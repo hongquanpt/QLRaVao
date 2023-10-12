@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace QuanLyRaVao.Models;
+
+public partial class Quannhan
+{
+    public int MaQn { get; set; }
+
+    public string HoTen { get; set; } = null!;
+
+    public bool TonTai { get; set; }
+
+    public int? NguoiSua { get; set; }
+
+    public DateTime? ThoiGianSua { get; set; }
+
+    public string? MaCv { get; set; }
+
+    public string? MaDv { get; set; }
+
+    public string? MaCapBac { get; set; }
+
+    public virtual ICollection<CanboDuyet> CanboDuyets { get; set; } = new List<CanboDuyet>();
+
+    public virtual ICollection<ChitietdanhsachGiayto> ChitietdanhsachGiaytos { get; set; } = new List<ChitietdanhsachGiayto>();
+
+    public virtual ICollection<Chitietdanhsach> Chitietdanhsaches { get; set; } = new List<Chitietdanhsach>();
+
+    public virtual Capbac? MaCapBacNavigation { get; set; }
+
+    public virtual Chucvu? MaCvNavigation { get; set; }
+
+    public virtual Donvi? MaDvNavigation { get; set; }
+
+    public virtual ICollection<Taikhoan> Taikhoans { get; set; } = new List<Taikhoan>();
+
+    public virtual ICollection<Vipham> Viphams { get; set; } = new List<Vipham>();
+}
