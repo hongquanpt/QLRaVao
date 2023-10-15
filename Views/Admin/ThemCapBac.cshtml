@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "ThemCapBac";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var dscb = (List<QuanLyRaVao.Models.Capbac>)ViewBag.dscb;
+    //var ds2 = (List<QuanLyRaVao.Models.Hangsanxuat>)ViewBag.dshang;
+}
+
+<div class="content-wrapper">
+    <!-- Begin Page Content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-6">
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Thêm thông tin Cấp bậc</h3>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <form class="was-validated" method="post" action="/Admin/ThemCapBac" enctype="multipart/form-data">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="uname">Tên Câp bậc:</label>
+                        <input type="text" class="form-control" id="uname" placeholder="Nhập tên cấp bậc" name="CapBac" required>
+                        <div class="valid-feedback">Valid.</div>
+                        <div class="invalid-feedback">Vui lòng điền vào trường này.</div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="pwd">Kí hiệu:</label>
+                        <input type="text" class="form-control" id="pwd" placeholder="Nhập Kí hiệu cấp bậc" name="KyHieu" required>
+                        <div class="invalid-feedback">Vui lòng điền vào trường này.</div>
+                    </div>
+            </form>
+        </div>
+</div>
+<button type="submit" class="btn btn-primary">Thêm mới</button>
+                </div>
+    </section>
+</div>
+
+
+

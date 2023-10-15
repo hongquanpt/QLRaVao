@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "QuanLyQN";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var dsqn = (List<QuanLyRaVao.Models.Quannhan>)ViewBag.dsqn;
+}
+<div>
+    <div class="content-wrapper">
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">DataTable with minimal features & hover style</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <table id="example2" class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã quân nhân</th>
+                                            <th>Chức vụ</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in dsqn)
+                                        {
+                                            <tr>
+                                                <td>@item.HoTen</td>
+                                                <td>@item.MaCv</td>
+                                                <td>
+                                                    <a href="#" class="btn btn-app" title="Settings" data-toggle="modal" id="viewbtn" data-target="#sua"><i class="fas fa-edit"></i>Edit</a>
+                                                    <a href="#" class="btn btn-app" title="Delete" data-toggle="modal" onclick="XoaHang(@item.MaQn)"><i class="material-icons"></i>Delete</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>XXXXXXXXXXXXx</th>
+                                            <th>XXXXXXXXXXXXx</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+                        <!-- /.card -->
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "QuanLyDSVP";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var dsvp = ViewBag.dsvp;
+}
+<div class="wrapper">
+    <div class="content-wrapper">
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">DataTable with minimal features & hover style</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <table id="example2" class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã vi phạm</th>
+                                            <th>Họ tên quân nhân</th>
+                                            <th>Mô tả</th>
+                                            <th>Loại vi phạm</th>
+                                            <th>Thời gian</th>
+                                            <th>Ghi chú</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        //------------------------
+                                        @foreach (var item in dsvp)
+                                        {
+                                            <tr>
+
+                                                <td>@item.MaVp</td>
+                                                <td>@item.HoTen</td>
+                                                <td>@item.MoTa</td>
+                                                <td>@item.Loai</td>
+                                                <td>@item.ThoiGian</td>
+                                                <td>@item.GhiChu</td>
+
+
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>XXXXXXXXXXXXx</th>
+                                            <th>XXXXXXXXXXXXx</th>
+                                            <th>XXXXXXXXXXXXx</th>
+                                            <th>XXXXXXXXXXXXx</th>
+                                            <th>XXXXXXXXXXXXx</th>
+                                            <th>XXXXXXXXXXXXx</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+        </section>
+    </div>
+</div>
