@@ -30,20 +30,97 @@ namespace QuanLyRaVao.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult ThemCapBac(Models.Capbac cb, string CapBac, string KyHieu)
+        public IActionResult ThemCapBac( string tenCB, string KH)
         {
             var spmoi = new Models.Capbac();
-            spmoi.CapBac1 = cb.CapBac1;
-            spmoi.KyHieu = cb.KyHieu;
-           
+            if (tenCB != null && KH != null)
+            {
+                spmoi.CapBac1 = tenCB;
+                spmoi.KyHieu = KH;
+                obj.Capbacs.Add(spmoi);
+                obj.SaveChanges();
+                return RedirectToAction("QuanLyCapBac");
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+        }
+        public IActionResult SuaCapBac(int maCB)
+        {
+            var cb= obj.Capbacs.Find(maCB);
+            if(cb!= null)
+            return View(cb);
+            else return Json(new { status = false });
+            
+        }
+        [HttpPost]
+        public IActionResult SuaCapBac(int maCB, string tenCB, string KH)
+        {
+            var cb = obj.Capbacs.Find(maCB);
+            if (cb != null)
+            {
+                cb.KyHieu = KH;
+                cb.CapBac1 = tenCB;
+                obj.SaveChanges();
+                return Json(new { status = true });
+            }
+            else
+            {
+                return Json(new { status = false });
+            }                       
+        }
+        public IActionResult XoaCapBac(int maCB)
+        {
+            var cb = obj.Capbacs.Find(maCB);
+            if (cb!= null)
+            {
+                obj.Capbacs.Remove(cb);
+                obj.SaveChanges();
+                return Json(new 
+                { 
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                { 
+                    status = false
+                });
+            }
 
-            // Lặp lại cho image3, image4, image5, và image6
-          
-          
-            obj.Capbacs.Add(spmoi);
+        }
+        #endregion
+        #region Quản lý đơn vị
+        public IActionResult QuanLyDonVi()
+        {
+            var model = obj.Donvis.ToList();
+            ViewBag.dsdv = model;
+            return View();
+        }
+     
+        public IActionResult ThemDonVi()
+        {
+            var dscb = obj.Donvis.ToList();
+            ViewBag.dscb = dscb;
+            return View();
+        }
+        [HttpPost]
+        public ActionResult ThemDonVi( string TenDv, short Cap)
+        {
+            var moi = new Models.Donvi();
+            moi.Cap = Cap;
+            moi.TenDv = TenDv;        
+            obj.Donvis.Add(moi);
             obj.SaveChanges();
-
-            return RedirectToAction("QuanLyCapBac");
+            return Json(new
+            {
+                status= true 
+            });
         }
         #endregion
 

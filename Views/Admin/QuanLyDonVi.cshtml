@@ -1,0 +1,72 @@
+﻿@{
+    ViewBag.Title = "QuanLyDonVi";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var dsdv = (List<QuanLyRaVao.Models.Donvi>)ViewBag.dsdv;
+}
+<div>
+    <div class="content-wrapper">
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">DataTable with minimal features & hover style</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <table id="example2" class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã Đơn vị</th>
+                                            <th>Cấp</th>
+                                            <th>Tên đơn vị</th>
+                                          
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in dsdv)
+                                        {
+                                            <tr>
+                                                <td>@item.MaDv</td>
+                                                <td>@item.Cap</td>
+                                                <td>@item.TenDv</td>
+                                                <td></td>
+                                                <td>
+                                                    <a href="#" class="btn btn-app" title="Settings" data-toggle="modal" id="viewbtn" data-target="#sua"><i class="fas fa-edit"></i>Edit</a>
+                                                    <a href="#" class="btn btn-app" title="Delete" data-toggle="modal" onclick="XoaHang(@item.MaDv)"><i class="material-icons"></i>Delete</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>XXXXXXXXXXXXx</th>
+                                            <th>XXXXXXXXXXXXx</th>
+                                            <th>XXXXXXXXXXXXx</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">           
+                                        <a type="button" class="btn btn-primary"  data-dismiss="modal" id="confirmThem" href="@Url.Action("Admin","ThemDonVi")">Thêm đơn vị mới</a>
+                                    </h3>
+                                 </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+                        <!-- /.card -->
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+    </div>
+</div>
+

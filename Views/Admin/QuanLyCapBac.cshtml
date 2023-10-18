@@ -34,8 +34,8 @@
                                                 <td>@item.KyHieu</td>
                                                 <td></td>
                                                 <td>
-                                                    <a href="#" class="btn btn-app" title="Settings" data-toggle="modal" id="viewbtn" data-target="#sua"><i class="fas fa-edit"></i>Edit</a>
-                                                    <a href="#" class="btn btn-app" title="Delete" data-toggle="modal" onclick="XoaHang(@item.MaCapBac)"><i class="material-icons"></i>Delete</a>
+                                                    <a href="@Url.Action("SuaCapBac","Admin",new { maCB = item.MaCapBac})" class="btn btn-success">Edit</a>
+                                                    <a href="#" class="btn btn-app" title="Delete" data-toggle="modal" onclick="XoaCapBac(@item.MaCapBac)"><i class="material-icons"></i>Delete</a>
                                                 </td>
                                             </tr>
                                         }
@@ -55,6 +55,14 @@
                     </div>
                     <!-- /.col -->
                 </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                 
+                            <a type="button" class="btn btn-primary" href="@Url.Action("ThemCapBac","Admin")" data-dismiss="modal" id="confirmThem">Thêm cấp bậc mới</a>
+                        </h3>
+                    </div>
+                </div>
                 <!-- /.row -->
             </div>
             <!-- /.container-fluid -->
@@ -63,9 +71,48 @@
 </div>
 
 <!--Thêm cấp bậc -->
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Quản lý cấp bậc  
-            <a type="button" class="btn btn-primary" href=" 
-                @Url.Action("ThemCapBac","Admin")" data-dismiss="modal" id="confirmThem">Thêm cấp bậc mới</a></h3>
+<!-- Đoạn mã HTML cho modal xác nhận xóa -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Bạn có chắc chắn muốn xóa cấp bậc?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmDeleteButton">Xóa</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+            </div>
+        </div>
     </div>
+</div>
+<!-- Đoạn mã JavaScript để xử lý sự kiện xóa -->
+<script>
+    function XoaCapBac(ma) {
+        var maCB = parseInt(ma);
+
+        // Hiển thị modal xác nhận xóa
+        $('#confirmDeleteModal').modal('show');
+
+        // Xử lý sự kiện khi người dùng xác nhận xóa
+        $('#confirmDeleteButton').on('click', function () {
+            $.ajax({
+                url: '/Admin/XoaCapBac',
+                data: {
+                    maCB: maCB
+                },
+                type: 'POST',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status == true) {
+                        // Đóng modal sau khi xóa thành công
+                        $('#confirmDeleteModal').modal('hide');
+                        window.location = '@Url.Action("QuanLyCapBac","Admin")';
+                    }
+                }
+            });
+        });
+    }
+</script>
