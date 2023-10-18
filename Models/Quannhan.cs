@@ -15,9 +15,9 @@ public partial class Quannhan
 
     public DateTime? ThoiGianSua { get; set; }
 
-    public string? MaCv { get; set; }
+    public int? MaCv { get; set; }
 
-    public string? MaDv { get; set; }
+    public int? MaDv { get; set; }
 
     public int? MaCapBac { get; set; }
 

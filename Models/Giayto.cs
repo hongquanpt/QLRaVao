@@ -19,7 +19,7 @@ public partial class Giayto
 
     public DateTime? ThoiGianSua { get; set; }
 
-    public string? MaDv { get; set; }
+    public int? MaDv { get; set; }
 
     public virtual ICollection<ChitietdanhsachGiayto> ChitietdanhsachGiaytos { get; set; } = new List<ChitietdanhsachGiayto>();
 

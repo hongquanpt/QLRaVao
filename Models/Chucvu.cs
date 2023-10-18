@@ -5,7 +5,7 @@ namespace QuanLyRaVao.Models;
 
 public partial class Chucvu
 {
-    public string MaCv { get; set; } = null!;
+    public int MaCv { get; set; }
 
     public string TenCv { get; set; } = null!;
 

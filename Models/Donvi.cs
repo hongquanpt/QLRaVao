@@ -5,7 +5,7 @@ namespace QuanLyRaVao.Models;
 
 public partial class Donvi
 {
-    public string MaDv { get; set; } = null!;
+    public int MaDv { get; set; }
 
     public short Cap { get; set; }
 
