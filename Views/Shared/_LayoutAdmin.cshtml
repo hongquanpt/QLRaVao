@@ -218,12 +218,7 @@
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="@Url.Action("QuanLyCapBac", "Admin")" class="nav-link ">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý Cấp bậc</p>
-                                    </a>
-                                </li>
+            
                                 <li class="nav-item">
                                     <a href="@Url.Action("QuanLyQN", "Admin")" class="nav-link ">
                                         <i class="far fa-circle nav-icon"></i>
@@ -242,16 +237,35 @@
                                         <p>Quản lý danh sách vi phạm</p>
                                     </a>
                                 </li>
-                                 <li class="nav-item">
-                                    <a href="@Url.Action("QuanLyDSTK", "Admin")" class="nav-link">
+                                
+   
+                            </ul>
+                        </li>
+                    <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-copy"></i>
+                                <p>
+                                    Quản trị hệ thống
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="@Url.Action("QuanLyCapBac", "Admin")" class="nav-link ">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý danh sách tài khoản</p>
+                                        <p>Quản lý Cấp bậc</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="@Url.Action("QuanLyDH", "Admin")" class="nav-link">
+                                    <a href="@Url.Action("QuanLyDonVi", "Admin")" class="nav-link ">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý đơn hàng</p>
+                                        <p>Quản lý danh sách các đơn vị</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("QuanLyDSTK", "Admin")" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Quản lý danh sách tài khoản</p>
                                     </a>
                                 </li>
                             </ul>

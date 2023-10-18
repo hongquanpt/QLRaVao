@@ -1,7 +1,7 @@
 ﻿@{
-    ViewBag.Title = "QuanLyCapBac";
+    ViewBag.Title = "QuanLyDonVi";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-    var dscb = (List<QuanLyRaVao.Models.Capbac>)ViewBag.dscb;
+    var dsdv = (List<QuanLyRaVao.Models.Donvi>)ViewBag.dsdv;
 }
 <div>
     <div class="content-wrapper">
@@ -18,24 +18,24 @@
                                 <table id="example2" class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Mã quân nhân</th>
-                                            <th>Cấp bậc</th>
-                                            <th>Kí hiệu</th>
-                                            <th>Ghi chú</th>
+                                            <th>Mã Đơn vị</th>
+                                            <th>Cấp</th>
+                                            <th>Tên đơn vị</th>
+                                          
 
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var item in dscb)
+                                        @foreach (var item in dsdv)
                                         {
                                             <tr>
-                                                <td>@item.MaCapBac</td>
-                                                <td>@item.CapBac1</td>
-                                                <td>@item.KyHieu</td>
+                                                <td>@item.MaDv</td>
+                                                <td>@item.Cap</td>
+                                                <td>@item.TenDv</td>
                                                 <td></td>
                                                 <td>
                                                     <a href="#" class="btn btn-app" title="Settings" data-toggle="modal" id="viewbtn" data-target="#sua"><i class="fas fa-edit"></i>Edit</a>
-                                                    <a href="#" class="btn btn-app" title="Delete" data-toggle="modal" onclick="XoaHang(@item.MaCapBac)"><i class="material-icons"></i>Delete</a>
+                                                    <a href="#" class="btn btn-app" title="Delete" data-toggle="modal" onclick="XoaHang(@item.MaDv)"><i class="material-icons"></i>Delete</a>
                                                 </td>
                                             </tr>
                                         }
@@ -44,9 +44,17 @@
                                         <tr>
                                             <th>XXXXXXXXXXXXx</th>
                                             <th>XXXXXXXXXXXXx</th>
+                                            <th>XXXXXXXXXXXXx</th>
                                         </tr>
                                     </tfoot>
                                 </table>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">           
+                                        <a type="button" class="btn btn-primary"  data-dismiss="modal" id="confirmThem" href="@Url.Action("Admin","ThemDonVi")">Thêm đơn vị mới</a>
+                                    </h3>
+                                 </div>
                             </div>
                             <!-- /.card-body -->
                         </div>
@@ -55,20 +63,10 @@
                     </div>
                     <!-- /.col -->
                 </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                 
-                            <a type="button" class="btn btn-primary" href="@Url.Action("ThemCapBac","Admin")" data-dismiss="modal" id="confirmThem">Thêm cấp bậc mới</a>
-                        </h3>
-                    </div>
-                </div>
                 <!-- /.row -->
             </div>
             <!-- /.container-fluid -->
         </section>
     </div>
 </div>
-
-<!--Thêm cấp bậc -->
 

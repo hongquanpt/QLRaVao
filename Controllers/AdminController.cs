@@ -30,22 +30,57 @@ namespace QuanLyRaVao.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult ThemCapBac(Models.Capbac cb, string CapBac, string KyHieu)
+        public IActionResult ThemCapBac( string tenCB, string KH)
         {
             var spmoi = new Models.Capbac();
-            spmoi.CapBac1 = cb.CapBac1;
-            spmoi.KyHieu = cb.KyHieu;
-           
-
-            // Lặp lại cho image3, image4, image5, và image6
-          
-          
-            obj.Capbacs.Add(spmoi);
-            obj.SaveChanges();
-
-            return RedirectToAction("QuanLyCapBac");
+            if (tenCB != null && KH != null)
+            {
+                spmoi.CapBac1 = tenCB;
+                spmoi.KyHieu = KH;
+                obj.Capbacs.Add(spmoi);
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
         }
         #endregion
+        public IActionResult QuanLyDonVi()
+        {
+            var model = obj.Donvis.ToList();
+            ViewBag.dsdv = model;
+            return View();
+        }
+     
+        public IActionResult ThemDonVi()
+        {
+            var dscb = obj.Donvis.ToList();
+            ViewBag.dscb = dscb;
+            return View();
+        }
+        [HttpPost]
+        public ActionResult ThemDonVi( string TenDv, short Cap)
+        {
+            var moi = new Models.Donvi();
+            moi.Cap = Cap;
+            moi.TenDv = TenDv;
+            // Lặp lại cho image3, image4, image5, và image6
+            obj.Donvis.Add(moi);
+            obj.SaveChanges();
+            return Json(new
+            {
+                status= true 
+            });
+        }
+    
 
         #region Quản lý quân nhân
         public IActionResult QuanLyQN()

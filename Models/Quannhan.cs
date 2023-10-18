@@ -19,7 +19,7 @@ public partial class Quannhan
 
     public string? MaDv { get; set; }
 
-    public string? MaCapBac { get; set; }
+    public int? MaCapBac { get; set; }
 
     public virtual ICollection<CanboDuyet> CanboDuyets { get; set; } = new List<CanboDuyet>();
 
