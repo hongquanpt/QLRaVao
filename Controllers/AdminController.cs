@@ -7,7 +7,7 @@ namespace QuanLyRaVao.Controllers
 {
     public class AdminController : Controller
     {
-        QuanLyRaVaoContext obj = new QuanLyRaVaoContext();
+        private readonly QuanLyRaVaoContext obj = new QuanLyRaVaoContext();
         public IActionResult Index()
         {
             return View();
