@@ -12,89 +12,6 @@ namespace QuanLyRaVao.Controllers
         {
             return View();
         }
-
-        #region Danh sách cấp bậc
-        public IActionResult QuanLyCapBac()
-        {
-            var model = obj.Capbacs.ToList();
-            ViewBag.dscb = model;
-            return View();
-        }
-        #endregion
-        #region Thêm Cấp bậc
-        public IActionResult ThemCapBac()
-        {
-            var dscb = obj.Capbacs.ToList();
-            ViewBag.dscb = dscb;
-
-            return View();
-        }
-        [HttpPost]
-        public IActionResult ThemCapBac( string tenCB, string KH)
-        {
-            var spmoi = new Models.Capbac();
-            if (tenCB != null && KH != null)
-            {
-                spmoi.CapBac1 = tenCB;
-                spmoi.KyHieu = KH;
-                obj.Capbacs.Add(spmoi);
-                obj.SaveChanges();
-                return RedirectToAction("QuanLyCapBac");
-            }
-            else
-            {
-                return Json(new
-                {
-                    status = false
-                });
-            }
-        }
-        public IActionResult SuaCapBac(int maCB)
-        {
-            var cb= obj.Capbacs.Find(maCB);
-            if(cb!= null)
-            return View(cb);
-            else return Json(new { status = false });
-            
-        }
-        [HttpPost]
-        public IActionResult SuaCapBac(int maCB, string tenCB, string KH)
-        {
-            var cb = obj.Capbacs.Find(maCB);
-            if (cb != null)
-            {
-                cb.KyHieu = KH;
-                cb.CapBac1 = tenCB;
-                obj.SaveChanges();
-                return Json(new { status = true });
-            }
-            else
-            {
-                return Json(new { status = false });
-            }                       
-        }
-        public IActionResult XoaCapBac(int maCB)
-        {
-            var cb = obj.Capbacs.Find(maCB);
-            if (cb!= null)
-            {
-                obj.Capbacs.Remove(cb);
-                obj.SaveChanges();
-                return Json(new 
-                { 
-                    status = true
-                });
-            }
-            else
-            {
-                return Json(new
-                { 
-                    status = false
-                });
-            }
-
-        }
-        #endregion
         #region Quản lý đơn vị
         public IActionResult QuanLyDonVi()
         {
@@ -123,83 +40,70 @@ namespace QuanLyRaVao.Controllers
             });
         }
         #endregion
-
-        #region Quản lý quân nhân
-        public IActionResult QuanLyQN()
+        #region Quản lý cấp bậc
+        public IActionResult QuanLyCapBac()
         {
-            var model = obj.Quannhans.ToList();
-            ViewBag.dsqn = model;
+            var model = obj.Capbacs.ToList();
+            ViewBag.dscb = model;
             return View();
         }
-        #endregion
-
-        #region Quản lý danh sách ra ngoài
-        public IActionResult QuanLyDS()
+        public IActionResult ThemCapBac()
         {
-            var dsrn = from qn in obj.Quannhans
-                       join ctds in obj.Chitietdanhsaches on qn.MaQn equals ctds.MaHocVien
-                       join ds in obj.Danhsaches on ctds.MaDs equals ds.MaDs
-                       select new {
-                           qn.HoTen ,
-                           ctds.DiaDiem ,
-                           ctds.LyDo,
-                           ctds.ThoiGianRa,
-                           ctds.ThoiGianVao,
-                           ctds.GhiChu,
-                           ds.TinhTrang
-                       };
+            var dscb = obj.Capbacs.ToList();
+            ViewBag.dscb = dscb;
 
-
-
-            ViewBag.dsrn = dsrn;
             return View();
         }
-        #endregion
-
-        #region Danh sách vi phạm
-        public IActionResult QuanLyDSVP()
+        [HttpPost]
+        public IActionResult ThemCapBac(string tenCB, string KH)
         {
-            var dsvp = from qn in obj.Quannhans
-                       join vp in obj.Viphams on qn.MaQn equals vp.MaHv
-                       select new
-                       {
-                           vp.MaVp,
-                           qn.HoTen,
-                           vp.MoTa,
-                           vp.Loai,
-                           vp.ThoiGian,
-                           vp.GhiChu
-                       };
-            ViewBag.dsvp = dsvp;
-            return View();
-        }
-        #endregion
-
-        #region Danh sách tài khoản
-        public IActionResult QuanLyDSTK()
-        {
-            var dstk = from qn in obj.Quannhans
-                       join tk in obj.Taikhoans on qn.MaQn equals tk.MaQn
-                       select new
-                       {
-                           tk.MaTaiKhoan,
-                           qn.MaQn,
-                           qn.HoTen,
-                           tk.Tdn,
-                           tk.MatKhau
-                       };
-            ViewBag.dstk = dstk;
-            return View();
-        }
-        #endregion
-
-        #region Xóa tài khoản
-        public IActionResult XoaTK(int MaTK)
-        {
-            var tk = obj.Taikhoans.Find(MaTK);
-            if (tk != null)
+            var spmoi = new Models.Capbac();
+            if (tenCB != null && KH != null)
             {
-                obj.Taikhoans.Remove(tk);
+                spmoi.CapBac1 = tenCB;
+                spmoi.KyHieu = KH;
+                obj.Capbacs.Add(spmoi);
+                obj.SaveChanges();
+                return RedirectToAction("QuanLyCapBac");
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+        }
+        public IActionResult SuaCapBac(int maCB)
+        {
+            var cb = obj.Capbacs.Find(maCB);
+            if (cb != null)
+                return View(cb);
+            else return Json(new { status = false });
+
+        }
+        [HttpPost]
+        public IActionResult SuaCapBac(int maCB, string tenCB, string KH)
+        {
+            var cb = obj.Capbacs.Find(maCB);
+            if (cb != null)
+            {
+                cb.KyHieu = KH;
+                cb.CapBac1 = tenCB;
+                obj.SaveChanges();
+                return Json(new { status = true });
+            }
+            else
+            {
+                return Json(new { status = false });
+            }
+        }
+        public IActionResult XoaCapBac(int maCB)
+        {
+            var cb = obj.Capbacs.Find(maCB);
+            if (cb != null)
+            {
+                obj.Capbacs.Remove(cb);
                 obj.SaveChanges();
                 return Json(new
                 {
@@ -208,15 +112,22 @@ namespace QuanLyRaVao.Controllers
             }
             else
             {
-                // Xử lý trường hợp tk là null (nếu cần)
                 return Json(new
                 {
-                    status = false,
-                    message = "Không tìm thấy tài khoản"
+                    status = false
                 });
             }
+
         }
         #endregion
+        #region Quản lý chức vụ
+        #endregion
+        #region Quản lý giấy tờ
+        #endregion
+        #region Quản lý tài khoản
+        #endregion
+
+
 
 
     }
