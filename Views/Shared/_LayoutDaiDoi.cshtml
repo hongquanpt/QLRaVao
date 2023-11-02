@@ -174,7 +174,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="" @Url.Action("Index", "Admin")"" class="brand-link">
+            <a href="" @Url.Action("Index", "DaiDoi")"" class="brand-link">
                 <img src="~/Admin/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">Quản lý chung</span>
             </a>
@@ -218,52 +218,52 @@
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
-            
+
                                 <li class="nav-item">
-                                    <a href="@Url.Action("QuanLyDonVi", "Admin")" class="nav-link ">
+                                    <a href="@Url.Action("QuanLyQuanNhan", "DaiDoi")" class="nav-link ">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý đơn vị</p>
+                                        <p>Quản lý danh sách quân nhân</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="@Url.Action("QuanLyCapBac", "Admin")" class="nav-link">
+                                    <a href="@Url.Action("QuanLyViPham", "DaiDoi")" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý cấp bậc</p>
+                                        <p>Quản lý vi phạm</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="@Url.Action("QuanLyChucVu", "Admin")" class="nav-link">
+                                    <a href="@Url.Action("QuanLyDSRN", "DaiDoi")" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý Chức vụ</p>
+                                        <p>Quản lý danh sách ra ngoài</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="@Url.Action("QuanLyGiayTo", "Admin")" class="nav-link">
+                                    <a href="@Url.Action("QuanLyPhatGiay", "DaiDoi")" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý giấy tờ</p>
+                                        <p>Quản lý cấp phát giấy ra vào</p>
                                     </a>
                                 </li>
-   
+
                             </ul>
                         </li>
-                    <li class="nav-item">
+                        <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-copy"></i>
                                 <p>
-                                    Quản trị hệ thống
+                                    Thông tin từ tiểu đoàn
                                     <i class="right fas fa-angle-left"></i>
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="@Url.Action("QuanLyTK", "Admin")" class="nav-link ">
+                                    <a href="@Url.Action("DanhSach", "DaiDoi")" class="nav-link ">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý tài khoản</p>
+                                        <p>Danh sách sau khi duyệt</p>
                                     </a>
                                 </li>
-                                
+
                             </ul>
-                        </li>                      
+                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->

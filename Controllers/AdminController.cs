@@ -2,42 +2,98 @@
 using QuanLyRaVao.Data;
 using QuanLyRaVao.Models;
 using System.Security.Cryptography;
+using PagedList;
 
 namespace QuanLyRaVao.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly QuanLyRaVaoContext obj = new QuanLyRaVaoContext();
+        private readonly QuanLyRaVaoContext obj;
+        public AdminController(QuanLyRaVaoContext obj)
+        {
+            this.obj = obj;
+        }
         public IActionResult Index()
         {
             return View();
         }
         #region Quản lý đơn vị
-        public IActionResult QuanLyDonVi()
+        public IActionResult QuanLyDonVi(int page = 1, int pageSize = 10)
         {
-            var model = obj.Donvis.ToList();
-            ViewBag.dsdv = model;
-            return View();
-        }
-     
-        public IActionResult ThemDonVi()
-        {
-            var dscb = obj.Donvis.ToList();
-            ViewBag.dscb = dscb;
-            return View();
+            
+            var query = obj.Donvis.OrderBy(s => s.MaDv);
+            var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            // Tính toán thông tin phân trang
+            var totalItemCount = query.Count();
+            var pagedList = new StaticPagedList<Donvi>(model, page, pageSize, totalItemCount);
+            ViewBag.PageStartItem = (page - 1) * pageSize + 1;
+            ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
+            ViewBag.Page = page;
+            ViewBag.TotalItemCount = totalItemCount;
+            return View(pagedList);
         }
         [HttpPost]
-        public ActionResult ThemDonVi( string TenDv, short Cap)
+        public ActionResult ThemDonVi( string tendv, short cap)
         {
             var moi = new Models.Donvi();
-            moi.Cap = Cap;
-            moi.TenDv = TenDv;        
+            moi.Cap = cap;
+            moi.TenDv = tendv;        
             obj.Donvis.Add(moi);
             obj.SaveChanges();
             return Json(new
             {
                 status= true 
             });
+        }
+        public IActionResult XoaDonVi(int madv)
+        {
+            var donvi = obj.Donvis.Find(madv);
+            if (donvi != null)
+            {
+                obj.Donvis.Remove(donvi);
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+
+        public IActionResult SuaDonVi(int madv)
+        {
+            var model = obj.Donvis.Find(madv);
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult SuaDonVi(int madv, string tendv, short cap)
+        {
+            var donvi = obj.Donvis.Find(madv);
+            if (donvi != null)
+            {
+                donvi.TenDv = tendv;
+                donvi.Cap = cap;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
         }
         #endregion
         #region Quản lý cấp bậc

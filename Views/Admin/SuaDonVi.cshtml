@@ -1,0 +1,82 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @model QuanLyRaVao.Models.Donvi
+
+}
+<div class="content-wrapper">
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-6">
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Cập nhật thông tin đơn vị</h3>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <form id="frmSuaHang" method="post">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Nhập cấp đơn vị</label>
+                        <input type="text" class="form-control" id="cap" value="@Model.Cap">
+                        <label for="exampleInputPassword1">Nhập tên đơn vị</label>
+                        <input type="text" class="form-control" id="tendv" value="@Model.TenDv">
+                        
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-primary" onclick="SuaDonVi(@Model.MaDv)" id="confirm">Lưu</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">Hủy bỏ</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </section>
+</div>
+
+
+<script>
+    function SuaDonVi(madv) {
+
+        $('#confirm').on('click', function () {
+            var tendv = $('#tendv').val().toString();
+            var cap = parseInt($('#cap').val());
+            if (tendv.trim() === "" || (typeof cap !== 'number' || !Number.isInteger(cap))) {
+                // Kiểm tra nếu trường TenHang rỗng
+                alert("Bạn chưa nhập đủ thông tin đơn vị.");
+            } else {
+                // Nếu trường TenHang không rỗng, tiến hành gửi yêu cầu AJAX
+                $.ajax({
+                    url: '/Admin/SuaDonVi',
+                    data: {
+                        tendv: tendv,
+                        cap: cap
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status == true) {
+                            window.location = '@Url.Action("QuanLyDonVi","Admin")'
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Sửa thành công',
+                                showConfirmButton: false,
+                                timer: 100
+                            })
+                        }
+                    }
+                });
+            }
+        });
+        $('#cancel').on('click', function () {
+            window.location = '@Url.Action("QuanLyDonVi","Admin")'
+        });
+    }
+
+</script>
