@@ -1,6 +1,6 @@
-﻿@model PagedList.IPagedList<QuanLyRaVao.Models.Donvi>
+﻿@model PagedList.IPagedList<QuanLyRaVao.Models.Chucvu>
 @{
-    ViewBag.Title = "QuanLyDonVi";
+    ViewBag.Title = "QuanLyChucVu";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 <div>
@@ -11,17 +11,18 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Quản lý đơn vị</h3>
+                                <h3 class="card-title">Quản lý chức vụ</h3>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <table id="example2" class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Mã Đơn vị</th>
-                                            <th>Cấp</th>
-                                            <th>Tên đơn vị</th>
-                                          
+                                            <th>Mã chức vụk</th>
+                                            <th>chức vụ</th>
+                                            <th>Kí hiệu</th>
+                                            <th>Ghi chú</th>
+
 
                                         </tr>
                                     </thead>
@@ -29,22 +30,24 @@
                                         @foreach (var item in Model)
                                         {
                                             <tr>
-                                                <td>@item.MaDv</td>
-                                                <td>@item.Cap</td>
-                                                <td>@item.TenDv</td>                                          
+                                                <td>@item.MaCv</td>
+                                                <td>@item.TenCv</td>
+                                                <td>@item.KyHieu</td>
+                                                <td></td>
                                                 <td>
-                                                    <a href="@Url.Action("SuaDonVi","Admin",new {madv=item.MaDv})" class="btn btn-success">Edit</a>
+                                                    <a href="@Url.Action("SuaChucVu","Admin",new { macv = item.MaCv})" class="btn btn-success">Edit</a>
+                                                    <a href="#" class="btn btn-success" onclick="XoaChucVu(@item.MaCv)">Delete</a>
                                                 </td>
-                                                <td><a class="btn btn-success" onclick="XoaDonVi(@item.MaDv)">Delete</a></td>
                                             </tr>
                                         }
                                     </tbody>
-                                    
+                                    <tfoot>
+                                    </tfoot>
                                 </table>
                                 <div class="row">
                                     <div class="col-sm-12 col-md-5">
                                         <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
-                                            Danh sách từ @ViewBag.PageStartItem đến @ViewBag.PageEndItem trên tổng số @ViewBag.TotalItemCount đơn vị
+                                            Danh sách từ @ViewBag.PageStartItem đến @ViewBag.PageEndItem trên tổng số @ViewBag.TotalItemCount chức vụ
                                         </div>
                                     </div>
                                     <ul class="pagination">
@@ -52,12 +55,12 @@
                                         @if (Model.HasPreviousPage)
                                         {
                                             <li class="page-item">
-                                                <a class="page-link" href="@Url.Action("QuanLyDonVi", new { page = Model.PageNumber - 1 })">Previous</a>
+                                                <a class="page-link" href="@Url.Action("QuanLyChucVu", new { page = Model.PageNumber - 1 })">Previous</a>
                                             </li>
 
                                         }
                                         <li class="page-item">
-                                            <a class="page-link" href="@Url.Action("QuanLyDonVi", new { page = 1 })">1</a>
+                                            <a class="page-link" href="@Url.Action("QuanLyChucVu", new { page = 1 })">1</a>
                                         </li>
                                         @if (Model.PageNumber > 3)
                                         {
@@ -70,7 +73,7 @@
                                             if (i > 1 && i < Model.PageCount)
                                             {
                                                 <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                                                    <a class="page-link" href="@Url.Action("QuanLyDonVi", new { page = i })">@i</a>
+                                                    <a class="page-link" href="@Url.Action("QuanLyChucVu", new { page = i })">@i</a>
                                                 </li>
                                             }
                                         }
@@ -83,21 +86,21 @@
                                         @if (Model.PageCount > 1)
                                         {
                                             <li class="page-item">
-                                                <a class="page-link" href="@Url.Action("QuanLyDonVi", new { page = Model.PageCount })">@Model.PageCount</a>
+                                                <a class="page-link" href="@Url.Action("QuanLyChucVu", new { page = Model.PageCount })">@Model.PageCount</a>
                                             </li>
                                         }
                                         @if (Model.HasNextPage)
                                         {
 
                                             <li class="page-item">
-                                                <a class="page-link" href="@Url.Action("QuanLyDonVi", new { page = Model.PageNumber + 1 })">Next</a>
+                                                <a class="page-link" href="@Url.Action("QuanLyChucVu", new { page = Model.PageNumber + 1 })">Next</a>
                                             </li>
                                         }
                                     </ul>
                                 </div>
                             </div>
                             <div class="card-footer">
-                                <button class="btn btn-primary" data-dismiss="modal" id="confirmThem" onclick="Them()">Thêm đơn vị mới</button>
+                                <button class="btn btn-primary" data-dismiss="modal" id="confirmThem" onclick="Them()">Thêm chức vụ mới</button>
                                 @*<a href="#" class="btn btn-secondary" style="display: none;"><i class="material-icons">&#xE24D;</i> <span>Xuất Excel</span></a>*@
                             </div>
                             <!-- /.card-body -->
@@ -111,16 +114,16 @@
             </div>
             <!-- /.container-fluid -->
         </section>
-        <form id="frmThemDV" method="post" aria-hidden="true" tabindex="-1" role="dialog" style="display: none;" enctype="multipart/form-data">
+        <form id="frmThemCV" method="post" aria-hidden="true" tabindex="-1" role="dialog" style="display: none;" enctype="multipart/form-data">
             <div class="card-body">
                 <div class="form-group">
-                    <label for="exampleInputPassword1">Nhập cấp đơn vị</label>
-                    <input type="text" class="form-control" id="cap" placeholder="Nhập cấp đơn vị mới tại đây">
-                    <label for="exampleInputPassword1">Nhập tên đơn vị</label>
-                    <input type="text" class="form-control" id="tendv" placeholder="Nhập tên đơn vị mới tại đây">
+                    <label for="exampleInputPassword1">Nhập cấp chức vụ</label>
+                    <input type="text" class="form-control" id="cap" placeholder="Nhập cấp chức vụ mới tại đây">
+                    <label for="exampleInputPassword1">Nhập tên chức vụ</label>
+                    <input type="text" class="form-control" id="tendv" placeholder="Nhập tên chức vụ mới tại đây">
                 </div>
                 <div class="card-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirm">Thêm đơn vị</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirm">Thêm chức vụ</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">Hủy bỏ</button>
                 </div>
             </div>
@@ -128,24 +131,24 @@
     </div>
     <script>
         function Them() {
-            var form = document.getElementById("frmThemDV");
+            var form = document.getElementById("frmThemCV");
             form.setAttribute("aria-hidden", "false");
             form.setAttribute("tabindex", "0");
             form.style.display = "block";
             $('#confirm').on('click', function () {
                 var tendv = $('#tendv').val().toString();
-                var cap = parseInt($('#cap').val());
+                var cap = $('#tendv').val().toString();
 
-                if (tendv.trim() === "" || (typeof cap !== 'number' || !Number.isInteger(cap))) {
+                if (tendv.trim() === "" || cap.trim() === "") {
                     // Kiểm tra nếu trường TenDM rỗng
-                    alert("Bạn chưa nhập đủ thông tin đơn vị.");
+                    alert("Bạn chưa nhập đủ thông tin chức vụ.");
                 } else {
                     // Nếu trường TenDM không rỗng, tiến hành gửi yêu cầu AJAX
                     $.ajax({
-                        url: '/Admin/ThemDonVi', // Điều chỉnh URL nếu cần thiết
+                        url: '/Admin/ThemChucVu', // Điều chỉnh URL nếu cần thiết
                         data: {
-                            tendv: tendv,
-                            cap:cap
+                            TenCv: tendv,
+                            KH: cap
                         },
                         type: 'POST',
                         dataType: 'json',
@@ -155,7 +158,7 @@
                                 form.setAttribute("aria-hidden", "true");
                                 form.setAttribute("tabindex", "-1");
                                 form.style.display = "none";
-                                window.location = '@Url.Action("QuanLyDonVi","Admin")';
+                                window.location = '@Url.Action("QuanLyChucVu","Admin")';
                             }
                         }
                     });
@@ -173,7 +176,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmDeleteModalLabel">Bạn có chắc chắn muốn xóa đơn vị?</h5>
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Bạn có chắc chắn muốn xóa chức vụ?</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -188,7 +191,7 @@
 
     <!-- Đoạn mã JavaScript để xử lý sự kiện xóa -->
     <script>
-        function XoaDonVi(madv) {
+        function XoaChucVu(madv) {
             var madv = parseInt(madv);
 
             // Hiển thị modal xác nhận xóa
@@ -197,9 +200,9 @@
             // Xử lý sự kiện khi người dùng xác nhận xóa
             $('#confirmDeleteButton').on('click', function () {
                 $.ajax({
-                    url: '/Admin/XoaDonVi',
+                    url: '/Admin/XoaChucVu',
                     data: {
-                        madv: madv
+                        macv: madv
                     },
                     type: 'POST',
                     dataType: 'json',
@@ -207,7 +210,7 @@
                         if (res.status == true) {
                             // Đóng modal sau khi xóa thành công
                             $('#confirmDeleteModal').modal('hide');
-                            window.location = '@Url.Action("QuanLyDonVi","Admin")';
+                            window.location = '@Url.Action("QuanLyChucVu","Admin")';
                         }
                     }
                 });

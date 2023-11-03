@@ -18,7 +18,7 @@ namespace QuanLyRaVao.Controllers
             return View();
         }
         #region Quản lý đơn vị
-        public IActionResult QuanLyDonVi(int page = 1, int pageSize = 10)
+        public IActionResult QuanLyDonVi(int page = 1, int pageSize = 5)
         {
             
             var query = obj.Donvis.OrderBy(s => s.MaDv);
@@ -97,19 +97,21 @@ namespace QuanLyRaVao.Controllers
         }
         #endregion
         #region Quản lý cấp bậc
-        public IActionResult QuanLyCapBac()
+        public IActionResult QuanLyCapBac(int page = 1, int pageSize = 5)
         {
-            var model = obj.Capbacs.ToList();
-            ViewBag.dscb = model;
-            return View();
-        }
-        public IActionResult ThemCapBac()
-        {
-            var dscb = obj.Capbacs.ToList();
-            ViewBag.dscb = dscb;
+            var query = obj.Capbacs.OrderBy(s => s.MaCapBac);
+            var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-            return View();
+            // Tính toán thông tin phân trang
+            var totalItemCount = query.Count();
+            var pagedList = new StaticPagedList<Capbac>(model, page, pageSize, totalItemCount);
+            ViewBag.PageStartItem = (page - 1) * pageSize + 1;
+            ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
+            ViewBag.Page = page;
+            ViewBag.TotalItemCount = totalItemCount;
+            return View(pagedList);
         }
+  
         [HttpPost]
         public IActionResult ThemCapBac(string tenCB, string KH)
         {
@@ -120,7 +122,10 @@ namespace QuanLyRaVao.Controllers
                 spmoi.KyHieu = KH;
                 obj.Capbacs.Add(spmoi);
                 obj.SaveChanges();
-                return RedirectToAction("QuanLyCapBac");
+                return Json(new
+                {
+                    status = true
+                });
             }
             else
             {
@@ -177,6 +182,85 @@ namespace QuanLyRaVao.Controllers
         }
         #endregion
         #region Quản lý chức vụ
+
+        public IActionResult QuanLyChucVu(int page = 1, int pageSize = 5)
+        {
+
+            var query = obj.Chucvus.OrderBy(s => s.MaCv);
+            var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            // Tính toán thông tin phân trang
+            var totalItemCount = query.Count();
+            var pagedList = new StaticPagedList<Chucvu>(model, page, pageSize, totalItemCount);
+            ViewBag.PageStartItem = (page - 1) * pageSize + 1;
+            ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
+            ViewBag.Page = page;
+            ViewBag.TotalItemCount = totalItemCount;
+            return View(pagedList);
+        }
+        [HttpPost]
+        public ActionResult ThemChucVu(string TenCv, string KH)
+        {
+            var moi = new Models.Chucvu();
+            moi.KyHieu = KH;
+            moi.TenCv = TenCv;
+            obj.Chucvus.Add(moi);
+            obj.SaveChanges();
+            return Json(new
+            {
+                status = true
+            });
+        }
+        public IActionResult XoaChucVu(int macv)
+        {
+            var ChucVu = obj.Chucvus.Find(macv);
+            if (ChucVu != null)
+            {
+                obj.Chucvus.Remove(ChucVu);
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+
+        public IActionResult SuaChucVu(int macv)
+        {
+            var model = obj.Chucvus.Find(macv);
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult SuaChucVu(int macv, string TenCv, string KH)
+        {
+            var ChucVu = obj.Chucvus.Find(macv);
+            if (ChucVu != null)
+            {
+                ChucVu.TenCv = TenCv;
+                ChucVu.KyHieu = KH;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+        }
+
         #endregion
         #region Quản lý giấy tờ
         #endregion

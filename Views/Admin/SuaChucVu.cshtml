@@ -1,0 +1,85 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @model QuanLyRaVao.Models.Chucvu
+
+}
+<div class="content-wrapper">
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-6">
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Cập nhật thông tin chức vụ</h3>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <form id="frmSuaHang" method="post">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Chức vụ:</label>
+                        <input type="text" class="form-control" id="cb" value="@Model.TenCv" name="Moi">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Kí hiệu:</label>
+                        <input type="text" class="form-control" id="kh" value="@Model.KyHieu" name="Moi">
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-primary" onclick="SuaCapBac(@Model.MaCv)" id="confirm">Lưu</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">Hủy bỏ</button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+    </section>
+</div>
+
+
+<script>
+    function SuaCapBac(id) {
+
+        $('#confirm').on('click', function () {
+            var tencb = $('#cb').val().toString();
+            var kh = $('#kh').val().toString();
+            if (tencb.trim() === "" || kh.trim() === "") {
+
+                alert("Bạn chưa nhập đủ thông tin");
+            } else {
+                // Nếu trường TenHang không rỗng, tiến hành gửi yêu cầu AJAX
+                $.ajax({
+                    url: '/Admin/SuaChucVu',
+                    data: {
+                        macv: id,
+                        TenCv: tencb,
+                        KH: kh
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status == true) {
+                            window.location = '@Url.Action("QuanLyChucVu","Admin")'
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Sửa thành công',
+                                showConfirmButton: false,
+                                timer: 100
+                            })
+                        }
+                    }
+                });
+            }
+        });
+        $('#cancel').on('click', function () {
+            window.location = '@Url.Action("QuanLyChucVu","Admin")'
+        });
+    }
+
+</script>
