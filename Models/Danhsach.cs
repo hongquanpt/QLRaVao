@@ -19,11 +19,5 @@ public partial class Danhsach
 
     public DateTime? ThoiGianSua { get; set; }
 
-    public virtual ICollection<CanboDuyet> CanboDuyets { get; set; } = new List<CanboDuyet>();
-
-    public virtual ICollection<ChitietdanhsachGiayto> ChitietdanhsachGiaytos { get; set; } = new List<ChitietdanhsachGiayto>();
-
-    public virtual ICollection<Chitietdanhsach> Chitietdanhsaches { get; set; } = new List<Chitietdanhsach>();
-
     public virtual ICollection<Rangoai> Rangoais { get; set; } = new List<Rangoai>();
 }
