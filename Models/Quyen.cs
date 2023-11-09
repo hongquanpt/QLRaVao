@@ -10,6 +10,4 @@ public partial class Quyen
     public string Ten { get; set; } = null!;
 
     public string? GhiChu { get; set; }
-
-    public virtual ICollection<TaikhoanQuyen> TaikhoanQuyens { get; set; } = new List<TaikhoanQuyen>();
 }
