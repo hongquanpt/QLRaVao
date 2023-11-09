@@ -16,6 +16,4 @@ public partial class Taikhoan
     public int? MaQn { get; set; }
 
     public virtual Quannhan? MaQnNavigation { get; set; }
-
-    public virtual ICollection<TaikhoanQuyen> TaikhoanQuyens { get; set; } = new List<TaikhoanQuyen>();
 }

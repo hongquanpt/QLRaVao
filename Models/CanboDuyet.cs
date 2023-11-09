@@ -15,6 +15,10 @@ public partial class CanboDuyet
 
     public string? GhiChu { get; set; }
 
+    public int? NguoiSua { get; set; }
+
+    public DateTime? ThoiGianSua { get; set; }
+
     public virtual Quannhan MaCbNavigation { get; set; } = null!;
 
     public virtual Danhsach MaDsNavigation { get; set; } = null!;

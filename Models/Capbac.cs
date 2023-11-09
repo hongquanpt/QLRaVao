@@ -5,7 +5,7 @@ namespace QuanLyRaVao.Models;
 
 public partial class Capbac
 {
-    public int MaCapBac { get; set; } 
+    public int MaCapBac { get; set; }
 
     public string? CapBac1 { get; set; }
 
