@@ -9,5 +9,9 @@ public partial class Quyen
 
     public string Ten { get; set; } = null!;
 
-    public string? GhiChu { get; set; }
+    public string? ActionName { get; set; }
+
+    public string? ControllerName { get; set; }
+
+    public virtual ICollection<NQHd> NQHds { get; set; } = new List<NQHd>();
 }
