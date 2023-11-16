@@ -288,10 +288,77 @@ namespace QuanLyRaVao.Controllers
         #region Quản lý danh sách
         #endregion
         #region Quản lý danh sách quân nhân
+        public IActionResult QuanLyQuanNhan(int page = 1, int pageSize = 5)
+        {
+
+            var query = from qn in obj.Quannhans
+                        join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
+                        join dv in obj.Donvis on qn.MaDv equals dv.MaDv
+                        join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
+                        select new TT_QN
+                        {
+                            MaQn = qn.MaQn,
+                            HoTen = qn.HoTen,
+                            TonTai = qn.TonTai,
+                            NguoiSua = qn.NguoiSua,
+                            ThoiGianSua = qn.ThoiGianSua,
+                            MaCv = qn.MaCv,
+                            MaDv = qn.MaDv,
+                            MaCapBac = qn.MaCapBac,
+                            CapBac1 = cb.CapBac1,
+                            TenCv = cv.TenCv,
+                            TenDv = dv.TenDv,
+                            DiaChi= qn.DiaChi
+                        };
+            var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            // Tính toán thông tin phân trang
+            var totalItemCount = query.Count();
+            var pagedList = new StaticPagedList<TT_QN>(model, page, pageSize, totalItemCount);
+            ViewBag.PageStartItem = (page - 1) * pageSize + 1;
+            ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
+            ViewBag.Page = page;
+            ViewBag.TotalItemCount = totalItemCount;
+            return View(pagedList);
+        }
         #endregion
         #region Quản lý danh sách ra ngoài
         #endregion
         #region Quản lý danh sách vi phạm
+        public IActionResult QuanLyViPham(int page = 1, int pageSize = 5)
+        {
+
+            var query = from qn in obj.Quannhans
+                        join vp in obj.Viphams on qn.MaQn equals vp.MaHv
+                        join dv in obj.Donvis on qn.MaDv equals dv.MaDv
+                        join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
+                        join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac                                              
+                        select new HV_VP
+                        {
+                            MaQn = qn.MaQn,
+                            HoTen = qn.HoTen,
+                            MaVp = vp.MaVp,
+                            MaDv = qn.MaDv,
+                            MaCapBac = qn.MaCapBac,
+                            MaCv = qn.MaCv,
+                            TenCv= cv.TenCv,
+                            CapBac1=cb.CapBac1,
+                            ThoiGian = vp.ThoiGian,
+                            TenDv = dv.TenDv,
+                            Loai = vp.Loai,
+                            MoTa= vp.MoTa
+                        };
+            var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            // Tính toán thông tin phân trang
+            var totalItemCount = query.Count();
+            var pagedList = new StaticPagedList<HV_VP>(model, page, pageSize, totalItemCount);
+            ViewBag.PageStartItem = (page - 1) * pageSize + 1;
+            ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
+            ViewBag.Page = page;
+            ViewBag.TotalItemCount = totalItemCount;
+            return View(pagedList);
+        }
         #endregion
         #endregion
         #region Tiểu đoàn

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-namespace ShopBanDoGiaDung.authorize
+namespace QuanLyRaVao.authorize
 {
     public static class SessionExtensions
     {

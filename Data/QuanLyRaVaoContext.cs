@@ -32,6 +32,12 @@ public partial class QuanLyRaVaoContext : DbContext
 
     public virtual DbSet<Giayto> Giaytos { get; set; }
 
+    public virtual DbSet<Hd> Hds { get; set; }
+
+    public virtual DbSet<NQHd> NQHds { get; set; }
+
+    public virtual DbSet<NhomQuyen> NhomQuyens { get; set; }
+
     public virtual DbSet<Quannhan> Quannhans { get; set; }
 
     public virtual DbSet<Quyen> Quyens { get; set; }
@@ -40,13 +46,10 @@ public partial class QuanLyRaVaoContext : DbContext
 
     public virtual DbSet<Taikhoan> Taikhoans { get; set; }
 
-    public virtual DbSet<TaikhoanQuyen> TaikhoanQuyens { get; set; }
-
     public virtual DbSet<Vipham> Viphams { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Data Source=msi\\phuc;Initial Catalog=QuanLyRaVao;Integrated Security=True;Encrypt=false;Trusted_Connection=True;TrustServerCertificate=True;");
-
+        => optionsBuilder.UseSqlServer("Data Source=Quan\\hq;Initial Catalog=QuanLyRaVao;Integrated Security=True;Encrypt=false;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -193,6 +196,50 @@ public partial class QuanLyRaVaoContext : DbContext
                 .HasConstraintName("FK__GIAYTO__MaDV__403A8C7D");
         });
 
+        modelBuilder.Entity<Hd>(entity =>
+        {
+            entity.HasKey(e => e.MaA);
+
+            entity.ToTable("HD");
+
+            entity.Property(e => e.MaA).ValueGeneratedNever();
+            entity.Property(e => e.TenA).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<NQHd>(entity =>
+        {
+            entity.HasKey(e => new { e.MaA, e.MaQuyen, e.MaNhom });
+
+            entity.ToTable("N_Q_HD");
+
+            entity.Property(e => e.Ten).HasMaxLength(100);
+
+            entity.HasOne(d => d.MaANavigation).WithMany(p => p.NQHds)
+                .HasForeignKey(d => d.MaA)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_N_Q_HD_HD");
+
+            entity.HasOne(d => d.MaNhomNavigation).WithMany(p => p.NQHds)
+                .HasForeignKey(d => d.MaNhom)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_N_Q_HD_NhomQuyen");
+
+            entity.HasOne(d => d.MaQuyenNavigation).WithMany(p => p.NQHds)
+                .HasForeignKey(d => d.MaQuyen)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_N_Q_HD_QUYEN");
+        });
+
+        modelBuilder.Entity<NhomQuyen>(entity =>
+        {
+            entity.HasKey(e => e.MaNhom);
+
+            entity.ToTable("NhomQuyen");
+
+            entity.Property(e => e.MaNhom).ValueGeneratedNever();
+            entity.Property(e => e.TenNhom).HasMaxLength(200);
+        });
+
         modelBuilder.Entity<Quannhan>(entity =>
         {
             entity.HasKey(e => e.MaQn).HasName("PK__QUANNHAN__2725F8505224FF05");
@@ -225,10 +272,9 @@ public partial class QuanLyRaVaoContext : DbContext
 
             entity.ToTable("QUYEN");
 
-            entity.Property(e => e.GhiChu).HasMaxLength(200);
-            entity.Property(e => e.Ten)
-                .HasMaxLength(200)
-                .IsUnicode(false);
+            entity.Property(e => e.ActionName).HasMaxLength(200);
+            entity.Property(e => e.ControllerName).HasMaxLength(200);
+            entity.Property(e => e.Ten).HasMaxLength(200);
         });
 
         modelBuilder.Entity<Rangoai>(entity =>
@@ -273,28 +319,13 @@ public partial class QuanLyRaVaoContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("TDN");
 
+            entity.HasOne(d => d.MaNhomNavigation).WithMany(p => p.Taikhoans)
+                .HasForeignKey(d => d.MaNhom)
+                .HasConstraintName("FK_TAIKHOAN_NhomQuyen");
+
             entity.HasOne(d => d.MaQnNavigation).WithMany(p => p.Taikhoans)
                 .HasForeignKey(d => d.MaQn)
                 .HasConstraintName("FK__TAIKHOAN__MaQN__46E78A0C");
-        });
-
-        modelBuilder.Entity<TaikhoanQuyen>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToTable("TAIKHOAN_QUYEN");
-
-            entity.Property(e => e.ThoiGianSua).HasColumnType("datetime");
-
-            entity.HasOne(d => d.MaQuyenNavigation).WithMany()
-                .HasForeignKey(d => d.MaQuyen)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__TAIKHOAN___MaQuy__47DBAE45");
-
-            entity.HasOne(d => d.MaTaiKhoanNavigation).WithMany()
-                .HasForeignKey(d => d.MaTaiKhoan)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__TAIKHOAN___MaTai__48CFD27E");
         });
 
         modelBuilder.Entity<Vipham>(entity =>

@@ -1,21 +1,24 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using QuanLyRaVao.Data;
 using System.Security.Claims;
-using QuanLyRaVao.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
+using QuanLyRaVao.Models;
+using QuanLyRaVao.authorize;
+
 
 namespace QuanLyRaVao.Controllers
 {
     public class AccessController : Controller
     {
-        private readonly QuanLyRaVaoContext obj;
-        public AccessController(QuanLyRaVaoContext obj)
+        private readonly QuanLyRaVaoContext _context;
+
+        public AccessController(QuanLyRaVaoContext context)
         {
-            this.obj = obj;
+            _context = context;
         }
         public static string GetMD5(string str)
         {
@@ -35,118 +38,131 @@ namespace QuanLyRaVao.Controllers
         }
         public IActionResult Login()
         {
-            /* ClaimsPrincipal claimUser = HttpContext.User;
-             if (claimUser.Identity.IsAuthenticated)
-             {
-                 return RedirectToAction("Index", "Home");
-             }*/
+            ViewBag.prevouisPage = Request.Headers.Referer.ToString();
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginInfo loginInfo)
         {
-            Console.WriteLine(loginInfo.KeepLoggedIn);
-            var user = await obj.Taikhoans.SingleOrDefaultAsync(c => c.Tdn == loginInfo.TDN);
-            if (user == null)
-            {
-                ViewData["ValidateMessage"] = "user not found";
-                return View();
-            }
-            var f_password = GetMD5(loginInfo.MatKhau);
-            if (user.MatKhau != f_password)
-            {
-                ViewData["ValidateMessage"] = "password incorrect";
-                return View();
-            }
-            if (user.MatKhau == f_password)
-            {
-                List<Claim> claims = new List<Claim>()
+            
+                ViewData["action"] = "login";
+                var user = await _context.Taikhoans.SingleOrDefaultAsync(c => c.Tdn == loginInfo.TDN);
+                if (user == null)
+                {
+                    ViewData["ValidateMessage"] = "Tài khoản không tồn tại";
+                    return View();
+                }
+                var f_MatKhau = GetMD5(loginInfo.MatKhau);
+                if (user.MatKhau != f_MatKhau)
+                {
+                    ViewData["ValidateMessage"] = "Mật khẩu không chính xác";
+                    return View();
+                }
+                if (user.MatKhau == f_MatKhau)
+                {
+                    List<Claim> claims = new List<Claim>()
                   {
                       new Claim(ClaimTypes.NameIdentifier,loginInfo.TDN),
                       new Claim("OtherProperties","Example Role")
 
                   };
-                var quyen = obj.TaikhoanQuyens.SingleOrDefault(c => c.MaTaiKhoan == user.MaTaiKhoan);
-                //lu thogn tin vao session
-                //HttpContext.Session.SetString("TDN", loginInfo.TDN);
-                //HttpContext.Session.SetInt32("Ma", user.MaTaiKhoan);
-                //HttpContext.Session.SetString("role", quyen.MaQuyen);
+                HttpContext.Session.SetString("email", loginInfo.TDN);
+                var data = from tk in _context.Taikhoans
+                            join cv in _context.NhomQuyens on tk.MaNhom equals cv.MaNhom
+                            join qcv in _context.NQHds on cv.MaNhom equals qcv.MaNhom
+                            join q in _context.Quyens on qcv.MaQuyen equals q.MaQuyen
+                            join a in _context.Hds on qcv.MaA equals a.MaA
+                            where (tk.Tdn == loginInfo.TDN)
+                            select new AccountRole
+                            {
+                                MaTaiKhoan = tk.MaTaiKhoan,
+                                MaQ = q.MaQuyen,
+                                MaCv = cv.MaNhom,
+                                TenCV = cv.TenNhom,
+                                TenQ = q.Ten,
+                                ControllerName = q.ControllerName,
+                                ActionName = q.ActionName,
+                                MaA = a.MaA,
+                                TenA = a.TenA,
+                            };
+                List<AccountRole> roles = data.ToList();
 
+                HttpContext.Session.SetJson("QuyenTK", roles);
 
-                ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                AuthenticationProperties properties = new AuthenticationProperties()
-                {
-                    AllowRefresh = true,
-                    // IsPersistent = loginInfo.KeepLoggedIn
-                };
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity), properties);
-                if (quyen.MaQuyen == 1)
-                {
-                    return RedirectToAction("Index", "Admin");
+                    ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    AuthenticationProperties properties = new AuthenticationProperties()
+                    {
+                        AllowRefresh = true,
+                        // IsPersistent = loginInfo.KeepLoggedIn
+                    };
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity), properties);
+                   
+
+                
+
+                        return RedirectToAction("Index", "Admin");
+                    
                 }
-                if (quyen.MaQuyen == 2)
-                {
-                    return RedirectToAction("Index", "DaiDoi");
-                }
-                if (quyen.MaQuyen == 3)
-                {
-                    return RedirectToAction("Index", "TieuDoan");
-                }
-                if (quyen.MaQuyen == 4)
-                {
-                    return RedirectToAction("Index", "VanPhong");
-                }
-                if (quyen.MaQuyen == 5)
-                {
-                    return RedirectToAction("Index", "VeBinh");
-                }
-            }
-            return View();
+                return View();
+
+            
+        
         }
+
         [HttpPost]
         public async Task<IActionResult> Register(RegisterInfo registerInfo)
         {
-            var user = await obj.Taikhoans.SingleOrDefaultAsync(c => c.Tdn == registerInfo.TDN);
-            if (user != null)
+            try
             {
-                ViewData["ValidateMessage"] = "Tài khoản đã tồn tại";
-                return RedirectToAction("Login", "Access");
-            }
-            var f_password = GetMD5(registerInfo.MatKhau);
-            Taikhoan newTk = new Taikhoan()
-            {
-                Tdn = registerInfo.TDN,             
-                MatKhau = registerInfo.MatKhau,
-               
-            };
-            obj.Taikhoans.Add(newTk);
-            await obj.SaveChangesAsync();
-            List<Claim> claims = new List<Claim>()
+                ViewData["action"] = "register";
+                var user = await _context.Taikhoans.SingleOrDefaultAsync(c => c.Tdn == registerInfo.TDN);
+                if (user != null)
+                {
+                    ViewData["ValidateMessage"] = "Tài khoản đã tồn tại";
+                    return RedirectToAction("Login", "Access");
+                }
+                var f_MatKhau = GetMD5(registerInfo.MatKhau);
+                Taikhoan newTk = new Taikhoan()
+                {        
+                    Tdn = registerInfo.TDN,
+                    MatKhau = registerInfo.MatKhau,
+                    //  Quyen = "khach"
+                };
+                _context.Taikhoans.Add(newTk);
+                await _context.SaveChangesAsync();
+                List<Claim> claims = new List<Claim>()
                   {
                       new Claim(ClaimTypes.NameIdentifier,registerInfo.TDN),
                       new Claim("OtherProperties","Example Role")
 
                   };
-            HttpContext.Session.SetString("email", registerInfo.TDN);
-            HttpContext.Session.SetInt32("Ma", newTk.MaTaiKhoan);
+                HttpContext.Session.SetString("TDN", registerInfo.TDN);
+                HttpContext.Session.SetInt32("Ma", newTk.MaTaiKhoan);
 
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            AuthenticationProperties properties = new AuthenticationProperties()
+                ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                AuthenticationProperties properties = new AuthenticationProperties()
+                {
+                    AllowRefresh = true
+                };
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity), properties);
+              
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
             {
-                AllowRefresh = true
-            };
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(claimsIdentity), properties);
-            return RedirectToAction("Index", "Home");
+                ViewData["ValidateMessage"] = "Đăng ký thất bại";
+                return View();
+            }
         }
 
         public ActionResult Logout()
         {
 
             HttpContext.Session.Clear();
-            return RedirectToAction("Login");
+            return RedirectToAction("Login", "Access");
         }
 
     }

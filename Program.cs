@@ -15,6 +15,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     options.LoginPath = "/Access/Login";
     options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
 });
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -36,13 +37,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseSession();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-
-    pattern: "{controller=Admin}/{action=Index}/{id?}");
-
+    pattern: "{controller=Access}/{action=Login}/{id?}");
 
 app.Run();

@@ -1,4 +1,18 @@
-﻿<!DOCTYPE html>
+﻿@using System.Text.Json
+@using QuanLyRaVao.authorize
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+
+    string sessionvalue = HttpContextAccessor.HttpContext.Session.GetString("email");
+
+    int sl = HttpContextAccessor.HttpContext.Session.GetInt32("so") ?? 0;
+
+    List<AccountRole> data = HttpContextAccessor.HttpContext.Session.GetJson<List<AccountRole>>("QuyenTK") ?? new List<AccountRole>();
+    var dl = data.Where(c => c.MaA != 1).ToList();
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -218,53 +232,20 @@
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
-            
-                                <li class="nav-item">
-                                    <a href="@Url.Action("QuanLyDonVi", "Admin")" class="nav-link ">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý đơn vị</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="@Url.Action("QuanLyCapBac", "Admin")" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý cấp bậc</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="@Url.Action("QuanLyChucVu", "Admin")" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý Chức vụ</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="@Url.Action("QuanLyGiayTo", "Admin")" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý giấy tờ</p>
-                                    </a>
-                                </li>
-   
+                                @foreach (var item in dl)
+                                {
+                                    <li class="nav-item">
+                                        <a href="@Url.Action(item.ActionName, @item.ControllerName)" class="nav-link ">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>@item.TenQ</p>
+                                        </a>
+                                    </li>
+
+                                }
+
                             </ul>
                         </li>
-                    <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-copy"></i>
-                                <p>
-                                    Quản trị hệ thống
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="@Url.Action("QuanLyTK", "Admin")" class="nav-link ">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý tài khoản</p>
-                                    </a>
-                                </li>
-                                
-                            </ul>
-                        </li>                      
-                    </ul>
+                   
                 </nav>
                 <!-- /.sidebar-menu -->
             </div>

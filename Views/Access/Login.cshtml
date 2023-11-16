@@ -1,6 +1,8 @@
-﻿
+﻿@model QuanLyRaVao.Models.LoginInfo
 @{
     Layout = null;
+    var previousPage = ViewBag.prevouisPage;
+
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -22,10 +24,17 @@
 
 
                         <input type="text" class="input" name="Ten" placeholder="Name" />
-                        <input type="text" class="input" name="Email" placeholder="Email" />
+                        <input type="email" class="input" name="Email" placeholder="Email" />
                         <input type="password" class="input" name="Password" placeholder="Password" />
 
                     </div>
+                    <input hidden type="text" name="previousPage" value="@previousPage" />
+                    @if (ViewData["action"] == "register" && @ViewData["ValidateMessage"] != null)
+                    {
+                        <span style="color: red;font-size: 13px;margin-left: 4px">@ViewData["ValidateMessage"]</span>
+                    }
+
+
                     <button type="submit" class="submit-btn">Đăng ký</button>
                 </form>
             </div>
@@ -35,11 +44,18 @@
             <h2 class="form-title" id="signup">Đăng nhập</h2>
             <form id="input-login" asp-controller="Access" asp-action="Login">
                 <div class="form-holder">
-                    <input type="text" class="input" name="TDN" placeholder="TDN" />
-                    <input type="password" class="input" name="MatKhau" placeholder="MatKhau" />
+                    <input type="text" class="input" name="Tdn" placeholder="Email" />
+                    <input type="password" class="input" name="MatKhau" placeholder="Password" />
+
                 </div>
+                <input hidden type="text" name="previousPage" value="@previousPage" />
+                @if (ViewData["action"] == "login" && @ViewData["ValidateMessage"] != null)
+                {
+                    <span style="color: red;font-size: 13px;margin-left: 4px">@ViewData["ValidateMessage"]</span>
+                }
                 <button type="submit" class="submit-btn">Đăng nhập</button>
             </form>
+
         </div>
 
     </div>
