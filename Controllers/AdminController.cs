@@ -2,7 +2,7 @@
 using QuanLyRaVao.Data;
 using QuanLyRaVao.Models;
 using System.Security.Cryptography;
-using PagedList;
+using X.PagedList;
 
 namespace QuanLyRaVao.Controllers
 {
@@ -263,6 +263,21 @@ namespace QuanLyRaVao.Controllers
 
         #endregion
         #region Quản lý giấy tờ
+        public IActionResult QuanLyGiayTo(int page = 1, int pageSize = 5)
+        {
+            var query = obj.Giaytos.OrderBy(s => s.MaDv);
+            var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            // Tính toán thông tin phân trang
+            var totalItemCount = query.Count();
+            var pagedList = new StaticPagedList<Giayto>(model, page, pageSize, totalItemCount);
+            ViewBag.PageStartItem = (page - 1) * pageSize + 1;
+            ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
+            ViewBag.Page = page;
+            ViewBag.TotalItemCount = totalItemCount;
+            return View(pagedList);
+
+        }
         #endregion
         #region Quản lý tài khoản
         #endregion
