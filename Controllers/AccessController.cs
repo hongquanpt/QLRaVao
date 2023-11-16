@@ -67,7 +67,7 @@ namespace QuanLyRaVao.Controllers
                       new Claim("OtherProperties","Example Role")
 
                   };
-                var quyen = obj.TaikhoanQuyens.SingleOrDefault(c => c.MaTaiKhoan == user.MaTaiKhoan);
+                var quyen = obj.TkNqs.SingleOrDefault(c => c.MaTaiKhoan == user.MaTaiKhoan);
                 //lu thogn tin vao session
                 //HttpContext.Session.SetString("TDN", loginInfo.TDN);
                 //HttpContext.Session.SetInt32("Ma", user.MaTaiKhoan);
@@ -82,26 +82,9 @@ namespace QuanLyRaVao.Controllers
                 };
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity), properties);
-                if (quyen.MaQuyen == 1)
-                {
-                    return RedirectToAction("Index", "Admin");
-                }
-                if (quyen.MaQuyen == 2)
-                {
-                    return RedirectToAction("Index", "DaiDoi");
-                }
-                if (quyen.MaQuyen == 3)
-                {
-                    return RedirectToAction("Index", "TieuDoan");
-                }
-                if (quyen.MaQuyen == 4)
-                {
-                    return RedirectToAction("Index", "VanPhong");
-                }
-                if (quyen.MaQuyen == 5)
-                {
+                
                     return RedirectToAction("Index", "VeBinh");
-                }
+                
             }
             return View();
         }

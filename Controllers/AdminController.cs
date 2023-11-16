@@ -18,6 +18,7 @@ namespace QuanLyRaVao.Controllers
         {
             return View();
         }
+        #region admin
         #region Quản lý đơn vị
         public IActionResult QuanLyDonVi(int page = 1, int pageSize = 5)
         {
@@ -348,8 +349,30 @@ namespace QuanLyRaVao.Controllers
         #region Quản lý tài khoản
         #endregion
 
+        #endregion
+        #region Đại đội
+        #region Quản lý danh sách
+        #endregion
+        #region Quản lý danh sách quân nhân
+        #endregion
+        #region Quản lý danh sách ra ngoài
+        #endregion
+        #region Quản lý danh sách vi phạm
+        #endregion
+        #endregion
+        #region Tiểu đoàn
+        #region Cập nhập danh sách vi phạm
+        #endregion
+        #region Phê duyệt danh sách ra ngoài
+        #endregion
 
-
+        #endregion
+        #region Vệ Binh
+        #region Cập nhật danh sách vi phạm
+        #endregion
+        #region Xác nhận ra/ vào 
+        #endregion
+        #endregion
 
     }
 }
