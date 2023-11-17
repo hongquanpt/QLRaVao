@@ -1,6 +1,6 @@
 ﻿@model X.PagedList.IPagedList<QuanLyRaVao.Models.Giayto>
 @{
-    
+    ViewBag.Title = "QuanLyGiayTo";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 <div>
@@ -116,13 +116,16 @@
         <form id="frmThemDV" method="post" aria-hidden="true" tabindex="-1" role="dialog" style="display: none;" enctype="multipart/form-data">
             <div class="card-body">
                 <div class="form-group">
-                    <label for="exampleInputPassword1">Nhập cấp đơn vị</label>
-                    <input type="text" class="form-control" id="cap" placeholder="Nhập cấp đơn vị mới tại đây">
-                    <label for="exampleInputPassword1">Nhập tên đơn vị</label>
-                    <input type="text" class="form-control" id="tendv" placeholder="Nhập tên đơn vị mới tại đây">
+                    <label for="exampleInputPassword1">Nhập Số giấy tờ</label>
+                    <input type="text" class="form-control" id="sogiay" placeholder="Nhập số giấy tờ mới tại đây">
+                    <label for="exampleInputPassword1">Nhập loại giấy tờ</label>
+                    <input type="text" class="form-control" id="loai" placeholder="Nhập loại giấy tờ mới tại đây">
+
+                    <label for="exampleInputPassword1">Nhập mã đơn vị của giấy tờ</label>
+                    <input type="text" class="form-control" id="madv" placeholder="Nhập mã đơn vị của giấy tờ mới tại đây">
                 </div>
                 <div class="card-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirm">Thêm đơn vị</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirm">Thêm giấy tờ</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">Hủy bỏ</button>
                 </div>
             </div>
@@ -130,7 +133,7 @@
     </div>
     <script>
         function Them() {
-            var form = document.getElementById("frmThemDV");
+            var form = document.getElementById("frmThemGiayTo");
             form.setAttribute("aria-hidden", "false");
             form.setAttribute("tabindex", "0");
             form.style.display = "block";

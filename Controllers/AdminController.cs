@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using QuanLyRaVao.Data;
 using QuanLyRaVao.Models;
+using System;
 using System.Security.Cryptography;
 using X.PagedList;
 
@@ -266,7 +268,7 @@ namespace QuanLyRaVao.Controllers
         #region Quản lý giấy tờ
         public IActionResult QuanLyGiayTo(int page = 1, int pageSize = 5)
         {
-            var query = obj.Giaytos.OrderBy(s => s.MaDv);
+            var query = obj.Giaytos.OrderBy(s => s.MaGiayTo);
             var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             // Tính toán thông tin phân trang
@@ -276,11 +278,112 @@ namespace QuanLyRaVao.Controllers
             ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
             ViewBag.Page = page;
             ViewBag.TotalItemCount = totalItemCount;
+            ViewBag.ChonDonVi = new SelectList(obj.Donvis.ToList(), "MaDV", "TenDV");
+            return View(pagedList);
+        }
+        [HttpPost]
+        public ActionResult ThemGiayTo(bool Loai, int sogiay, int madv)
+        {
+            var moi = new Models.Giayto();
+            moi.Loai = Loai;
+            moi.SoGiay = sogiay;
+            moi.MaDv= madv;
+            obj.Giaytos.Add(moi);
+            obj.SaveChanges();
+            return Json(new
+            {
+                status = true
+            });
+        }
+        public IActionResult XoaGiayTo(int magiayto)
+        {
+            var giayto = obj.Giaytos.Find(magiayto);
+            if (giayto != null)
+            {
+                obj.Giaytos.Remove(giayto);
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+
+        public IActionResult SuaGiayTo(int magiayto)
+        {
+            var model = obj.Giaytos.Find(magiayto);
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult SuaGiayTo(int magiayto, bool loai, int  sogiay,int madv)
+        {
+            var giayto = obj.Giaytos.Find(magiayto);
+            if (giayto != null)
+            {
+                giayto.SoGiay = sogiay;
+                giayto.Loai = loai;
+                giayto.MaDv= madv;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+        }
+
+        #endregion
+        #region Quản lý tài khoản
+        public IActionResult QuanLyTK( int page = 1, int pageSize = 10)
+        {
+
+            // Thực hiện truy vấn và phân trang
+            var query = from tk in obj.Taikhoans
+                        join cv in obj.NhomQuyens on tk.MaNhom equals cv.MaNhom
+                        join  qn in obj.Quannhans on tk.MaQn equals qn.MaQn
+                        join dv in obj.Donvis on qn.MaDv equals dv.MaDv
+                        join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac                       
+                        join ch in obj.Chucvus on qn.MaCv equals ch.MaCv
+                        select new TT_TK
+                        {
+                            MaTaiKhoan = tk.MaTaiKhoan,
+                            Tdn= tk.Tdn,
+                            MaNhom= cv.MaNhom,
+                            Khoa= tk.Khoa,
+                            MaQn=qn.MaQn,
+                            HoTen= qn.HoTen,
+                            TenNhom=cv.TenNhom,
+                            TenDv=dv.TenDv,
+                            TenCv=ch.TenCv,
+                            CapBac1=cb.CapBac1
+                        }; 
+            var nhomquyen = obj.NhomQuyens.ToList();
+            var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            // Tính toán thông tin phân trang
+            var totalItemCount = query.Count();
+            var pagedList = new StaticPagedList<TT_TK>(model, page, pageSize, totalItemCount);
+            ViewBag.PageStartItem = (page - 1) * pageSize + 1;
+            ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
+            ViewBag.Page = page;
+            ViewBag.TotalItemCount = totalItemCount;
+           ViewBag.nhomquyen=nhomquyen; 
             return View(pagedList);
 
         }
-        #endregion
-        #region Quản lý tài khoản
         #endregion
 
         #endregion
