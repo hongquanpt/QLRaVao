@@ -20,4 +20,6 @@ public partial class Taikhoan
     public virtual NhomQuyen? MaNhomNavigation { get; set; }
 
     public virtual Quannhan? MaQnNavigation { get; set; }
+
+    public virtual ICollection<TkNq> TkNqs { get; set; } = new List<TkNq>();
 }
