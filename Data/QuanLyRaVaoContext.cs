@@ -206,6 +206,16 @@ public partial class QuanLyRaVaoContext : DbContext
             entity.Property(e => e.TenA).HasMaxLength(200);
         });
 
+        modelBuilder.Entity<Hd>(entity =>
+        {
+            entity.HasKey(e => e.MaA);
+
+            entity.ToTable("HD");
+
+            entity.Property(e => e.MaA).ValueGeneratedNever();
+            entity.Property(e => e.TenA).HasMaxLength(200);
+        });
+
         modelBuilder.Entity<NQHd>(entity =>
         {
             entity.HasKey(e => new { e.MaA, e.MaQuyen, e.MaNhom });
