@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using QuanLyRaVao.authorize;
 using QuanLyRaVao.Data;
 using QuanLyRaVao.Models;
 using System;
@@ -570,7 +571,10 @@ namespace QuanLyRaVao.Controllers
             ViewBag.ChonDonVi = (obj.Donvis.ToList());
             ViewBag.ChonChucVu = (obj.Chucvus.ToList());
             ViewBag.ChonCapBac = (obj.Capbacs.ToList());
-            ViewBag.qn = query;
+            List<TT_QN> query1 = query.ToList();
+
+            HttpContext.Session.SetJson("QuanNhan", query1);
+
             return View();
         }
         [HttpPost]

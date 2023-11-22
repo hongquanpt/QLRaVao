@@ -1,11 +1,15 @@
-﻿
+﻿@using System.Text.Json
+@using QuanLyRaVao.authorize
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
 @{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-    var qn1 = (List<TT_QN>)ViewBag.qn;
+    List<TT_QN> data = HttpContextAccessor.HttpContext.Session.GetJson<List<TT_QN>>("QuanNhan") ?? new List<TT_QN>();
     var ChonDonVi = (List<Donvi>)ViewBag.ChonDonVi;
     var ChonChucVu = (List<Chucvu>)ViewBag.ChonChucVu;
     var ChonCapBac = (List<Capbac>)ViewBag.ChonCapBac;
-    TT_QN qn = qn1.FirstOrDefault();
+    var qn = data.FirstOrDefault();
+
 }
 <div class="content-wrapper">
     <section class="content">
@@ -33,7 +37,7 @@
                         
                         <label for="exampleInputPassword1">Chọn đơn vị của quân nhân</label>
                         <select class="form-control" id="madv">
-                            <option style="display:none" value="@qn.TenDv"></option>
+                            <option style="display:none" value="@qn.MaDv">@qn.TenDv</option>
                             @if (ChonDonVi != null)
                             {
                                 @foreach (var item in ChonDonVi)
@@ -44,7 +48,7 @@
                         </select>
                         <label for="exampleInputPassword1">Chọn chức vụ của quân nhân</label>
                         <select class="form-control" id="macv">
-                            <option style="display:none" value="@qn.TenCv"></option>
+                            <option style="display:none" value="@qn.MaCv">@qn.TenCv</option>
                             @if (ChonChucVu != null)
                             {
                                 @foreach (var item in ChonChucVu)
@@ -55,7 +59,7 @@
                         </select>
                         <label for="exampleInputPassword1">Chọn cấp bậc của quân nhân</label>
                         <select class="form-control" id="macapbac">
-                            <option style="display:none" value="@qn.CapBac1"></option>
+                            <option style="display:none" value="@qn.MaCapBac">@qn.CapBac1</option>
                             @if (ChonCapBac != null)
                             {
                                 @foreach (var item in ChonCapBac)
@@ -82,45 +86,45 @@
 
 <script>
     function SuaQuanNhan(maqn) {
-        $('#confirm').on('click', function () {
-            var hoten = $('#hoten').val().toString();
-            var madv = parseInt($('#madv').val());
-            var macv = parseInt($('#macv').val());
-            var macapbac = parseInt($('#macapbac').val());
-            var diachi = $('#diachi').val().toString();
-            if (hoten.trim() === "" || (typeof madv !== 'number' || !Number.isInteger(madv))) {
+        var hoten = $('#hoten').val().toString();
+        var madv = parseInt($('#madv').val());
+        var macv = parseInt($('#macv').val());
+        var macapbac = parseInt($('#macapbac').val());
+        var diachi = $('#diachi').val().toString();
 
-                alert("Bạn chưa nhập đủ thông tin");
-            } else {
-                // Nếu trường TenHang không rỗng, tiến hành gửi yêu cầu AJAX
-                $.ajax({
-                    url: '/Admin/SuaQuanNhan',
-                    data: {
-                                    hoten: hoten
-                                    madv: madv
-                                    macv: macv
-                                    macapbac: macapbac
-                                    diachi: diachi
-                    },
-                    type: 'POST',
-                    dataType: 'json',
-                    success: function (res) {
-                        if (res.status == true) {
-                            window.location = '@Url.Action("QuanLyQuanNhan", "Admin")'
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'success',
-                                title: 'Sửa thành công',
-                                showConfirmButton: false,
-                                timer: 100
-                            })
-                        }
+        if (hoten.trim() === "" || isNaN(madv) || isNaN(macv) || isNaN(macapbac)) {
+            alert("Bạn chưa nhập đủ thông tin");
+        } else {
+            // Nếu trường TenHang không rỗng, tiến hành gửi yêu cầu AJAX
+            $.ajax({
+                url: '/Admin/SuaQuanNhan',
+                data: {
+                    maqn: maqn,
+                    hoten: hoten,
+                    madv: madv,
+                    macv: macv,
+                    macapbac: macapbac,
+                    diachi: diachi
+                },
+                type: 'POST',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status == true) {
+                        window.location = '@Url.Action("QuanLyQuanNhan", "Admin")'
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Sửa thành công',
+                            showConfirmButton: false,
+                            timer: 100
+                        })
                     }
-                });
-            }
-        });
-        $('#cancel').on('click', function () {
-            window.location = '@Url.Action("QuanLyQuanNhan", "Admin")'
-        });
+                }
+            });
+        }
     }
+
+    $('#cancel').on('click', function () {
+        window.location = '@Url.Action("QuanLyQuanNhan", "Admin")'
+    });
 </script>
