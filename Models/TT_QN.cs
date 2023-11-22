@@ -22,6 +22,11 @@
         public string ?TenDv { get; set; }
         public string? DiaChi { get; set; }
 
-
+        //public TT_QN(Quannhan qn) 
+        //{
+        //    this.MaQn = qn.MaQn;
+        //    this.MaCv = qn.MaCv;
+            
+        //}
     }
 }

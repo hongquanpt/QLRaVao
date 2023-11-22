@@ -1,4 +1,5 @@
-﻿namespace QuanLyRaVao.Models
+﻿
+namespace QuanLyRaVao.Models
 {
     public class TT_TK
     {
@@ -14,5 +15,6 @@
         public string? TenNhom { get; set; }
         public string? CapBac1 { get; set; }
         public string? TenCv { get; set; }
+        public TimeSpan? ThoiGianRa { get; internal set; }
     }
 }

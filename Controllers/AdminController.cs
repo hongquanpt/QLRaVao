@@ -271,6 +271,7 @@ namespace QuanLyRaVao.Controllers
             var query = obj.Giaytos.OrderBy(s => s.MaGiayTo);
             var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
+
             // Tính toán thông tin phân trang
             var totalItemCount = query.Count();
             var pagedList = new StaticPagedList<Giayto>(model, page, pageSize, totalItemCount);
@@ -278,7 +279,7 @@ namespace QuanLyRaVao.Controllers
             ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
             ViewBag.Page = page;
             ViewBag.TotalItemCount = totalItemCount;
-            ViewBag.ChonDonVi = new SelectList(obj.Donvis.ToList(), "MaDV", "TenDV");
+            ViewBag.ChonDonVi = (obj.Donvis.ToList());
             return View(pagedList);
         }
         [HttpPost]
@@ -320,6 +321,7 @@ namespace QuanLyRaVao.Controllers
         public IActionResult SuaGiayTo(int magiayto)
         {
             var model = obj.Giaytos.Find(magiayto);
+            ViewBag.ChonDonVi = (obj.Donvis.ToList());
             return View(model);
         }
         [HttpPost]
@@ -350,7 +352,6 @@ namespace QuanLyRaVao.Controllers
         #region Quản lý tài khoản
         public IActionResult QuanLyTK( int page = 1, int pageSize = 10)
         {
-
             // Thực hiện truy vấn và phân trang
             var query = from tk in obj.Taikhoans
                         join cv in obj.NhomQuyens on tk.MaNhom equals cv.MaNhom
@@ -380,9 +381,78 @@ namespace QuanLyRaVao.Controllers
             ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
             ViewBag.Page = page;
             ViewBag.TotalItemCount = totalItemCount;
-           ViewBag.nhomquyen=nhomquyen; 
+             ViewBag.nhomquyen=nhomquyen;
+            ViewBag.ChonQuanNhan = (obj.Quannhans.ToList());
+            ViewBag.ChonNhomQuyen = (obj.NhomQuyens.ToList());
             return View(pagedList);
+        }
+        [HttpPost]
+        public ActionResult ThemTaiKhoan(string tdn, string  matkhau, int maqn, int manhom)
+        {
+            var moi = new Models.Taikhoan();
+            moi.Tdn = tdn;
+            moi.MatKhau = matkhau;
+            moi.MaQn = maqn;
+            moi.MaNhom = manhom;
+            obj.Taikhoans.Add(moi);
+            obj.SaveChanges();
+            return Json(new
+            {
+                status = true
+            });
+        }
+        public IActionResult XoaTaiKhoan(int mataikhoan)
+        {
+            var taikhoan = obj.Taikhoans.Find(mataikhoan);
+            if (taikhoan != null)
+            {
+                obj.Taikhoans.Remove(taikhoan);
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
 
+        }
+
+        public IActionResult SuaTaiKhoan(int mataikhoan)
+        {
+            var model = obj.Taikhoans.Find(mataikhoan);
+            ViewBag.ChonQuanNhan = (obj.Quannhans.ToList());
+            ViewBag.ChonNhomQuyen = (obj.NhomQuyens.ToList());
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult SuaTaiKhoan(int mataikhoan, string tdn, string matkhau, int maqn, int manhom)
+        {
+            var taikhoan = obj.Taikhoans.Find(mataikhoan);
+            if (taikhoan != null)
+            {
+                taikhoan.Tdn = tdn;
+                taikhoan.MatKhau = matkhau;
+                taikhoan.MaQn = maqn;
+                taikhoan.MaNhom = manhom;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
         }
         #endregion
 
@@ -422,10 +492,152 @@ namespace QuanLyRaVao.Controllers
             ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
             ViewBag.Page = page;
             ViewBag.TotalItemCount = totalItemCount;
+            ViewBag.ChonDonVi = (obj.Donvis.ToList());
+            ViewBag.ChonChucVu = (obj.Chucvus.ToList());
+            ViewBag.ChonCapBac = (obj.Capbacs.ToList());
+
             return View(pagedList);
+        }
+        [HttpPost]
+        public ActionResult ThemQuanNhan(string hoten, int macv, int madv,int macapbac, string diachi)
+        {
+            var moi = new Models.Quannhan();
+            var ttqn = new TT_QN();
+            ttqn.MaQn = moi.MaQn;
+            ttqn.MaCv = moi.MaCv;
+            ttqn.MaDv = moi.MaDv;
+            ttqn.DiaChi = moi.DiaChi;
+            ttqn.HoTen = moi.HoTen;
+            ttqn.MaCapBac = moi.MaCapBac;
+            moi.HoTen = hoten;
+            moi.MaCv = macv;
+            moi.MaDv = madv;
+            moi.MaCapBac=macapbac;
+            moi.DiaChi=diachi;
+            obj.Quannhans.Add(moi);
+            obj.SaveChanges();
+            return Json(new
+            {
+                status = true
+            });
+        }
+        public IActionResult XoaQuanNhan(int maqn)
+        {
+            var quannhan = obj.Quannhans.Find(maqn);
+            if (quannhan != null)
+            {
+                obj.Quannhans.Remove(quannhan);
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+
+        public IActionResult SuaQuanNhan(int maqn)
+        {
+            var query = from qn in obj.Quannhans
+                        join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
+                        join dv in obj.Donvis on qn.MaDv equals dv.MaDv
+                        join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
+                        where qn.MaQn==maqn
+                        select new TT_QN
+                        {
+                            MaQn = qn.MaQn,
+                            HoTen = qn.HoTen,
+                            TonTai = qn.TonTai,
+                            NguoiSua = qn.NguoiSua,
+                            ThoiGianSua = qn.ThoiGianSua,
+                            MaCv = qn.MaCv,
+                            MaDv = qn.MaDv,
+                            MaCapBac = qn.MaCapBac,
+                            CapBac1 = cb.CapBac1,
+                            TenCv = cv.TenCv,
+                            TenDv = dv.TenDv,
+                            DiaChi = qn.DiaChi
+                        };
+
+           
+            ViewBag.ChonDonVi = (obj.Donvis.ToList());
+            ViewBag.ChonChucVu = (obj.Chucvus.ToList());
+            ViewBag.ChonCapBac = (obj.Capbacs.ToList());
+            ViewBag.qn = query;
+            return View();
+        }
+        [HttpPost]
+        public IActionResult SuaQuanNhan(int maqn,string hoten, int macv, int madv, int macapbac, string diachi)
+        {
+            var quannhan = obj.Quannhans.Find(maqn);
+            if (quannhan != null)
+            {
+                quannhan.HoTen = hoten;
+                quannhan.MaCv = macv;
+                quannhan.MaDv = madv;
+                quannhan.MaCapBac = macapbac;
+                quannhan.DiaChi = diachi;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
         }
         #endregion
         #region Quản lý danh sách ra ngoài
+        //public IActionResult QuanLyDanhSachRaNgoai(int page = 1, int pageSize = 10)
+        //{
+        //    // Thực hiện truy vấn và phân trang
+        //    var query = from ctds in obj.Chitietdanhsaches
+        //              //  join cv in obj.NhomQuyens on tk.MaNhom equals cv.MaNhom
+        //                join qn in obj.Quannhans on ctds.MaHocVien equals qn.MaQn
+        //                join dv in obj.Donvis on qn.MaDv equals dv.MaDv
+        //                join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
+        //                join ch in obj.Chucvus on qn.MaCv equals ch.MaCv
+        //                select new 
+        //                {
+        //                   // Hoten = qn.HoTen,
+        //                    //Tdn = tk.Tdn,
+        //                   // MaNhom = cv.MaNhom,
+        //                 //   Khoa = tk.Khoa,
+        //                    MaQn = qn.MaQn,
+        //                    HoTen = qn.HoTen,
+        //                 //   TenNhom = cv.TenNhom,
+        //                    TenDv = dv.TenDv,
+        //                    TenCv = ch.TenCv,
+        //                    CapBac1 = cb.CapBac1,
+        //                    ThoiGianRa = ctds.ThoiGianRa,
+        //                    ThoiGianVao = ctds.ThoiGianVao
+        //                };
+        //    var nhomquyen = obj.NhomQuyens.ToList();
+        //    var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        //    // Tính toán thông tin phân trang
+        //    var totalItemCount = query.Count();
+        //  //  var pagedList = new StaticPagedList<TT_TK>(model, page, pageSize, totalItemCount);
+        //    ViewBag.PageStartItem = (page - 1) * pageSize + 1;
+        //    ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
+        //    ViewBag.Page = page;
+        //    ViewBag.TotalItemCount = totalItemCount;
+        //    ViewBag.nhomquyen = nhomquyen;
+        //    ViewBag.ChonQuanNhan = (obj.Quannhans.ToList());
+        //    ViewBag.ChonNhomQuyen = (obj.NhomQuyens.ToList());
+        //    return View(pagedList);
+        //}
         #endregion
         #region Quản lý danh sách vi phạm
         public IActionResult QuanLyViPham(int page = 1, int pageSize = 5)
@@ -460,7 +672,83 @@ namespace QuanLyRaVao.Controllers
             ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
             ViewBag.Page = page;
             ViewBag.TotalItemCount = totalItemCount;
+            ViewBag.ChonQuanNhan = (obj.Quannhans.ToList());
             return View(pagedList);
+        }
+        [HttpPost]
+        public ActionResult ThemViPham(string mota, bool loai, DateTime thoigian, string ghichu, int mahv)
+        {
+            var moi = new Models.Vipham();
+            moi.MoTa = mota;
+            moi.Loai = loai;
+            moi.ThoiGian = thoigian;
+            moi.GhiChu = ghichu;
+            moi.MaHv = mahv;
+            obj.Viphams.Add(moi);
+            obj.SaveChanges();
+            return Json(new
+            {
+                status = true
+            });
+        }
+        public IActionResult XoaViPham(int mavp)
+        {
+            var vipham = obj.Viphams.Find(mavp);
+            if (vipham != null)
+            {
+                obj.Viphams.Remove(vipham);
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+
+        public IActionResult SuaViPham(int mavp)
+        {
+            var model = obj.Viphams.Find(mavp);
+            ViewBag.ChonQuanNhan = (obj.Quannhans.ToList());
+            var hvvp = new HV_VP();
+            hvvp.MoTa = model.MoTa;
+            hvvp.Loai = model.Loai;
+            hvvp.ThoiGian = model.ThoiGian;
+            
+            hvvp.MaQn = (int)model.MaHv;
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult SuaViPham(int mavp, string mota, bool loai, DateTime thoigian, string ghichu, int mahv)
+        {
+            var vipham = obj.Viphams.Find(mavp);
+            if (vipham != null)
+            {
+                vipham.MoTa = mota;
+                vipham.Loai = loai;
+                vipham.ThoiGian = thoigian;
+                vipham.GhiChu = ghichu;
+                vipham.MaHv = mahv;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
         }
         #endregion
         #endregion

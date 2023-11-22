@@ -2,6 +2,7 @@
 @{
 
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var ChonQuanNhan = (List<Quannhan>)ViewBag.ChonQuanNhan;
 }
 <div>
     <div class="content-wrapper">
@@ -61,12 +62,12 @@
                                         @if (Model.HasPreviousPage)
                                         {
                                             <li class="page-item">
-                                                <a class="page-link" href="@Url.Action("QuanLyGiayTo", new { page = Model.PageNumber - 1 })">Previous</a>
+                                                <a class="page-link" href="@Url.Action("QuanLyViPham", new { page = Model.PageNumber - 1 })">Previous</a>
                                             </li>
 
                                         }
                                         <li class="page-item  @(1 == Model.PageNumber ? "active" : "")">
-                                            <a class="page-link" href="@Url.Action("QuanLyGiayTo", new { page = 1 })">1</a>
+                                            <a class="page-link" href="@Url.Action("QuanLyViPham", new { page = 1 })">1</a>
                                         </li>
                                         @if (Model.PageNumber > 3)
                                         {
@@ -79,7 +80,7 @@
                                             if (i > 1 && i < Model.PageCount)
                                             {
                                                 <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                                                    <a class="page-link" href="@Url.Action("QuanLyGiayTo", new { page = i })">@i</a>
+                                                    <a class="page-link" href="@Url.Action("QuanLyViPham", new { page = i })">@i</a>
                                                 </li>
                                             }
                                         }
@@ -92,14 +93,14 @@
                                         @if (Model.PageCount > 1)
                                         {
                                             <li class="page-item  @(Model.PageCount == Model.PageNumber ? "active" : "")">
-                                                <a class="page-link" href="@Url.Action("QuanLyGiayTo", new { page = Model.PageCount })">@Model.PageCount</a>
+                                                <a class="page-link" href="@Url.Action("QuanLyViPham", new { page = Model.PageCount })">@Model.PageCount</a>
                                             </li>
                                         }
                                         @if (Model.HasNextPage)
                                         {
 
                                             <li class="page-item">
-                                                <a class="page-link" href="@Url.Action("QuanLyGiayTo", new { page = Model.PageNumber + 1 })">Next</a>
+                                                <a class="page-link" href="@Url.Action("QuanLyViPham", new { page = Model.PageNumber + 1 })">Next</a>
                                             </li>
                                         }
                                     </ul>
@@ -120,13 +121,28 @@
             </div>
             <!-- /.container-fluid -->
         </section>
-        <form id="frmThemDV" method="post" aria-hidden="true" tabindex="-1" role="dialog" style="display: none;" enctype="multipart/form-data">
+        <form id="frmThemViPham" method="post" aria-hidden="true" tabindex="-1" role="dialog" style="display: none;" enctype="multipart/form-data">
             <div class="card-body">
                 <div class="form-group">
-                    <label for="exampleInputPassword1">Nhập cấp đơn vị</label>
-                    <input type="text" class="form-control" id="cap" placeholder="Nhập cấp đơn vị mới tại đây">
-                    <label for="exampleInputPassword1">Nhập tên đơn vị</label>
-                    <input type="text" class="form-control" id="tendv" placeholder="Nhập tên đơn vị mới tại đây">
+                    <label for="exampleInputPassword1">Nhập mô tả vi phạm</label>
+                    <input type="text" class="form-control" id="mota" placeholder="Nhập mô tả tại đây">
+                    <label for="exampleInputPassword1">Nhập loại vi phạm</label>
+                    <input type="text" class="form-control" id="loai" placeholder="Nhập loại tại đây">
+                    <label for="exampleInputPassword1">Nhập thời gian vi phạm</label>
+                    <input type="text" class="form-control" id="thoigian" placeholder="Nhập loại tại đây">
+
+                    <select class="form-control" id="mahv">
+                        <option style="display:none" value=""></option>
+                        @if (ChonQuanNhan != null)
+                        {
+                            @foreach (var item in ChonQuanNhan)
+                            {
+                                <option value="@item.MaQn">@item.HoTen</option>
+                            }
+                        }
+                    </select>
+                    <label for="exampleInputPassword1">Nhập ghi chú vi phạm</label>
+                    <input type="text" class="form-control" id="ghichu" placeholder="Nhập ghi chú tại đây">
                 </div>
                 <div class="card-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirm">Thêm đơn vị</button>
@@ -137,24 +153,30 @@
     </div>
     <script>
         function Them() {
-            var form = document.getElementById("frmThemDV");
+            var form = document.getElementById("frmThemViPham");
             form.setAttribute("aria-hidden", "false");
             form.setAttribute("tabindex", "0");
             form.style.display = "block";
             $('#confirm').on('click', function () {
-                var tendv = $('#tendv').val().toString();
-                var cap = parseInt($('#cap').val());
+                var mota = $('#mota').val().toString();
+                var loai = $('#loai').val();
+                var thoigian = $('#thoigian').val();
+                var ghichu = $('#ghichu').val().toString();
+                var mahv = $('#mahv').val();
 
-                if (tendv.trim() === "" || (typeof cap !== 'number' || !Number.isInteger(cap))) {
+                if (mota.trim() === "" || (typeof mahv !== 'number' || !Number.isInteger(mahv))) {
                     // Kiểm tra nếu trường TenDM rỗng
                     alert("Bạn chưa nhập đủ thông tin đơn vị.");
                 } else {
                     // Nếu trường TenDM không rỗng, tiến hành gửi yêu cầu AJAX
                     $.ajax({
-                        url: '/Admin/ThemDonVi', // Điều chỉnh URL nếu cần thiết
+                        url: '/Admin/ThemViPham', // Điều chỉnh URL nếu cần thiết
                         data: {
-                            tendv: tendv,
-                            cap: cap
+                            mota: mota,
+                            loai: loai,
+                            thoigian: thoigian,
+                            ghichu: ghichu,
+                            mahv:mahv
                         },
                         type: 'POST',
                         dataType: 'json',
@@ -164,7 +186,7 @@
                                 form.setAttribute("aria-hidden", "true");
                                 form.setAttribute("tabindex", "-1");
                                 form.style.display = "none";
-                                window.location = '@Url.Action("QuanLyDonVi","Admin")';
+                                window.location = '@Url.Action("QuanLyViPham","Admin")';
                             }
                         }
                     });
@@ -182,7 +204,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmDeleteModalLabel">Bạn có chắc chắn muốn xóa đơn vị?</h5>
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Bạn có chắc chắn muốn xóa vi phạm?</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -197,7 +219,7 @@
 
     <!-- Đoạn mã JavaScript để xử lý sự kiện xóa -->
     <script>
-        function XoaDonVi(madv) {
+        function XoaViPham(mavp) {
             var madv = parseInt(madv);
 
             // Hiển thị modal xác nhận xóa
@@ -206,9 +228,9 @@
             // Xử lý sự kiện khi người dùng xác nhận xóa
             $('#confirmDeleteButton').on('click', function () {
                 $.ajax({
-                    url: '/Admin/XoaDonVi',
+                    url: '/Admin/XoaViPham',
                     data: {
-                        madv: madv
+                        mavp: mavp
                     },
                     type: 'POST',
                     dataType: 'json',
@@ -216,7 +238,7 @@
                         if (res.status == true) {
                             // Đóng modal sau khi xóa thành công
                             $('#confirmDeleteModal').modal('hide');
-                            window.location = '@Url.Action("QuanLyDonVi","Admin")';
+                            window.location = '@Url.Action("QuanLyViPham","Admin")';
                         }
                     }
                 });

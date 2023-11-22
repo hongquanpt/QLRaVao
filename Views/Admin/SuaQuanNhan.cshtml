@@ -1,0 +1,126 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var qn1 = (List<TT_QN>)ViewBag.qn;
+    var ChonDonVi = (List<Donvi>)ViewBag.ChonDonVi;
+    var ChonChucVu = (List<Chucvu>)ViewBag.ChonChucVu;
+    var ChonCapBac = (List<Capbac>)ViewBag.ChonCapBac;
+    TT_QN qn = qn1.FirstOrDefault();
+}
+<div class="content-wrapper">
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-6">
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Cập nhật thông tin quân nhân</h3>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+           <form id="frmSuaQuanNhan" method="post">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Họ Tên:</label>
+                        <input type="text" class="form-control" id="hoten" value="@qn.HoTen" name="Moi">
+                    </div>
+                    <div class="form-group">
+                        
+                        <label for="exampleInputPassword1">Chọn đơn vị của quân nhân</label>
+                        <select class="form-control" id="madv">
+                            <option style="display:none" value="@qn.TenDv"></option>
+                            @if (ChonDonVi != null)
+                            {
+                                @foreach (var item in ChonDonVi)
+                                {
+                                    <option value="@item.MaDv">@item.TenDv</option>
+                                }
+                            }
+                        </select>
+                        <label for="exampleInputPassword1">Chọn chức vụ của quân nhân</label>
+                        <select class="form-control" id="macv">
+                            <option style="display:none" value="@qn.TenCv"></option>
+                            @if (ChonChucVu != null)
+                            {
+                                @foreach (var item in ChonChucVu)
+                                {
+                                    <option value="@item.MaCv">@item.TenCv</option>
+                                }
+                            }
+                        </select>
+                        <label for="exampleInputPassword1">Chọn cấp bậc của quân nhân</label>
+                        <select class="form-control" id="macapbac">
+                            <option style="display:none" value="@qn.CapBac1"></option>
+                            @if (ChonCapBac != null)
+                            {
+                                @foreach (var item in ChonCapBac)
+                                {
+                                    <option value="@item.MaCapBac">@item.CapBac1</option>
+                                }
+                            }
+                        </select>
+                        <label for="exampleInputPassword1">Nhập địa chỉ quân nhân</label>
+                        <input type="text" class="form-control" id="diachi"  value="@qn.DiaChi" name="Moi">
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-primary" onclick="SuaQuanNhan(@qn.MaQn)" id="confirm">Lưu</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">Hủy bỏ</button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+    </section>
+</div>
+
+
+<script>
+    function SuaQuanNhan(maqn) {
+        $('#confirm').on('click', function () {
+            var hoten = $('#hoten').val().toString();
+            var madv = parseInt($('#madv').val());
+            var macv = parseInt($('#macv').val());
+            var macapbac = parseInt($('#macapbac').val());
+            var diachi = $('#diachi').val().toString();
+            if (hoten.trim() === "" || (typeof madv !== 'number' || !Number.isInteger(madv))) {
+
+                alert("Bạn chưa nhập đủ thông tin");
+            } else {
+                // Nếu trường TenHang không rỗng, tiến hành gửi yêu cầu AJAX
+                $.ajax({
+                    url: '/Admin/SuaQuanNhan',
+                    data: {
+                                    hoten: hoten
+                                    madv: madv
+                                    macv: macv
+                                    macapbac: macapbac
+                                    diachi: diachi
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status == true) {
+                            window.location = '@Url.Action("QuanLyQuanNhan", "Admin")'
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Sửa thành công',
+                                showConfirmButton: false,
+                                timer: 100
+                            })
+                        }
+                    }
+                });
+            }
+        });
+        $('#cancel').on('click', function () {
+            window.location = '@Url.Action("QuanLyQuanNhan", "Admin")'
+        });
+    }
+</script>

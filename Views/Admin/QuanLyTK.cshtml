@@ -8,6 +8,8 @@
     var nhomquyen = (List<QuanLyRaVao.Models.NhomQuyen>)ViewBag.nhomquyen;
     List<AccountRole> data = HttpContextAccessor.HttpContext.Session.GetJson<List<AccountRole>>("QuyenTK") ?? new List<AccountRole>();
     var qh = data.FirstOrDefault(c => c.ActionName == "QuanLyTK");
+    var ChonQuanNhan = (List<Quannhan>)ViewBag.ChonQuanNhan;
+    var ChonNhomQuyen = (List<NhomQuyen>)ViewBag.ChonNhomQuyen;
 
 }
 @if (qh.MaA == 1)

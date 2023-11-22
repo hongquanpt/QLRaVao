@@ -2,6 +2,8 @@
 @{
     ViewBag.Title = "QuanLyGiayTo";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var ChonDonVi = (List<Donvi>)ViewBag.ChonDonVi;
+
 }
 <div>
     <div class="content-wrapper">
@@ -35,9 +37,9 @@
                                                 <td>@item.Loai</td>
                                                 <td>@item.MaDv</td>
                                                 <td>
-                                                    <a href="@Url.Action("SuaGiayTo","Admin",new {madv=item.MaGiayTo})" class="btn btn-success">Edit</a>
+                                                    <a href="@Url.Action("SuaGiayTo","Admin",new {magiayto=item.MaGiayTo})" class="btn btn-success">Edit</a>
                                                 </td>
-                                                <td><a class="btn btn-success" onclick="XoaDonVi(@item.MaGiayTo)">Delete</a></td>
+                                                <td><a class="btn btn-success" onclick="XoaGiayTo(@item.MaGiayTo)">Delete</a></td>
                                             </tr>
                                         }
                                     </tbody>
@@ -113,17 +115,28 @@
             </div>
             <!-- /.container-fluid -->
         </section>
-        <form id="frmThemDV" method="post" aria-hidden="true" tabindex="-1" role="dialog" style="display: none;" enctype="multipart/form-data">
+        <form id="frmThemGiayTo" method="post" aria-hidden="true" tabindex="-1" role="dialog" style="display: none;" enctype="multipart/form-data">
             <div class="card-body">
                 <div class="form-group">
                     <label for="exampleInputPassword1">Nhập Số giấy tờ</label>
                     <input type="text" class="form-control" id="sogiay" placeholder="Nhập số giấy tờ mới tại đây">
+
                     <label for="exampleInputPassword1">Nhập loại giấy tờ</label>
                     <input type="text" class="form-control" id="loai" placeholder="Nhập loại giấy tờ mới tại đây">
 
-                    <label for="exampleInputPassword1">Nhập mã đơn vị của giấy tờ</label>
-                    <input type="text" class="form-control" id="madv" placeholder="Nhập mã đơn vị của giấy tờ mới tại đây">
-                </div>
+                    <label for="exampleInputPassword1">Chọn đơn vị của giấy tờ</label>
+           
+                        <select class="form-control" id="madv">
+                            <option style="display:none" value=""></option>
+                            @if (ChonDonVi != null)
+                            {
+                                @foreach (var item in ChonDonVi)
+                                {
+                                    <option value="@item.MaDv">@item.TenDv</option>
+                                }
+                            }
+                        </select>
+                    </div>
                 <div class="card-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirm">Thêm giấy tờ</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">Hủy bỏ</button>
@@ -138,19 +151,21 @@
             form.setAttribute("tabindex", "0");
             form.style.display = "block";
             $('#confirm').on('click', function () {
-                var tendv = $('#tendv').val().toString();
-                var cap = parseInt($('#cap').val());
+                var  loai = $('#loai').val();
+                var sogiay = parseInt($('#sogiay').val());
+                var madv = parseInt($('#madv').val());
 
-                if (tendv.trim() === "" || (typeof cap !== 'number' || !Number.isInteger(cap))) {
+                if ((typeof sogiay !== 'number' || !Number.isInteger(sogiay)) || (typeof madv !== 'number' || !Number.isInteger(madv))) {
                     // Kiểm tra nếu trường TenDM rỗng
-                    alert("Bạn chưa nhập đủ thông tin đơn vị.");
+                    alert("Bạn chưa nhập đủ thông tin giay to.");
                 } else {
                     // Nếu trường TenDM không rỗng, tiến hành gửi yêu cầu AJAX
                     $.ajax({
-                        url: '/Admin/ThemDonVi', // Điều chỉnh URL nếu cần thiết
+                        url: '/Admin/ThemGiayTo', // Điều chỉnh URL nếu cần thiết
                         data: {
-                            tendv: tendv,
-                            cap: cap
+                            sogiay: sogiay,
+                            loai: loai,
+                            madv:madv
                         },
                         type: 'POST',
                         dataType: 'json',
@@ -160,7 +175,7 @@
                                 form.setAttribute("aria-hidden", "true");
                                 form.setAttribute("tabindex", "-1");
                                 form.style.display = "none";
-                                window.location = '@Url.Action("QuanLyDonVi","Admin")';
+                                window.location = '@Url.Action("QuanLyGiayTo","Admin")';
                             }
                         }
                     });
@@ -178,7 +193,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmDeleteModalLabel">Bạn có chắc chắn muốn xóa đơn vị?</h5>
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Bạn có chắc chắn muốn xóa giayas towf?</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -193,8 +208,8 @@
 
     <!-- Đoạn mã JavaScript để xử lý sự kiện xóa -->
     <script>
-        function XoaDonVi(madv) {
-            var madv = parseInt(madv);
+        function XoaGiayTo(magiayto) {
+            var magiayto = parseInt(magiayto);
 
             // Hiển thị modal xác nhận xóa
             $('#confirmDeleteModal').modal('show');
@@ -202,9 +217,9 @@
             // Xử lý sự kiện khi người dùng xác nhận xóa
             $('#confirmDeleteButton').on('click', function () {
                 $.ajax({
-                    url: '/Admin/XoaDonVi',
+                    url: '/Admin/XoaGiayTo',
                     data: {
-                        madv: madv
+                        magiayto: magiayto
                     },
                     type: 'POST',
                     dataType: 'json',
@@ -212,7 +227,7 @@
                         if (res.status == true) {
                             // Đóng modal sau khi xóa thành công
                             $('#confirmDeleteModal').modal('hide');
-                            window.location = '@Url.Action("QuanLyDonVi","Admin")';
+                            window.location = '@Url.Action("QuanLyGiayTo","Admin")';
                         }
                     }
                 });

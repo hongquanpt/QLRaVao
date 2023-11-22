@@ -1,0 +1,106 @@
+﻿@model QuanLyRaVao.Models.HV_VP
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var ChonQuanNhan = (List<Quannhan>)ViewBag.ChonQuanNhan;
+}
+<div class="content-wrapper">
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-6">
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Cập nhật thông tin giay to</h3>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <form id="frmSuaViPham" method="post">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Mô tả vi phạm:</label>
+                        <input type="text" class="form-control" id="mota" value="@Model.MoTa" name="Moi">
+                    </div>
+                    <label for="exampleInputPassword1">Nhập thời gian vi phạm của quân nhân</label>
+                    <input type="text" class="form-control" id="thoigian" value="@Model.ThoiGian" name="Moi">
+                    <label for="exampleInputPassword1">Nhập loại vi phạm của quân nhân</label>
+                    <input type="text" class="form-control" id="loai" value="@Model.Loai" name="Moi">
+                    <div class="form-group">
+
+                        <label for="exampleInputPassword1">Chọn quân nhân vi phạm</label>
+                        <select class="form-control" id="mahv">
+                            <option style="display:none" value="@Model.HoTen"></option>
+                            @if (ChonQuanNhan != null)
+                            {
+                                @foreach (var item in ChonQuanNhan)
+                                {
+                                    <option value="@item.MaQn">@item.HoTen</option>
+                                }
+                            }
+                        </select>
+                     
+                       
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-primary" onclick="SuaViPham(@Model.MaVp)" id="confirm">Lưu</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">Hủy bỏ</button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+    </section>
+</div>
+
+
+<script>
+    function SuaViPham(mavp) {
+        $('#confirm').on('click', function () {
+            var mota = $('#mota').val().toString();
+            var loai = $('#loai').val();
+            var thoigian = $('#thoigian').val();
+            var ghichu = $('#ghichu').val().toString();
+            var mahv = $('#mahv').val();
+            if (mota.trim() === "" || (typeof mahv !== 'number' || !Number.isInteger(mahv))) {
+
+                alert("Bạn chưa nhập đủ thông tin");
+            } else {
+                // Nếu trường TenHang không rỗng, tiến hành gửi yêu cầu AJAX
+                $.ajax({
+                    url: '/Admin/SuaViPham',
+                    data: {
+                        mota: mota,
+                        loai: loai,
+                        thoigian: thoigian,
+                        ghichu: ghichu,
+                        mahv: mahv
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status == true) {
+                            window.location = '@Url.Action("QuanLyViPham", "Admin")'
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Sửa thành công',
+                                showConfirmButton: false,
+                                timer: 100
+                            })
+                        }
+                    }
+                });
+            }
+        });
+        $('#cancel').on('click', function () {
+            window.location = '@Url.Action("QuanLyViPham", "Admin")'
+        });
+    }
+</script>

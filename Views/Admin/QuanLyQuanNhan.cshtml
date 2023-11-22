@@ -1,7 +1,11 @@
 ﻿@model X.PagedList.IPagedList<QuanLyRaVao.Models.TT_QN>
 @{
+    
     ViewBag.Title = "QuanLyQuanNhan";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var ChonDonVi = (List<Donvi>)ViewBag.ChonDonVi;
+    var ChonChucVu = (List<Chucvu>)ViewBag.ChonChucVu;
+    var ChonCapBac = (List<Capbac>)ViewBag.ChonCapbac;
 }
 <div>
     <div class="content-wrapper">
@@ -37,9 +41,9 @@
                                                 <td>@item.TenDv</td>
                                                 <td>@item.DiaChi</td>
                                                 <td>
-                                                    <a href="@Url.Action("SuaQuanNhan","Admin",new {maqn=item.MaDv})" class="btn btn-success">Edit</a>
+                                                    <a href="@Url.Action("SuaQuanNhan","Admin",new {maqn=item.MaQn})" class="btn btn-success">Edit</a>
                                                 </td>
-                                                <td><a class="btn btn-success" onclick="XoaDonVi(@item.MaDv)">Delete</a></td>
+                                                <td><a class="btn btn-success" onclick="XoaQuanNhan(@item.MaQn)">Delete</a></td>
                                             </tr>
                                         }
                                     </tbody>
@@ -115,13 +119,46 @@
             </div>
             <!-- /.container-fluid -->
         </section>
-        <form id="frmThemDV" method="post" aria-hidden="true" tabindex="-1" role="dialog" style="display: none;" enctype="multipart/form-data">
+        <form id="frmThemQuanNhan" method="post" aria-hidden="true" tabindex="-1" role="dialog" style="display: none;" enctype="multipart/form-data">
             <div class="card-body">
                 <div class="form-group">
-                    <label for="exampleInputPassword1">Nhập cấp đơn vị</label>
-                    <input type="text" class="form-control" id="cap" placeholder="Nhập cấp đơn vị mới tại đây">
-                    <label for="exampleInputPassword1">Nhập tên đơn vị</label>
-                    <input type="text" class="form-control" id="tendv" placeholder="Nhập tên đơn vị mới tại đây">
+                    <label for="exampleInputPassword1">Nhập tên quân nhân</label>
+                    <input type="text" class="form-control" id="hoten" placeholder="Nhập tên quân nhân mới tại đây">
+                    <label for="exampleInputPassword1">Chọn đơn vị của quân nhân</label>
+                    <select class="form-control" id="madv">
+                        <option style="display:none" value=""></option>
+                        @if (ChonDonVi != null)
+                        {
+                            @foreach (var item in ChonDonVi)
+                            {
+                                <option value="@item.MaDv">@item.TenDv</option>
+                            }
+                        }
+                    </select>
+                    <label for="exampleInputPassword1">Chọn chức vụ của quân nhân</label>
+                    <select class="form-control" id="macv">
+                        <option style="display:none" value=""></option>
+                        @if (ChonChucVu != null)
+                        {
+                            @foreach (var item in ChonChucVu)
+                            {
+                                <option value="@item.MaCv">@item.TenCv</option>
+                            }
+                        }
+                    </select>
+                    <label for="exampleInputPassword1">Chọn cấp bậc của quân nhân</label>
+                    <select class="form-control" id="macapbac">
+                        <option style="display:none" value=""></option>
+                        @if (ChonCapBac != null)
+                        {
+                            @foreach (var item in ChonCapBac)
+                            {
+                                <option value="@item.MaCapBac">@item.CapBac1</option>
+                            }
+                        }
+                    </select>
+                    <label for="exampleInputPassword1">Nhập địa chỉ quân nhân</label>
+                    <input type="text" class="form-control" id="diachi" placeholder="Nhập địa chỉ quân nhân mới tại đây">
                 </div>
                 <div class="card-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirm">Thêm đơn vị</button>
@@ -132,24 +169,30 @@
     </div>
     <script>
         function Them() {
-            var form = document.getElementById("frmThemDV");
+            var form = document.getElementById("frmThemQuanNhan");
             form.setAttribute("aria-hidden", "false");
             form.setAttribute("tabindex", "0");
             form.style.display = "block";
             $('#confirm').on('click', function () {
-                var tendv = $('#tendv').val().toString();
-                var cap = parseInt($('#cap').val());
+                var hoten = $('#hoten').val().toString();
+                var madv = parseInt($('#madv').val());
+                var macv = parseInt($('#macv').val());
+                var macapbac = parseInt($('#macapbac').val());
+                var diachi = $('#diachi').val().toString();
 
-                if (tendv.trim() === "" || (typeof cap !== 'number' || !Number.isInteger(cap))) {
+                if (hoten.trim() === "" || (typeof madv !== 'number' || !Number.isInteger(madv))) {
                     // Kiểm tra nếu trường TenDM rỗng
                     alert("Bạn chưa nhập đủ thông tin đơn vị.");
                 } else {
                     // Nếu trường TenDM không rỗng, tiến hành gửi yêu cầu AJAX
                     $.ajax({
-                        url: '/Admin/ThemDonVi', // Điều chỉnh URL nếu cần thiết
+                        url: '/Admin/ThemQuanNhan', // Điều chỉnh URL nếu cần thiết
                         data: {
-                            tendv: tendv,
-                            cap: cap
+                                hoten: hoten
+                                madv: madv
+                                macv :macv
+                                macapbac: macapbac
+                                diachi: diachi
                         },
                         type: 'POST',
                         dataType: 'json',
@@ -177,7 +220,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmDeleteModalLabel">Bạn có chắc chắn muốn xóa đơn vị?</h5>
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Bạn có chắc chắn muốn xóa quân nhân?</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -192,7 +235,7 @@
 
     <!-- Đoạn mã JavaScript để xử lý sự kiện xóa -->
     <script>
-        function XoaDonVi(madv) {
+        function XoaQuanNhan(maqn) {
             var madv = parseInt(madv);
 
             // Hiển thị modal xác nhận xóa
@@ -201,9 +244,9 @@
             // Xử lý sự kiện khi người dùng xác nhận xóa
             $('#confirmDeleteButton').on('click', function () {
                 $.ajax({
-                    url: '/Admin/XoaDonVi',
+                    url: '/Admin/XoaQuanNhan',
                     data: {
-                        madv: madv
+                        maqn: maqn
                     },
                     type: 'POST',
                     dataType: 'json',
