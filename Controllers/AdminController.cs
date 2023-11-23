@@ -462,7 +462,7 @@ namespace QuanLyRaVao.Controllers
         #region Quản lý danh sách
         #endregion
         #region Quản lý danh sách quân nhân
-        public IActionResult QuanLyQuanNhan(int page = 1, int pageSize = 5)
+        public IActionResult QuanLyQuanNhan(int maqn, string diachi, string hoten, int CapBac, int ChucVu, int DonVi,int page = 1, int pageSize = 5)
         {
 
             var query = from qn in obj.Quannhans
@@ -484,6 +484,30 @@ namespace QuanLyRaVao.Controllers
                             TenDv = dv.TenDv,
                             DiaChi= qn.DiaChi
                         };
+            if (maqn != 0)
+            {
+                query = query.Where(item => item.MaQn == maqn);
+            }
+            if (ChucVu != 0)
+            {
+                query = query.Where(item => item.MaCv == ChucVu);
+            }
+            if (CapBac != 0)
+            {
+                query = query.Where(item => item.MaCapBac == CapBac);
+            }
+            if (DonVi != 0)
+            {
+                query = query.Where(item => item.MaDv == DonVi);
+            }
+            if (!string.IsNullOrEmpty(diachi))
+            {
+                query = query.Where(dm => dm.DiaChi.Contains(diachi)); // hoặc OrderByDescending(dm => dm.MaDanhMuc)
+            }
+            if (!string.IsNullOrEmpty(hoten))
+            {
+                query = query.Where(dm => dm.HoTen.Contains(hoten)); // hoặc OrderByDescending(dm => dm.MaDanhMuc)
+            }
             var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             // Tính toán thông tin phân trang
@@ -496,7 +520,12 @@ namespace QuanLyRaVao.Controllers
             ViewBag.ChonDonVi = (obj.Donvis.ToList());
             ViewBag.ChonChucVu = (obj.Chucvus.ToList());
             ViewBag.ChonCapBac = (obj.Capbacs.ToList());
-
+            ViewBag.maqn = maqn;
+            ViewBag.hoten = hoten;
+            ViewBag.diachi= diachi;
+            ViewBag.ChucVu = ChucVu;
+            ViewBag.CapBac=CapBac;
+            ViewBag.DonVi = DonVi;
             return View(pagedList);
         }
         [HttpPost]

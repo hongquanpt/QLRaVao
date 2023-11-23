@@ -1,265 +1,429 @@
 ﻿@model X.PagedList.IPagedList<QuanLyRaVao.Models.TT_QN>
+@using System.Text.Json
+@using QuanLyRaVao.authorize
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
 @{
-    
-    ViewBag.Title = "QuanLyQuanNhan";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var nhomquyen = (List<QuanLyRaVao.Models.NhomQuyen>)ViewBag.nhomquyen;
+    List<AccountRole> data = HttpContextAccessor.HttpContext.Session.GetJson<List<AccountRole>>("QuyenTK") ?? new List<AccountRole>();
+    var qh = data.FirstOrDefault(c => c.ActionName == "QuanLyQuanNhan");
+
     var ChonDonVi = (List<Donvi>)ViewBag.ChonDonVi;
     var ChonChucVu = (List<Chucvu>)ViewBag.ChonChucVu;
     var ChonCapBac = (List<Capbac>)ViewBag.ChonCapbac;
+    var diachi= ViewBag.diachi;
+    var hoten= ViewBag.hoten;
+    var maqn = ViewBag.maqn;
+    var ChucVu = ViewBag.ChucVu;
+    var CapBac = ViewBag.CapBac;
+    var DonVi = ViewBag.DonVi;
 }
-<div>
-    <div class="content-wrapper">
-        <section class="content">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Quản lý quân nhân</h3>
-                            </div>
-                            <!-- /.card-header -->
-                            <div class="card-body">
-                                <table id="example2" class="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Mã quân nhân</th>
-                                            <th>Họ tên</th>
-                                            <th>Chức vụ</th>
-                                            <th>Cấp bậc</th>
-                                            <th>Đơn vị</th>
-                                            <th>Địa chỉ</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var item in Model)
-                                        {
-                                            <tr>
-                                                <td>@item.MaQn</td>
-                                                <td>@item.HoTen</td>
-                                                <td>@item.TenCv</td>
-                                                <td>@item.CapBac1</td>
-                                                <td>@item.TenDv</td>
-                                                <td>@item.DiaChi</td>
-                                                <td>
-                                                    <a href="@Url.Action("SuaQuanNhan","Admin",new {maqn=item.MaQn})" class="btn btn-success">Edit</a>
-                                                </td>
-                                                <td><a class="btn btn-success" onclick="XoaQuanNhan(@item.MaQn)">Delete</a></td>
-                                            </tr>
-                                        }
-                                    </tbody>
 
-                                </table>
-                                <div class="row">
-                                    <div class="col-sm-12 col-md-5">
-                                        <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
-                                            Danh sách từ @ViewBag.PageStartItem đến @ViewBag.PageEndItem trên tổng số @ViewBag.TotalItemCount quân nhân
+@if (qh.MaA == 1)
+{
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Full Screen Alert</title>
+        <style>
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+            }
+
+            .fullscreen-alert {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                text-align: center;
+                z-index: 1000;
+            }
+
+            .alert-content {
+                background-color: #343a40;
+                padding: 20px;
+                border-radius: 8px;
+            }
+
+            .close-btn {
+                cursor: pointer;
+                color: #fff;
+                font-size: 20px;
+                position: absolute;
+                top: 10px;
+                right: 10px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="fullscreen-alert" id="fullscreenAlert">
+            <div class="alert-content">
+                <span class="close-btn" onclick="closeFullscreenAlert()">&times;</span>
+                <h1>Truy cập thất bại</h1>
+                <p>Bạn không có quyền truy cập trang này. Vui lòng liên hệ với chúng tôi để nhận hỗ trợ </p>
+            </div>
+        </div>
+
+        <script>
+            function showFullscreenAlert() {
+                document.getElementById('fullscreenAlert').style.display = 'flex';
+            }
+
+            function closeFullscreenAlert() {
+                document.getElementById('fullscreenAlert').style.display = 'none';
+            }
+
+            // Gọi hàm này khi trang web được tải
+            document.addEventListener('DOMContentLoaded', function () {
+                showFullscreenAlert();
+            });
+        </script>
+
+    </body>
+    </html>
+
+
+}
+else
+{
+    <div>
+        <div class="content-wrapper">
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Quản lý quân nhân</h3>
+                                </div>
+                                <div class="card-body">                                                                   
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+
+                                                <select class="form-control" id="ChucVu">
+                                                    <option value="0" selected="@(ChucVu == 0)">Chọn chức vụ</option>
+
+                                                    @foreach (var item in ChonChucVu)
+                                                    {
+                                                        <option value="@item.MaCv" selected="@(ChucVu == item.MaCv)">@item.TenCv</option>
+                                                    }
+                                                </select>
+
+
+                                            </div>
+                                                <div class="form-group">
+                                                  
+                                                    <select class="form-control" id="CapBac">
+                                                    <option value="0" selected="@(CapBac == 0)">Chọn cấp bậc</option>
+                                                        @foreach (var item in ChonCapBac)
+                                                        {
+                                                        <option value="@item.MaCapBac" selected="@(CapBac == item.MaCapBac)">@item.CapBac1</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                               
+                                                    <select class="form-control" id="DonVi">
+                                                    <option value="0" selected="@(DonVi == 0)">Chọn đơn vị</option>
+                                                        @foreach (var item in ChonDonVi)
+                                                        {
+                                                        <option value="@item.MaDv" selected="@(DonVi == item.MaDv)">@item.TenDv</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                               
+                                                <div class="form-group">
+                                                 
+                                                    <input type="number" value="@(maqn!=0? maqn:null)" class="form-control" placeholder="Nhập mã quân nhân" name="maqn" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    
+                                                    <input type="text" value="@hoten" class="form-control" placeholder="Nhập họ tên quân nhân" name="hoten" required>
+                                                </div>
+                                                <div class="form-group">
+                                               
+                                                    <input type="text" value="@diachi" class="form-control" placeholder="Nhập điạ chỉ " name="Địa chỉ" required>
+                                                </div>
+                                            </div>
                                         </div>
+
+
+                                        <button type="button" class="btn btn-primary" id="filterButton">Tìm kiếm</button>                                       
+
                                     </div>
-                                    <ul class="pagination">
 
-                                        @if (Model.HasPreviousPage)
-                                        {
-                                            <li class="page-item">
-                                                <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = Model.PageNumber - 1 })">Previous</a>
-                                            </li>
-
-                                        }
-                                        <li class="page-item  @(1 == Model.PageNumber ? "active" : "")">
-                                            <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = 1 })">1</a>
-                                        </li>
-                                        @if (Model.PageNumber > 3)
-                                        {
-                                            <li class="page-item">
-                                                <span class="page-link">...</span>
-                                            </li>
-                                        }
-                                        @for (int i = Model.PageNumber - 1; i <= Model.PageNumber + 1; i++)
-                                        {
-                                            if (i > 1 && i < Model.PageCount)
+                                <!-- /.card-header -->
+                                <div class="card-body">
+                                    <table id="example2" class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Mã quân nhân</th>
+                                                <th>Họ tên</th>
+                                                <th>Chức vụ</th>
+                                                <th>Cấp bậc</th>
+                                                <th>Đơn vị</th>
+                                                <th>Địa chỉ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
                                             {
-                                                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                                                    <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = i })">@i</a>
+                                                <tr>
+                                                    <td>@item.MaQn</td>
+                                                    <td>@item.HoTen</td>
+                                                    <td>@item.TenCv</td>
+                                                    <td>@item.CapBac1</td>
+                                                    <td>@item.TenDv</td>
+                                                    <td>@item.DiaChi</td>
+                                                    <td>
+                                                        <a href="@Url.Action("SuaQuanNhan","Admin",new {maqn=item.MaQn})" class="btn btn-success">Edit</a>
+                                                    </td>
+                                                    <td><a class="btn btn-success" onclick="XoaQuanNhan(@item.MaQn)">Delete</a></td>
+                                                </tr>
+                                            }
+                                        </tbody>
+
+                                    </table>
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-5">
+                                            <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
+                                                Danh sách từ @ViewBag.PageStartItem đến @ViewBag.PageEndItem trên tổng số @ViewBag.TotalItemCount quân nhân
+                                            </div>
+                                        </div>
+                                        <ul class="pagination">
+
+                                            @if (Model.HasPreviousPage)
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = Model.PageNumber - 1 })">Previous</a>
+                                                </li>
+
+                                            }
+                                            <li class="page-item  @(1 == Model.PageNumber ? "active" : "")">
+                                                <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = 1 })">1</a>
+                                            </li>
+                                            @if (Model.PageNumber > 3)
+                                            {
+                                                <li class="page-item">
+                                                    <span class="page-link">...</span>
                                                 </li>
                                             }
-                                        }
-                                        @if (Model.PageNumber < Model.PageCount - 1)
-                                        {
-                                            <li class="page-item">
-                                                <span class="page-link">...</span>
-                                            </li>
-                                        }
-                                        @if (Model.PageCount > 1)
-                                        {
-                                            <li class="page-item  @(Model.PageCount == Model.PageNumber ? "active" : "")">
-                                                <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = Model.PageCount })">@Model.PageCount</a>
-                                            </li>
-                                        }
-                                        @if (Model.HasNextPage)
-                                        {
+                                            @for (int i = Model.PageNumber - 1; i <= Model.PageNumber + 1; i++)
+                                            {
+                                                if (i > 1 && i < Model.PageCount)
+                                                {
+                                                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                                        <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = i })">@i</a>
+                                                    </li>
+                                                }
+                                            }
+                                            @if (Model.PageNumber < Model.PageCount - 1)
+                                            {
+                                                <li class="page-item">
+                                                    <span class="page-link">...</span>
+                                                </li>
+                                            }
+                                            @if (Model.PageCount > 1)
+                                            {
+                                                <li class="page-item  @(Model.PageCount == Model.PageNumber ? "active" : "")">
+                                                    <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = Model.PageCount })">@Model.PageCount</a>
+                                                </li>
+                                            }
+                                            @if (Model.HasNextPage)
+                                            {
 
-                                            <li class="page-item">
-                                                <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = Model.PageNumber + 1 })">Next</a>
-                                            </li>
-                                        }
-                                    </ul>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = Model.PageNumber + 1 })">Next</a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-primary" data-dismiss="modal" id="confirmThem" onclick="Them()">Thêm quân nhân mới</button>
+                                    @*<a href="#" class="btn btn-secondary" style="display: none;"><i class="material-icons">&#xE24D;</i> <span>Xuất Excel</span></a>*@
+                                </div>
+                                <!-- /.card-body -->
                             </div>
-                            <div class="card-footer">
-                                <button class="btn btn-primary" data-dismiss="modal" id="confirmThem" onclick="Them()">Thêm quân nhân mới</button>
-                                @*<a href="#" class="btn btn-secondary" style="display: none;"><i class="material-icons">&#xE24D;</i> <span>Xuất Excel</span></a>*@
-                            </div>
-                            <!-- /.card-body -->
+                            <!-- /.card -->
+                            <!-- /.card -->
                         </div>
-                        <!-- /.card -->
-                        <!-- /.card -->
+                        <!-- /.col -->
                     </div>
-                    <!-- /.col -->
+                    <!-- /.row -->
                 </div>
-                <!-- /.row -->
-            </div>
-            <!-- /.container-fluid -->
-        </section>
-        <form id="frmThemQuanNhan" method="post" aria-hidden="true" tabindex="-1" role="dialog" style="display: none;" enctype="multipart/form-data">
-            <div class="card-body">
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Nhập tên quân nhân</label>
-                    <input type="text" class="form-control" id="hoten" placeholder="Nhập tên quân nhân mới tại đây">
-                    <label for="exampleInputPassword1">Chọn đơn vị của quân nhân</label>
-                    <select class="form-control" id="madv">
-                        <option style="display:none" value=""></option>
-                        @if (ChonDonVi != null)
-                        {
-                            @foreach (var item in ChonDonVi)
+                <!-- /.container-fluid -->
+            </section>
+            <form id="frmThemQuanNhan" method="post" aria-hidden="true" tabindex="-1" role="dialog" style="display: none;" enctype="multipart/form-data">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Nhập tên quân nhân</label>
+                        <input type="text" class="form-control" id="hoten" placeholder="Nhập tên quân nhân mới tại đây">
+                        <label for="exampleInputPassword1">Chọn đơn vị của quân nhân</label>
+                        <select class="form-control" id="madv">
+                            <option style="display:none" value=""></option>
+                            @if (ChonDonVi != null)
                             {
-                                <option value="@item.MaDv">@item.TenDv</option>
+                                @foreach (var item in ChonDonVi)
+                                {
+                                    <option value="@item.MaDv">@item.TenDv</option>
+                                }
                             }
-                        }
-                    </select>
-                    <label for="exampleInputPassword1">Chọn chức vụ của quân nhân</label>
-                    <select class="form-control" id="macv">
-                        <option style="display:none" value=""></option>
-                        @if (ChonChucVu != null)
-                        {
-                            @foreach (var item in ChonChucVu)
+                        </select>
+                        <label for="exampleInputPassword1">Chọn chức vụ của quân nhân</label>
+                        <select class="form-control" id="macv">
+                            <option style="display:none" value=""></option>
+                            @if (ChonChucVu != null)
                             {
-                                <option value="@item.MaCv">@item.TenCv</option>
+                                @foreach (var item in ChonChucVu)
+                                {
+                                    <option value="@item.MaCv">@item.TenCv</option>
+                                }
                             }
-                        }
-                    </select>
-                    <label for="exampleInputPassword1">Chọn cấp bậc của quân nhân</label>
-                    <select class="form-control" id="macapbac">
-                        <option style="display:none" value=""></option>
-                        @if (ChonCapBac != null)
-                        {
-                            @foreach (var item in ChonCapBac)
+                        </select>
+                        <label for="exampleInputPassword1">Chọn cấp bậc của quân nhân</label>
+                        <select class="form-control" id="macapbac">
+                            <option style="display:none" value=""></option>
+                            @if (ChonCapBac != null)
                             {
-                                <option value="@item.MaCapBac">@item.CapBac1</option>
+                                @foreach (var item in ChonCapBac)
+                                {
+                                    <option value="@item.MaCapBac">@item.CapBac1</option>
+                                }
                             }
-                        }
-                    </select>
-                    <label for="exampleInputPassword1">Nhập địa chỉ quân nhân</label>
-                    <input type="text" class="form-control" id="diachi" placeholder="Nhập địa chỉ quân nhân mới tại đây">
+                        </select>
+                        <label for="exampleInputPassword1">Nhập địa chỉ quân nhân</label>
+                        <input type="text" class="form-control" id="diachi" placeholder="Nhập địa chỉ quân nhân mới tại đây">
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirm">Thêm đơn vị</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">Hủy bỏ</button>
+                    </div>
                 </div>
-                <div class="card-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirm">Thêm đơn vị</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">Hủy bỏ</button>
-                </div>
-            </div>
-        </form>
-    </div>
-    <script>
-        function Them() {
-            var form = document.getElementById("frmThemQuanNhan");
-            form.setAttribute("aria-hidden", "false");
-            form.setAttribute("tabindex", "0");
-            form.style.display = "block";
-            $('#confirm').on('click', function () {
-                var hoten = $('#hoten').val().toString();
-                var madv = parseInt($('#madv').val());
-                var macv = parseInt($('#macv').val());
-                var macapbac = parseInt($('#macapbac').val());
-                var diachi = $('#diachi').val().toString();
+            </form>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script>
+            function Them() {
+                var form = document.getElementById("frmThemQuanNhan");
+                form.setAttribute("aria-hidden", "false");
+                form.setAttribute("tabindex", "0");
+                form.style.display = "block";
+                $('#confirm').on('click', function () {
+                    var hoten = $('#hoten').val().toString();
+                    var madv = parseInt($('#madv').val());
+                    var macv = parseInt($('#macv').val());
+                    var macapbac = parseInt($('#macapbac').val());
+                    var diachi = $('#diachi').val().toString();
 
-                if (hoten.trim() === "" || (typeof madv !== 'number' || !Number.isInteger(madv))) {
-                    // Kiểm tra nếu trường TenDM rỗng
-                    alert("Bạn chưa nhập đủ thông tin đơn vị.");
-                } else {
-                    // Nếu trường TenDM không rỗng, tiến hành gửi yêu cầu AJAX
-                    $.ajax({
-                        url: '/Admin/ThemQuanNhan', // Điều chỉnh URL nếu cần thiết
-                        data: {
+                    if (hoten.trim() === "" || (typeof madv !== 'number' || !Number.isInteger(madv))) {
+                        // Kiểm tra nếu trường TenDM rỗng
+                        alert("Bạn chưa nhập đủ thông tin đơn vị.");
+                    } else {
+                        // Nếu trường TenDM không rỗng, tiến hành gửi yêu cầu AJAX
+                        $.ajax({
+                            url: '/Admin/ThemQuanNhan', // Điều chỉnh URL nếu cần thiết
+                            data: {
                                 hoten: hoten,
                                 madv: madv,
-                                macv :macv,
+                                macv: macv,
                                 macapbac: macapbac,
                                 diachi: diachi
+                            },
+                            type: 'POST',
+                            dataType: 'json',
+                            success: function (res) {
+                                if (res.status == true) {
+                                    // Đóng modal sau khi thêm thành công
+                                    form.setAttribute("aria-hidden", "true");
+                                    form.setAttribute("tabindex", "-1");
+                                    form.style.display = "none";
+                                    window.location = '@Url.Action("QuanLyQuanNhan","Admin")';
+                                }
+                            }
+                        });
+                    }
+                });
+                $('#cancel').on('click', function () {
+                    form.setAttribute("aria-hidden", "true");
+                    form.setAttribute("tabindex", "-1");
+                    form.style.display = "none";
+                });
+            }
+            // Filter button click event
+            $("#filterButton").click(function () {
+                // Lấy giá trị từ các phần tử trên trang
+                const chucVu = $("#ChucVu").val();
+                const capBac = $("#CapBac").val();
+                const donVi = $("#DonVi").val();
+                const maqn = $("input[name='maqn']").val();
+                const hoten = $("input[name='hoten']").val();
+                const diaChi = $("input[name='Địa chỉ']").val();
+
+                // Xây dựng URL và chuyển hướng
+                const url = `@Url.Action("QuanLyQuanNhan", "Admin")?ChucVu=${chucVu}&CapBac=${capBac}&DonVi=${donVi}&maqn=${maqn}&hoten=${hoten}&diaChi=${diaChi}`;
+                window.location.href = url;
+            });
+        </script>
+
+        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmDeleteModalLabel">Bạn có chắc chắn muốn xóa quân nhân?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="confirmDeleteButton">Xóa</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Đoạn mã JavaScript để xử lý sự kiện xóa -->
+        <script>
+            function XoaQuanNhan(maqn) {
+                var madv = parseInt(madv);
+
+                // Hiển thị modal xác nhận xóa
+                $('#confirmDeleteModal').modal('show');
+
+                // Xử lý sự kiện khi người dùng xác nhận xóa
+                $('#confirmDeleteButton').on('click', function () {
+                    $.ajax({
+                        url: '/Admin/XoaQuanNhan',
+                        data: {
+                            maqn: maqn
                         },
                         type: 'POST',
                         dataType: 'json',
                         success: function (res) {
                             if (res.status == true) {
-                                // Đóng modal sau khi thêm thành công
-                                form.setAttribute("aria-hidden", "true");
-                                form.setAttribute("tabindex", "-1");
-                                form.style.display = "none";
+                                // Đóng modal sau khi xóa thành công
+                                $('#confirmDeleteModal').modal('hide');
                                 window.location = '@Url.Action("QuanLyQuanNhan","Admin")';
                             }
                         }
                     });
-                }
-            });
-            $('#cancel').on('click', function () {
-                form.setAttribute("aria-hidden", "true");
-                form.setAttribute("tabindex", "-1");
-                form.style.display = "none";
-            });
-        }
-    </script>
-
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmDeleteModalLabel">Bạn có chắc chắn muốn xóa quân nhân?</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="confirmDeleteButton">Xóa</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Đoạn mã JavaScript để xử lý sự kiện xóa -->
-    <script>
-        function XoaQuanNhan(maqn) {
-            var madv = parseInt(madv);
-
-            // Hiển thị modal xác nhận xóa
-            $('#confirmDeleteModal').modal('show');
-
-            // Xử lý sự kiện khi người dùng xác nhận xóa
-            $('#confirmDeleteButton').on('click', function () {
-                $.ajax({
-                    url: '/Admin/XoaQuanNhan',
-                    data: {
-                        maqn: maqn
-                    },
-                    type: 'POST',
-                    dataType: 'json',
-                    success: function (res) {
-                        if (res.status == true) {
-                            // Đóng modal sau khi xóa thành công
-                            $('#confirmDeleteModal').modal('hide');
-                            window.location = '@Url.Action("QuanLyQuanNhan","Admin")';
-                        }
-                    }
                 });
-            });
-        }
-    </script>
-</div>
-
+            }
+        </script>
+    </div>
+}
