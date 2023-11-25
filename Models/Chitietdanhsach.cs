@@ -13,15 +13,17 @@ public partial class Chitietdanhsach
 
     public string? DiaDiem { get; set; }
 
-    public TimeSpan? ThoiGianRa { get; set; }
+    public DateTime? ThoiGianRa { get; set; }
 
-    public TimeSpan? ThoiGianVao { get; set; }
+    public DateTime? ThoiGianVao { get; set; }
 
     public string? GhiChu { get; set; }
 
     public int? NguoiSua { get; set; }
 
     public DateTime? ThoiGianSua { get; set; }
+
+    public int? TinhTrang { get; set; }
 
     public virtual Danhsach MaDsNavigation { get; set; } = null!;
 

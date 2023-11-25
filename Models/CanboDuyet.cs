@@ -11,8 +11,6 @@ public partial class CanboDuyet
 
     public DateTime? ThoiGianDuyet { get; set; }
 
-    public bool TinhTrang { get; set; }
-
     public string? GhiChu { get; set; }
 
     public int? NguoiSua { get; set; }

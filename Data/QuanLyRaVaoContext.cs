@@ -100,7 +100,9 @@ public partial class QuanLyRaVaoContext : DbContext
             entity.Property(e => e.GhiChu).HasMaxLength(200);
             entity.Property(e => e.LyDo).HasMaxLength(100);
             entity.Property(e => e.MaDs).HasColumnName("MaDS");
+            entity.Property(e => e.ThoiGianRa).HasColumnType("datetime");
             entity.Property(e => e.ThoiGianSua).HasColumnType("datetime");
+            entity.Property(e => e.ThoiGianVao).HasColumnType("datetime");
 
             entity.HasOne(d => d.MaDsNavigation).WithMany()
                 .HasForeignKey(d => d.MaDs)
@@ -163,9 +165,7 @@ public partial class QuanLyRaVaoContext : DbContext
             entity.ToTable("DANHSACH");
 
             entity.Property(e => e.MaDs).HasColumnName("MaDS");
-            entity.Property(e => e.GhiChu).HasMaxLength(200);
             entity.Property(e => e.HinhThucRn).HasColumnName("HinhThucRN");
-            entity.Property(e => e.ThoiGianSua).HasColumnType("datetime");
         });
 
         modelBuilder.Entity<Donvi>(entity =>
@@ -194,16 +194,6 @@ public partial class QuanLyRaVaoContext : DbContext
             entity.HasOne(d => d.MaDvNavigation).WithMany(p => p.Giaytos)
                 .HasForeignKey(d => d.MaDv)
                 .HasConstraintName("FK__GIAYTO__MaDV__403A8C7D");
-        });
-
-        modelBuilder.Entity<Hd>(entity =>
-        {
-            entity.HasKey(e => e.MaA);
-
-            entity.ToTable("HD");
-
-            entity.Property(e => e.MaA).ValueGeneratedNever();
-            entity.Property(e => e.TenA).HasMaxLength(200);
         });
 
         modelBuilder.Entity<Hd>(entity =>
