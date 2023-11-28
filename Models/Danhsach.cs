@@ -9,7 +9,7 @@ public partial class Danhsach
 
     public int HinhThucRn { get; set; }
 
-    public int? PheDuyet { get; set; }
+    public virtual ICollection<Chitietdanhsach> Chitietdanhsaches { get; set; } = new List<Chitietdanhsach>();
 
     public virtual ICollection<Rangoai> Rangoais { get; set; } = new List<Rangoai>();
 }

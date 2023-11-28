@@ -10,7 +10,7 @@
         public DateTime? ThoiGianVao { get; set; }
         public int? TinhTrang { get; set; }
         public int HinhThucRn { get; set; }
-        public int? PheDuyet { get; set; }
+      
 
         public string HoTen { get; set; }
         public string? DiaChi { get; set; }

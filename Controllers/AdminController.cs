@@ -469,7 +469,7 @@ namespace QuanLyRaVao.Controllers
                         join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
                         join dv in obj.Donvis on qn.MaDv equals dv.MaDv
                         join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
-                        where ct.TinhTrang!=3
+                       
                         select new DSRN
                         {
                             MaDs = ds.MaDs,
@@ -480,7 +480,6 @@ namespace QuanLyRaVao.Controllers
                             ThoiGianVao = ct.ThoiGianVao,
                             TinhTrang = ct.TinhTrang,
                             HinhThucRn = ds.HinhThucRn,
-                            PheDuyet = ds.PheDuyet,
                             MaCv = qn.MaCv,
                             MaDv = qn.MaDv,
                             MaCapBac = qn.MaCapBac,
@@ -501,8 +500,50 @@ namespace QuanLyRaVao.Controllers
             ViewBag.TotalItemCount = totalItemCount;
             return View(pagedList);
         }
+        public IActionResult Duyet1(int mactds)
+        {
+            var dh = obj.Chitietdanhsaches.Find(mactds);
+            if (dh != null)
+            {
+                dh.TinhTrang = 1;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+        public IActionResult Duyet2(int mactds)
+        {
+            var dh = obj.Chitietdanhsaches.Find(mactds);
+            if (dh != null)
+            {
+                dh.TinhTrang = 2;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
         #endregion
-        #region Quản lý danh sách quân nhân
+        #region Quản lý quân nhân
         public IActionResult QuanLyQuanNhan(int maqn, string diachi, string hoten, int CapBac, int ChucVu, int DonVi,int page = 1, int pageSize = 5)
         {
 

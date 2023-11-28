@@ -25,6 +25,12 @@ public partial class Chitietdanhsach
 
     public int? TinhTrang { get; set; }
 
+    public int MaCtds { get; set; }
+
+    public virtual ICollection<CanboDuyet> CanboDuyets { get; set; } = new List<CanboDuyet>();
+
+    public virtual ICollection<ChitietdanhsachGiayto> ChitietdanhsachGiaytos { get; set; } = new List<ChitietdanhsachGiayto>();
+
     public virtual Danhsach MaDsNavigation { get; set; } = null!;
 
     public virtual Quannhan MaHocVienNavigation { get; set; } = null!;

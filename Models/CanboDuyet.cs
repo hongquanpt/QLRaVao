@@ -7,7 +7,7 @@ public partial class CanboDuyet
 {
     public int MaCb { get; set; }
 
-    public int MaDs { get; set; }
+    public int MaCtds { get; set; }
 
     public DateTime? ThoiGianDuyet { get; set; }
 
@@ -19,5 +19,5 @@ public partial class CanboDuyet
 
     public virtual Quannhan MaCbNavigation { get; set; } = null!;
 
-    public virtual Danhsach MaDsNavigation { get; set; } = null!;
+    public virtual Chitietdanhsach MaCtdsNavigation { get; set; } = null!;
 }

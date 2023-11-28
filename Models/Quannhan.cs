@@ -23,6 +23,10 @@ public partial class Quannhan
 
     public string? DiaChi { get; set; }
 
+    public virtual ICollection<CanboDuyet> CanboDuyets { get; set; } = new List<CanboDuyet>();
+
+    public virtual ICollection<Chitietdanhsach> Chitietdanhsaches { get; set; } = new List<Chitietdanhsach>();
+
     public virtual Capbac? MaCapBacNavigation { get; set; }
 
     public virtual Chucvu? MaCvNavigation { get; set; }

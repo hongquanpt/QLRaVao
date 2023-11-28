@@ -55,25 +55,25 @@ public partial class QuanLyRaVaoContext : DbContext
     {
         modelBuilder.Entity<CanboDuyet>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("CANBO_DUYET");
+            entity.HasKey(e => new { e.MaCb, e.MaCtds });
 
-            entity.Property(e => e.GhiChu).HasMaxLength(200);
+            entity.ToTable("CANBO_DUYET");
+
             entity.Property(e => e.MaCb).HasColumnName("MaCB");
-            entity.Property(e => e.MaDs).HasColumnName("MaDS");
+            entity.Property(e => e.MaCtds).HasColumnName("MaCTDS");
+            entity.Property(e => e.GhiChu).HasMaxLength(200);
             entity.Property(e => e.ThoiGianDuyet).HasColumnType("datetime");
             entity.Property(e => e.ThoiGianSua).HasColumnType("datetime");
 
-            entity.HasOne(d => d.MaCbNavigation).WithMany()
+            entity.HasOne(d => d.MaCbNavigation).WithMany(p => p.CanboDuyets)
                 .HasForeignKey(d => d.MaCb)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__CANBO_DUYE__MaCB__398D8EEE");
 
-            entity.HasOne(d => d.MaDsNavigation).WithMany()
-                .HasForeignKey(d => d.MaDs)
+            entity.HasOne(d => d.MaCtdsNavigation).WithMany(p => p.CanboDuyets)
+                .HasForeignKey(d => d.MaCtds)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CANBO_DUYE__MaDS__3A81B327");
+                .HasConstraintName("FK_CANBO_DUYET_CHITIETDANHSACH");
         });
 
         modelBuilder.Entity<Capbac>(entity =>
@@ -92,10 +92,13 @@ public partial class QuanLyRaVaoContext : DbContext
 
         modelBuilder.Entity<Chitietdanhsach>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("CHITIETDANHSACH");
+            entity.HasKey(e => e.MaCtds);
 
+            entity.ToTable("CHITIETDANHSACH");
+
+            entity.Property(e => e.MaCtds)
+                .ValueGeneratedNever()
+                .HasColumnName("MaCTDS");
             entity.Property(e => e.DiaDiem).HasMaxLength(100);
             entity.Property(e => e.GhiChu).HasMaxLength(200);
             entity.Property(e => e.LyDo).HasMaxLength(100);
@@ -104,12 +107,12 @@ public partial class QuanLyRaVaoContext : DbContext
             entity.Property(e => e.ThoiGianSua).HasColumnType("datetime");
             entity.Property(e => e.ThoiGianVao).HasColumnType("datetime");
 
-            entity.HasOne(d => d.MaDsNavigation).WithMany()
+            entity.HasOne(d => d.MaDsNavigation).WithMany(p => p.Chitietdanhsaches)
                 .HasForeignKey(d => d.MaDs)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__CHITIETDAN__MaDS__3C69FB99");
 
-            entity.HasOne(d => d.MaHocVienNavigation).WithMany()
+            entity.HasOne(d => d.MaHocVienNavigation).WithMany(p => p.Chitietdanhsaches)
                 .HasForeignKey(d => d.MaHocVien)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__CHITIETDA__MaHoc__3B75D760");
@@ -117,30 +120,25 @@ public partial class QuanLyRaVaoContext : DbContext
 
         modelBuilder.Entity<ChitietdanhsachGiayto>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("CHITIETDANHSACH_GIAYTO");
+            entity.HasKey(e => new { e.MaGiayTo, e.MaCtds });
 
+            entity.ToTable("CHITIETDANHSACH_GIAYTO");
+
+            entity.Property(e => e.MaCtds).HasColumnName("MaCTDS");
             entity.Property(e => e.GhiChu).HasMaxLength(200);
-            entity.Property(e => e.MaDs).HasColumnName("MaDS");
             entity.Property(e => e.ThoiGianLay).HasColumnType("datetime");
             entity.Property(e => e.ThoiGianSua).HasColumnType("datetime");
             entity.Property(e => e.ThoiGianTra).HasColumnType("datetime");
 
-            entity.HasOne(d => d.MaDsNavigation).WithMany()
-                .HasForeignKey(d => d.MaDs)
+            entity.HasOne(d => d.MaCtdsNavigation).WithMany(p => p.ChitietdanhsachGiaytos)
+                .HasForeignKey(d => d.MaCtds)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CHITIETDAN__MaDS__3F466844");
+                .HasConstraintName("FK_CHITIETDANHSACH_GIAYTO_CHITIETDANHSACH");
 
-            entity.HasOne(d => d.MaGiayToNavigation).WithMany()
+            entity.HasOne(d => d.MaGiayToNavigation).WithMany(p => p.ChitietdanhsachGiaytos)
                 .HasForeignKey(d => d.MaGiayTo)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__CHITIETDA__MaGia__3D5E1FD2");
-
-            entity.HasOne(d => d.MaHocVienNavigation).WithMany()
-                .HasForeignKey(d => d.MaHocVien)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CHITIETDA__MaHoc__3E52440B");
         });
 
         modelBuilder.Entity<Chucvu>(entity =>
