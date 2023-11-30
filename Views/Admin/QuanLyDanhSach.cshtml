@@ -1,4 +1,4 @@
-﻿@model X.PagedList.IPagedList<QuanLyRaVao.Models.DSRN>
+﻿@using X.PagedList
 @using System.Text.Json
 @using QuanLyRaVao.authorize
 @using Microsoft.AspNetCore.Http
@@ -7,6 +7,12 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     List<AccountRole> data = HttpContextAccessor.HttpContext.Session.GetJson<List<AccountRole>>("QuyenTK") ?? new List<AccountRole>();
     var qh = data.FirstOrDefault(c => c.ActionName == "QuanLyDanhSach");
+    var dsdahoanthanh = ViewBag.pagedList5 as PagedList<DSRN>;
+    var dsdatuchoi = ViewBag.pagedList0 as PagedList<DSRN>;
+    var dschuapheduyet = ViewBag.pagedList1 as PagedList<DSRN>;
+    var dsdapheduyetc = ViewBag.pagedList2 as PagedList<DSRN>;
+    var dsdapheduyetd = ViewBag.pagedList3 as PagedList<DSRN>;
+    var dsdapheduyetcong = ViewBag.pagedList4 as PagedList<DSRN>;
 }
 
 @if (qh==null)
@@ -100,115 +106,639 @@ else
                                     <!--Tìm kiếm viết ở đây-->
 
                                 </div>
-
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li class=" nav-item active"><a class="nav-link active" data-toggle="tab" href="#ChuaPD">Chưa phê duyệt (@ViewBag.ChuPheDuyet)</a></li>
+                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#PDC">Đã phê duyệt cấp đại đội (@ViewBag.PheDuyetC)</a></li>
+                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#PDD">Đã phê duyệt cấp tiểu đoàn (@ViewBag.PheDuyetD)</a></li>
+                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#PDCong">Đã qua cổng (@ViewBag.PheDuyetCong)</a></li>
+                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#HT">Đã hoàn thành (@ViewBag.DaHoanThanh)</a></li>
+                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#TC">Đã hủy (@ViewBag.DaBiTuChoi)</a></li>
+                                </ul>
+                                                            
                                 <!-- /.card-header -->
                                 <div class="card-body">
-                                    <table id="example2" class="table table-bordered table-hover">
-                                        <thead>
-                                            <tr>
-                                              
-                                                <th>Họ tên</th>
-                                                <th>Chức vụ</th>
-                                                <th>Cấp bậc</th>
-                                                <th>Đơn vị</th>
-                                                <th>Lý do ra ngoài</th>
-                                                <th>Địa điểm</th>
-                                                <th>Hình thức ra ngoài</th>
-                                                <th>Thời giam ra</th>
-                                                <th>Thời gian vào</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var item in Model)
-                                            {
-                                                <tr>
-                                                  
-                                                    <td>@item.HoTen</td>
-                                                    <td>@item.TenCv</td>
-                                                    <td>@item.CapBac1</td>
-                                                    <td>@item.TenDv</td>
-                                                    <td>@item.LyDo</td>
-                                                    <td>@item.DiaDiem</td>
-                                                    @if (@item.HinhThucRn == 1)
-                                                    {
-                                                        <td>Đi tranh thủ</td>
-                                                    }
-                                                    else
-                                                    {
-                                                        <td>Đi ra ngoài</td>
-                                                    }
+                                    <div class="tab-content">
+                                        <div id="ChuaPD" class="tab-pane active">
+                                            <table id="example2" class="table table-bordered table-hover">
+                                                <thead>
+                                                    <tr>
 
-                                                    <td>@item.ThoiGianRa</td>
-                                                    <td>@item.ThoiGianVao</td>
-                                                    <td>
-                                                        <a href="@Url.Action("SuaDanhSach","Admin",new {MaHocVien=item.MaHocVien})" class="btn btn-success">Edit</a>
-                                                    </td>
-                                                    <td><a class="btn btn-success" onclick="XoaDS(@item.MaHocVien)">Delete</a></td>
-                                                    <td><a class="btn btn-success" onclick="PheDuyet1(@item.MaHocVien)">Phê duyệt</a></td>
-                                                </tr>
-                                            }
-                                        </tbody>
+                                                        <th>Họ tên</th>
+                                                        <th>Chức vụ</th>
+                                                        <th>Cấp bậc</th>
+                                                        <th>Đơn vị</th>
+                                                        <th>Lý do ra ngoài</th>
+                                                        <th>Địa điểm</th>
+                                                        <th>Hình thức ra ngoài</th>
+                                                        <th>Thời giam ra</th>
+                                                        <th>Thời gian vào</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in dschuapheduyet)
+                                                    {
+                                                        <tr>
 
-                                    </table>
-                                    <div class="row">
-                                        <div class="col-sm-12 col-md-5">
-                                            <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
-                                                Danh sách từ @ViewBag.PageStartItem đến @ViewBag.PageEndItem trên tổng số @ViewBag.TotalItemCount quân nhân
+                                                            <td>@item.HoTen</td>
+                                                            <td>@item.TenCv</td>
+                                                            <td>@item.CapBac1</td>
+                                                            <td>@item.TenDv</td>
+                                                            <td>@item.LyDo</td>
+                                                            <td>@item.DiaDiem</td>
+                                                            @if (@item.HinhThucRn == 1)
+                                                            {
+                                                                <td>Đi tranh thủ</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>Đi ra ngoài</td>
+                                                            }
+
+                                                            <td>@item.ThoiGianRa</td>
+                                                            <td>@item.ThoiGianVao</td>
+                                                            <td>
+                                                                <a href="@Url.Action("SuaDanhSach","Admin",new {MaHocVien=item.MaHocVien})" class="btn btn-success">Edit</a>
+                                                            </td>
+                                                            <td><a class="btn btn-success" onclick="XoaDS(@item.MaHocVien)">Delete</a></td>
+                                                            <td><a class="btn btn-success" onclick="PheDuyet1(@item.MaHocVien)">Phê duyệt</a></td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+
+                                            </table>
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-5">
+                                                    <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
+                                                        Danh sách từ @ViewBag.PageStartItem đến @ViewBag.PageEndItem trên tổng số @ViewBag.TotalItemCount quân nhân
+                                                    </div>
+                                                </div>
+                                                <ul class="pagination">
+
+                                                    @if (dschuapheduyet.HasPreviousPage)
+                                                    {
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dschuapheduyet.PageNumber - 1 })">Previous</a>
+                                                        </li>
+
+                                                    }
+                                                    <li class="page-item  @(1 == dschuapheduyet.PageNumber ? "active" : "")">
+                                                        <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = 1 })">1</a>
+                                                    </li>
+                                                    @if (dschuapheduyet.PageNumber > 3)
+                                                    {
+                                                        <li class="page-item">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    }
+                                                    @for (int i = dschuapheduyet.PageNumber - 1; i <= dschuapheduyet.PageNumber + 1; i++)
+                                                    {
+                                                        if (i > 1 && i < dschuapheduyet.PageCount)
+                                                        {
+                                                            <li class="page-item @(i == dschuapheduyet.PageNumber ? "active" : "")">
+                                                                <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = i })">@i</a>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    @if (dschuapheduyet.PageNumber < dschuapheduyet.PageCount - 1)
+                                                    {
+                                                        <li class="page-item">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    }
+                                                    @if (dschuapheduyet.PageCount > 1)
+                                                    {
+                                                        <li class="page-item  @(dschuapheduyet.PageCount == dschuapheduyet.PageNumber ? "active" : "")">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dschuapheduyet.PageCount })">@dschuapheduyet.PageCount</a>
+                                                        </li>
+                                                    }
+                                                    @if (dschuapheduyet.HasNextPage)
+                                                    {
+
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dschuapheduyet.PageNumber + 1 })">Next</a>
+                                                        </li>
+                                                    }
+                                                </ul>
                                             </div>
                                         </div>
-                                        <ul class="pagination">
+                                        <div id="PDC" class="tab-pane fade">
+                                            <table id="example2" class="table table-bordered table-hover">
+                                                <thead>
+                                                    <tr>
 
-                                            @if (Model.HasPreviousPage)
-                                            {
-                                                <li class="page-item">
-                                                    <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = Model.PageNumber - 1 })">Previous</a>
-                                                </li>
+                                                        <th>Họ tên</th>
+                                                        <th>Chức vụ</th>
+                                                        <th>Cấp bậc</th>
+                                                        <th>Đơn vị</th>
+                                                        <th>Lý do ra ngoài</th>
+                                                        <th>Địa điểm</th>
+                                                        <th>Hình thức ra ngoài</th>
+                                                        <th>Thời giam ra</th>
+                                                        <th>Thời gian vào</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in dsdapheduyetc)
+                                                    {
+                                                        <tr>
 
-                                            }
-                                            <li class="page-item  @(1 == Model.PageNumber ? "active" : "")">
-                                                <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = 1 })">1</a>
-                                            </li>
-                                            @if (Model.PageNumber > 3)
-                                            {
-                                                <li class="page-item">
-                                                    <span class="page-link">...</span>
-                                                </li>
-                                            }
-                                            @for (int i = Model.PageNumber - 1; i <= Model.PageNumber + 1; i++)
-                                            {
-                                                if (i > 1 && i < Model.PageCount)
-                                                {
-                                                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                                                        <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = i })">@i</a>
+                                                            <td>@item.HoTen</td>
+                                                            <td>@item.TenCv</td>
+                                                            <td>@item.CapBac1</td>
+                                                            <td>@item.TenDv</td>
+                                                            <td>@item.LyDo</td>
+                                                            <td>@item.DiaDiem</td>
+                                                            @if (@item.HinhThucRn == 1)
+                                                            {
+                                                                <td>Đi tranh thủ</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>Đi ra ngoài</td>
+                                                            }
+
+                                                            <td>@item.ThoiGianRa</td>
+                                                            <td>@item.ThoiGianVao</td>
+                                                            <td>
+                                                                <a href="@Url.Action("SuaDanhSach","Admin",new {MaHocVien=item.MaHocVien})" class="btn btn-success">Edit</a>
+                                                            </td>
+                                                            <td><a class="btn btn-success" onclick="XoaDS(@item.MaHocVien)">Delete</a></td>
+                                                            <td><a class="btn btn-success" onclick="PheDuyet1(@item.MaHocVien)">Phê duyệt</a></td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+
+                                            </table>
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-5">
+                                                    <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
+                                                        Danh sách từ @ViewBag.PageStartItem đến @ViewBag.PageEndItem trên tổng số @ViewBag.TotalItemCount quân nhân
+                                                    </div>
+                                                </div>
+                                                <ul class="pagination">
+
+                                                    @if (dsdapheduyetc.HasPreviousPage)
+                                                    {
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdapheduyetc.PageNumber - 1 })">Previous</a>
+                                                        </li>
+
+                                                    }
+                                                    <li class="page-item  @(1 == dsdapheduyetc.PageNumber ? "active" : "")">
+                                                        <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = 1 })">1</a>
                                                     </li>
-                                                }
-                                            }
-                                            @if (Model.PageNumber < Model.PageCount - 1)
-                                            {
-                                                <li class="page-item">
-                                                    <span class="page-link">...</span>
-                                                </li>
-                                            }
-                                            @if (Model.PageCount > 1)
-                                            {
-                                                <li class="page-item  @(Model.PageCount == Model.PageNumber ? "active" : "")">
-                                                    <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = Model.PageCount })">@Model.PageCount</a>
-                                                </li>
-                                            }
-                                            @if (Model.HasNextPage)
-                                            {
+                                                    @if (dsdapheduyetc.PageNumber > 3)
+                                                    {
+                                                        <li class="page-item">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    }
+                                                    @for (int i = dsdapheduyetc.PageNumber - 1; i <= dsdapheduyetc.PageNumber + 1; i++)
+                                                    {
+                                                        if (i > 1 && i < dsdapheduyetc.PageCount)
+                                                        {
+                                                            <li class="page-item @(i == dsdapheduyetc.PageNumber ? "active" : "")">
+                                                                <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = i })">@i</a>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    @if (dsdapheduyetc.PageNumber < dsdapheduyetc.PageCount - 1)
+                                                    {
+                                                        <li class="page-item">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    }
+                                                    @if (dsdapheduyetc.PageCount > 1)
+                                                    {
+                                                        <li class="page-item  @(dsdapheduyetc.PageCount == dsdapheduyetc.PageNumber ? "active" : "")">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdapheduyetc.PageCount })">@dsdapheduyetc.PageCount</a>
+                                                        </li>
+                                                    }
+                                                    @if (dsdapheduyetc.HasNextPage)
+                                                    {
 
-                                                <li class="page-item">
-                                                    <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = Model.PageNumber + 1 })">Next</a>
-                                                </li>
-                                            }
-                                        </ul>
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdapheduyetc.PageNumber + 1 })">Next</a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div id="PDD" class="tab-pane fade">
+                                            <table id="example2" class="table table-bordered table-hover">
+                                                <thead>
+                                                    <tr>
+
+                                                        <th>Họ tên</th>
+                                                        <th>Chức vụ</th>
+                                                        <th>Cấp bậc</th>
+                                                        <th>Đơn vị</th>
+                                                        <th>Lý do ra ngoài</th>
+                                                        <th>Địa điểm</th>
+                                                        <th>Hình thức ra ngoài</th>
+                                                        <th>Thời giam ra</th>
+                                                        <th>Thời gian vào</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in dsdapheduyetd)
+                                                    {
+                                                        <tr>
+
+                                                            <td>@item.HoTen</td>
+                                                            <td>@item.TenCv</td>
+                                                            <td>@item.CapBac1</td>
+                                                            <td>@item.TenDv</td>
+                                                            <td>@item.LyDo</td>
+                                                            <td>@item.DiaDiem</td>
+                                                            @if (@item.HinhThucRn == 1)
+                                                            {
+                                                                <td>Đi tranh thủ</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>Đi ra ngoài</td>
+                                                            }
+
+                                                            <td>@item.ThoiGianRa</td>
+                                                            <td>@item.ThoiGianVao</td>
+                                                            <td>
+                                                                <a href="@Url.Action("SuaDanhSach","Admin",new {MaHocVien=item.MaHocVien})" class="btn btn-success">Edit</a>
+                                                            </td>
+                                                            <td><a class="btn btn-success" onclick="XoaDS(@item.MaHocVien)">Delete</a></td>
+                                                            <td><a class="btn btn-success" onclick="PheDuyet1(@item.MaHocVien)">Phê duyệt</a></td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+
+                                            </table>
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-5">
+                                                    <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
+                                                        Danh sách từ @ViewBag.PageStartItem đến @ViewBag.PageEndItem trên tổng số @ViewBag.TotalItemCount quân nhân
+                                                    </div>
+                                                </div>
+                                                <ul class="pagination">
+
+                                                    @if (dsdapheduyetd.HasPreviousPage)
+                                                    {
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdapheduyetd.PageNumber - 1 })">Previous</a>
+                                                        </li>
+
+                                                    }
+                                                    <li class="page-item  @(1 == dsdapheduyetd.PageNumber ? "active" : "")">
+                                                        <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = 1 })">1</a>
+                                                    </li>
+                                                    @if (dsdapheduyetd.PageNumber > 3)
+                                                    {
+                                                        <li class="page-item">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    }
+                                                    @for (int i = dsdapheduyetd.PageNumber - 1; i <= dsdapheduyetd.PageNumber + 1; i++)
+                                                    {
+                                                        if (i > 1 && i < dsdapheduyetd.PageCount)
+                                                        {
+                                                            <li class="page-item @(i == dsdapheduyetd.PageNumber ? "active" : "")">
+                                                                <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = i })">@i</a>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    @if (dsdapheduyetd.PageNumber < dsdapheduyetd.PageCount - 1)
+                                                    {
+                                                        <li class="page-item">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    }
+                                                    @if (dsdapheduyetd.PageCount > 1)
+                                                    {
+                                                        <li class="page-item  @(dsdapheduyetd.PageCount == dsdapheduyetd.PageNumber ? "active" : "")">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdapheduyetd.PageCount })">@dsdapheduyetd.PageCount</a>
+                                                        </li>
+                                                    }
+                                                    @if (dsdapheduyetd.HasNextPage)
+                                                    {
+
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdapheduyetd.PageNumber + 1 })">Next</a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                         <div id="PDCong" class="tab-pane fade">
+                                            <table id="example2" class="table table-bordered table-hover">
+                                                <thead>
+                                                    <tr>
+
+                                                        <th>Họ tên</th>
+                                                        <th>Chức vụ</th>
+                                                        <th>Cấp bậc</th>
+                                                        <th>Đơn vị</th>
+                                                        <th>Lý do ra ngoài</th>
+                                                        <th>Địa điểm</th>
+                                                        <th>Hình thức ra ngoài</th>
+                                                        <th>Thời giam ra</th>
+                                                        <th>Thời gian vào</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in dsdapheduyetcong)
+                                                    {
+                                                        <tr>
+
+                                                            <td>@item.HoTen</td>
+                                                            <td>@item.TenCv</td>
+                                                            <td>@item.CapBac1</td>
+                                                            <td>@item.TenDv</td>
+                                                            <td>@item.LyDo</td>
+                                                            <td>@item.DiaDiem</td>
+                                                            @if (@item.HinhThucRn == 1)
+                                                            {
+                                                                <td>Đi tranh thủ</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>Đi ra ngoài</td>
+                                                            }
+
+                                                            <td>@item.ThoiGianRa</td>
+                                                            <td>@item.ThoiGianVao</td>
+                                                            <td>
+                                                                <a href="@Url.Action("SuaDanhSach","Admin",new {MaHocVien=item.MaHocVien})" class="btn btn-success">Edit</a>
+                                                            </td>
+                                                            <td><a class="btn btn-success" onclick="XoaDS(@item.MaHocVien)">Delete</a></td>
+                                                            <td><a class="btn btn-success" onclick="PheDuyet1(@item.MaHocVien)">Phê duyệt</a></td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+
+                                            </table>
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-5">
+                                                    <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
+                                                        Danh sách từ @ViewBag.PageStartItem đến @ViewBag.PageEndItem trên tổng số @ViewBag.TotalItemCount quân nhân
+                                                    </div>
+                                                </div>
+                                                <ul class="pagination">
+
+                                                    @if (dsdapheduyetcong.HasPreviousPage)
+                                                    {
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdapheduyetcong.PageNumber - 1 })">Previous</a>
+                                                        </li>
+
+                                                    }
+                                                    <li class="page-item  @(1 == dsdapheduyetcong.PageNumber ? "active" : "")">
+                                                        <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = 1 })">1</a>
+                                                    </li>
+                                                    @if (dsdapheduyetcong.PageNumber > 3)
+                                                    {
+                                                        <li class="page-item">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    }
+                                                    @for (int i = dsdapheduyetcong.PageNumber - 1; i <= dsdapheduyetcong.PageNumber + 1; i++)
+                                                    {
+                                                        if (i > 1 && i < dsdapheduyetcong.PageCount)
+                                                        {
+                                                            <li class="page-item @(i == dsdapheduyetcong.PageNumber ? "active" : "")">
+                                                                <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = i })">@i</a>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    @if (dsdapheduyetcong.PageNumber < dsdapheduyetcong.PageCount - 1)
+                                                    {
+                                                        <li class="page-item">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    }
+                                                    @if (dsdapheduyetcong.PageCount > 1)
+                                                    {
+                                                        <li class="page-item  @(dsdapheduyetcong.PageCount == dsdapheduyetcong.PageNumber ? "active" : "")">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdapheduyetcong.PageCount })">@dsdapheduyetcong.PageCount</a>
+                                                        </li>
+                                                    }
+                                                    @if (dsdapheduyetcong.HasNextPage)
+                                                    {
+
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdapheduyetcong.PageNumber + 1 })">Next</a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div id="HT" class="tab-pane fade">
+                                            <table id="example2" class="table table-bordered table-hover">
+                                                <thead>
+                                                    <tr>
+
+                                                        <th>Họ tên</th>
+                                                        <th>Chức vụ</th>
+                                                        <th>Cấp bậc</th>
+                                                        <th>Đơn vị</th>
+                                                        <th>Lý do ra ngoài</th>
+                                                        <th>Địa điểm</th>
+                                                        <th>Hình thức ra ngoài</th>
+                                                        <th>Thời giam ra</th>
+                                                        <th>Thời gian vào</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in dsdahoanthanh)
+                                                    {
+                                                        <tr>
+
+                                                            <td>@item.HoTen</td>
+                                                            <td>@item.TenCv</td>
+                                                            <td>@item.CapBac1</td>
+                                                            <td>@item.TenDv</td>
+                                                            <td>@item.LyDo</td>
+                                                            <td>@item.DiaDiem</td>
+                                                            @if (@item.HinhThucRn == 1)
+                                                            {
+                                                                <td>Đi tranh thủ</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>Đi ra ngoài</td>
+                                                            }
+
+                                                            <td>@item.ThoiGianRa</td>
+                                                            <td>@item.ThoiGianVao</td>
+                                                            <td>
+                                                                <a href="@Url.Action("SuaDanhSach","Admin",new {MaHocVien=item.MaHocVien})" class="btn btn-success">Edit</a>
+                                                            </td>
+                                                            <td><a class="btn btn-success" onclick="XoaDS(@item.MaHocVien)">Delete</a></td>
+                                                            <td><a class="btn btn-success" onclick="PheDuyet1(@item.MaHocVien)">Phê duyệt</a></td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+
+                                            </table>
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-5">
+                                                    <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
+                                                        Danh sách từ @ViewBag.PageStartItem đến @ViewBag.PageEndItem trên tổng số @ViewBag.TotalItemCount quân nhân
+                                                    </div>
+                                                </div>
+                                                <ul class="pagination">
+
+                                                    @if (dsdahoanthanh.HasPreviousPage)
+                                                    {
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdahoanthanh.PageNumber - 1 })">Previous</a>
+                                                        </li>
+
+                                                    }
+                                                    <li class="page-item  @(1 == dsdahoanthanh.PageNumber ? "active" : "")">
+                                                        <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = 1 })">1</a>
+                                                    </li>
+                                                    @if (dsdahoanthanh.PageNumber > 3)
+                                                    {
+                                                        <li class="page-item">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    }
+                                                    @for (int i = dsdahoanthanh.PageNumber - 1; i <= dsdahoanthanh.PageNumber + 1; i++)
+                                                    {
+                                                        if (i > 1 && i < dsdahoanthanh.PageCount)
+                                                        {
+                                                            <li class="page-item @(i == dsdahoanthanh.PageNumber ? "active" : "")">
+                                                                <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = i })">@i</a>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    @if (dsdahoanthanh.PageNumber < dsdahoanthanh.PageCount - 1)
+                                                    {
+                                                        <li class="page-item">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    }
+                                                    @if (dsdahoanthanh.PageCount > 1)
+                                                    {
+                                                        <li class="page-item  @(dsdahoanthanh.PageCount == dsdahoanthanh.PageNumber ? "active" : "")">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdahoanthanh.PageCount })">@dsdahoanthanh.PageCount</a>
+                                                        </li>
+                                                    }
+                                                    @if (dsdahoanthanh.HasNextPage)
+                                                    {
+
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdahoanthanh.PageNumber + 1 })">Next</a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div id="TC" class="tab-pane fade">
+                                            <table id="example2" class="table table-bordered table-hover">
+                                                <thead>
+                                                    <tr>
+
+                                                        <th>Họ tên</th>
+                                                        <th>Chức vụ</th>
+                                                        <th>Cấp bậc</th>
+                                                        <th>Đơn vị</th>
+                                                        <th>Lý do ra ngoài</th>
+                                                        <th>Địa điểm</th>
+                                                        <th>Hình thức ra ngoài</th>
+                                                        <th>Thời giam ra</th>
+                                                        <th>Thời gian vào</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in dsdatuchoi)
+                                                    {
+                                                        <tr>
+
+                                                            <td>@item.HoTen</td>
+                                                            <td>@item.TenCv</td>
+                                                            <td>@item.CapBac1</td>
+                                                            <td>@item.TenDv</td>
+                                                            <td>@item.LyDo</td>
+                                                            <td>@item.DiaDiem</td>
+                                                            @if (@item.HinhThucRn == 1)
+                                                            {
+                                                                <td>Đi tranh thủ</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>Đi ra ngoài</td>
+                                                            }
+
+                                                            <td>@item.ThoiGianRa</td>
+                                                            <td>@item.ThoiGianVao</td>
+                                                            <td>
+                                                                <a href="@Url.Action("SuaDanhSach","Admin",new {MaHocVien=item.MaHocVien})" class="btn btn-success">Edit</a>
+                                                            </td>
+                                                            <td><a class="btn btn-success" onclick="XoaDS(@item.MaHocVien)">Delete</a></td>
+                                                            <td><a class="btn btn-success" onclick="PheDuyet1(@item.MaHocVien)">Phê duyệt</a></td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+
+                                            </table>
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-5">
+                                                    <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
+                                                        Danh sách từ @ViewBag.PageStartItem đến @ViewBag.PageEndItem trên tổng số @ViewBag.TotalItemCount quân nhân
+                                                    </div>
+                                                </div>
+                                                <ul class="pagination">
+
+                                                    @if (dsdatuchoi.HasPreviousPage)
+                                                    {
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdatuchoi.PageNumber - 1 })">Previous</a>
+                                                        </li>
+
+                                                    }
+                                                    <li class="page-item  @(1 == dsdatuchoi.PageNumber ? "active" : "")">
+                                                        <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = 1 })">1</a>
+                                                    </li>
+                                                    @if (dsdatuchoi.PageNumber > 3)
+                                                    {
+                                                        <li class="page-item">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    }
+                                                    @for (int i = dsdatuchoi.PageNumber - 1; i <= dsdatuchoi.PageNumber + 1; i++)
+                                                    {
+                                                        if (i > 1 && i < dsdatuchoi.PageCount)
+                                                        {
+                                                            <li class="page-item @(i == dsdatuchoi.PageNumber ? "active" : "")">
+                                                                <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = i })">@i</a>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    @if (dsdatuchoi.PageNumber < dsdatuchoi.PageCount - 1)
+                                                    {
+                                                        <li class="page-item">
+                                                            <span class="page-link">...</span>
+                                                        </li>
+                                                    }
+                                                    @if (dsdatuchoi.PageCount > 1)
+                                                    {
+                                                        <li class="page-item  @(dsdatuchoi.PageCount == dsdatuchoi.PageNumber ? "active" : "")">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdatuchoi.PageCount })">@dsdatuchoi.PageCount</a>
+                                                        </li>
+                                                    }
+                                                    @if (dsdatuchoi.HasNextPage)
+                                                    {
+
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="@Url.Action("QuanLyDanhSach", new { page = dsdatuchoi.PageNumber + 1 })">Next</a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="card-footer">
-                                    <button class="btn btn-primary" data-dismiss="modal" id="confirmThem" onclick="Them()">Thêm quân nhân mới</button>
-                                    @*<a href="#" class="btn btn-secondary" style="display: none;"><i class="material-icons">&#xE24D;</i> <span>Xuất Excel</span></a>*@
-                                </div>
+                               
                                 <!-- /.card-body -->
                             </div>
                             <!-- /.card -->
@@ -222,114 +752,6 @@ else
             </section>
           
         </div>
-        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        <script>
-            function Them() {
-                var form = document.getElementById("frmThemQuanNhan");
-                form.setAttribute("aria-hidden", "false");
-                form.setAttribute("tabindex", "0");
-                form.style.display = "block";
-                $('#confirm').on('click', function () {
-                    var hoten = $('#hoten').val().toString();
-                    var madv = parseInt($('#madv').val());
-                    var macv = parseInt($('#macv').val());
-                    var macapbac = parseInt($('#macapbac').val());
-                    var diachi = $('#diachi').val().toString();
-
-                    if (hoten.trim() === "" || (typeof madv !== 'number' || !Number.isInteger(madv))) {
-                        // Kiểm tra nếu trường TenDM rỗng
-                        alert("Bạn chưa nhập đủ thông tin đơn vị.");
-                    } else {
-                        // Nếu trường TenDM không rỗng, tiến hành gửi yêu cầu AJAX
-                        $.ajax({
-                            url: '/Admin/ThemQuanNhan', // Điều chỉnh URL nếu cần thiết
-                            data: {
-                                hoten: hoten,
-                                madv: madv,
-                                macv: macv,
-                                macapbac: macapbac,
-                                diachi: diachi
-                            },
-                            type: 'POST',
-                            dataType: 'json',
-                            success: function (res) {
-                                if (res.status == true) {
-                                    // Đóng modal sau khi thêm thành công
-                                    form.setAttribute("aria-hidden", "true");
-                                    form.setAttribute("tabindex", "-1");
-                                    form.style.display = "none";
-                                    window.location = '@Url.Action("QuanLyDanhSach","Admin")';
-                                }
-                            }
-                        });
-                    }
-                });
-                $('#cancel').on('click', function () {
-                    form.setAttribute("aria-hidden", "true");
-                    form.setAttribute("tabindex", "-1");
-                    form.style.display = "none";
-                });
-            }
-            // Filter button click event
-            $("#filterButton").click(function () {
-                // Lấy giá trị từ các phần tử trên trang
-                const chucVu = $("#ChucVu").val();
-                const capBac = $("#CapBac").val();
-                const donVi = $("#DonVi").val();
-                const MaHocVien = $("input[name='MaHocVien']").val();
-                const hoten = $("input[name='hoten']").val();
-                const diaChi = $("input[name='Địa chỉ']").val();
-
-                // Xây dựng URL và chuyển hướng
-                const url = `@Url.Action("QuanLyDanhSach", "Admin")?ChucVu=${chucVu}&CapBac=${capBac}&DonVi=${donVi}&MaHocVien=${MaHocVien}&hoten=${hoten}&diaChi=${diaChi}`;
-                window.location.href = url;
-            });
-        </script>
-
-        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmDeleteModalLabel">Bạn có chắc chắn muốn xóa quân nhân?</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="confirmDeleteButton">Xóa</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Đoạn mã JavaScript để xử lý sự kiện xóa -->
-        <script>
-            function XoaQuanNhan(MaHocVien) {
-                var madv = parseInt(madv);
-
-                // Hiển thị modal xác nhận xóa
-                $('#confirmDeleteModal').modal('show');
-
-                // Xử lý sự kiện khi người dùng xác nhận xóa
-                $('#confirmDeleteButton').on('click', function () {
-                    $.ajax({
-                        url: '/Admin/XoaQuanNhan',
-                        data: {
-                            MaHocVien: MaHocVien
-                        },
-                        type: 'POST',
-                        dataType: 'json',
-                        success: function (res) {
-                            if (res.status == true) {
-                                // Đóng modal sau khi xóa thành công
-                                $('#confirmDeleteModal').modal('hide');
-                                window.location = '@Url.Action("QuanLyDanhSach","Admin")';
-                            }
-                        }
-                    });
-                });
-            }
-        </script>
+      
     </div>
 }

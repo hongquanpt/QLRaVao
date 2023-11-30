@@ -21,7 +21,7 @@ public partial class Vipham
 
     public DateTime? ThoiGianSua { get; set; }
 
-    public int? MaHv { get; set; }
+    public int MaHv { get; set; }
 
     public virtual Quannhan? MaHvNavigation { get; set; }
 
