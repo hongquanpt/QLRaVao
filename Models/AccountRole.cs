@@ -10,7 +10,6 @@
         public string? ActionName { get; set; }
         public string? ControllerName { get; set; }
         public string? TenQ { get; set; }
-        public int MaA { get; set; }
-        public string? TenA { get; set; }
+        
     }
 }

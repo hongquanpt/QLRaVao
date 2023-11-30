@@ -32,9 +32,7 @@ public partial class QuanLyRaVaoContext : DbContext
 
     public virtual DbSet<Giayto> Giaytos { get; set; }
 
-    public virtual DbSet<Hd> Hds { get; set; }
-
-    public virtual DbSet<NQHd> NQHds { get; set; }
+    public virtual DbSet<Nhom> Nhoms { get; set; }
 
     public virtual DbSet<NhomQuyen> NhomQuyens { get; set; }
 
@@ -194,48 +192,35 @@ public partial class QuanLyRaVaoContext : DbContext
                 .HasConstraintName("FK__GIAYTO__MaDV__403A8C7D");
         });
 
-        modelBuilder.Entity<Hd>(entity =>
+        modelBuilder.Entity<Nhom>(entity =>
         {
-            entity.HasKey(e => e.MaA);
+            entity.HasKey(e => e.MaNhom).HasName("PK_NhomQuyen");
 
-            entity.ToTable("HD");
+            entity.ToTable("NHOM");
 
-            entity.Property(e => e.MaA).ValueGeneratedNever();
-            entity.Property(e => e.TenA).HasMaxLength(200);
-        });
-
-        modelBuilder.Entity<NQHd>(entity =>
-        {
-            entity.HasKey(e => new { e.MaA, e.MaQuyen, e.MaNhom });
-
-            entity.ToTable("N_Q_HD");
-
-            entity.Property(e => e.Ten).HasMaxLength(100);
-
-            entity.HasOne(d => d.MaANavigation).WithMany(p => p.NQHds)
-                .HasForeignKey(d => d.MaA)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_N_Q_HD_HD");
-
-            entity.HasOne(d => d.MaNhomNavigation).WithMany(p => p.NQHds)
-                .HasForeignKey(d => d.MaNhom)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_N_Q_HD_NhomQuyen");
-
-            entity.HasOne(d => d.MaQuyenNavigation).WithMany(p => p.NQHds)
-                .HasForeignKey(d => d.MaQuyen)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_N_Q_HD_QUYEN");
+            entity.Property(e => e.MaNhom).ValueGeneratedNever();
+            entity.Property(e => e.TenNhom).HasMaxLength(200);
         });
 
         modelBuilder.Entity<NhomQuyen>(entity =>
         {
-            entity.HasKey(e => e.MaNhom);
+            entity.HasKey(e => new { e.MaQuyen, e.MaNhom });
 
-            entity.ToTable("NhomQuyen");
+            entity.ToTable("NHOM_QUYEN");
 
-            entity.Property(e => e.MaNhom).ValueGeneratedNever();
-            entity.Property(e => e.TenNhom).HasMaxLength(200);
+            entity.Property(e => e.GhiChu)
+                .HasMaxLength(10)
+                .IsFixedLength();
+
+            entity.HasOne(d => d.MaNhomNavigation).WithMany(p => p.NhomQuyens)
+                .HasForeignKey(d => d.MaNhom)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_NHOM_QUYEN_NHOM");
+
+            entity.HasOne(d => d.MaQuyenNavigation).WithMany(p => p.NhomQuyens)
+                .HasForeignKey(d => d.MaQuyen)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_NHOM_QUYEN_QUYEN");
         });
 
         modelBuilder.Entity<Quannhan>(entity =>
@@ -319,7 +304,7 @@ public partial class QuanLyRaVaoContext : DbContext
 
             entity.HasOne(d => d.MaNhomNavigation).WithMany(p => p.Taikhoans)
                 .HasForeignKey(d => d.MaNhom)
-                .HasConstraintName("FK_TAIKHOAN_NhomQuyen");
+                .HasConstraintName("FK_TAIKHOAN_NHOM");
 
             entity.HasOne(d => d.MaQnNavigation).WithMany(p => p.Taikhoans)
                 .HasForeignKey(d => d.MaQn)

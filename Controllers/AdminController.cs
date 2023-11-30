@@ -355,7 +355,7 @@ namespace QuanLyRaVao.Controllers
         {
             // Thực hiện truy vấn và phân trang
             var query = from tk in obj.Taikhoans
-                        join cv in obj.NhomQuyens on tk.MaNhom equals cv.MaNhom
+                        join cv in obj.Nhoms on tk.MaNhom equals cv.MaNhom
                         join  qn in obj.Quannhans on tk.MaQn equals qn.MaQn
                         join dv in obj.Donvis on qn.MaDv equals dv.MaDv
                         join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac                       

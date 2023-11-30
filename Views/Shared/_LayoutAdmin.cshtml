@@ -10,7 +10,7 @@
     int sl = HttpContextAccessor.HttpContext.Session.GetInt32("so") ?? 0;
 
     List<AccountRole> data = HttpContextAccessor.HttpContext.Session.GetJson<List<AccountRole>>("QuyenTK") ?? new List<AccountRole>();
-    var dl = data.Where(c => c.MaA != 1).ToList();
+    var dl = data.ToList();
 }
 <!DOCTYPE html>
 <html lang="en">

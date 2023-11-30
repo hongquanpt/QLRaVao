@@ -17,7 +17,7 @@ public partial class Taikhoan
 
     public int? MaNhom { get; set; }
 
-    public virtual NhomQuyen? MaNhomNavigation { get; set; }
+    public virtual Nhom? MaNhomNavigation { get; set; }
 
     public virtual Quannhan? MaQnNavigation { get; set; }
 }

@@ -5,12 +5,11 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-    var nhomquyen = (List<QuanLyRaVao.Models.NhomQuyen>)ViewBag.nhomquyen;
     List<AccountRole> data = HttpContextAccessor.HttpContext.Session.GetJson<List<AccountRole>>("QuyenTK") ?? new List<AccountRole>();
     var qh = data.FirstOrDefault(c => c.ActionName == "QuanLyDanhSach");
 }
 
-@if (qh.MaA == 1)
+@if (qh==null)
 {
     <!DOCTYPE html>
     <html lang="en">

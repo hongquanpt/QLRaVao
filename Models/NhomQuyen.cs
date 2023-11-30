@@ -5,11 +5,13 @@ namespace QuanLyRaVao.Models;
 
 public partial class NhomQuyen
 {
+    public int MaQuyen { get; set; }
+
     public int MaNhom { get; set; }
 
-    public string? TenNhom { get; set; }
+    public string? GhiChu { get; set; }
 
-    public virtual ICollection<NQHd> NQHds { get; set; } = new List<NQHd>();
+    public virtual Nhom MaNhomNavigation { get; set; } = null!;
 
-    public virtual ICollection<Taikhoan> Taikhoans { get; set; } = new List<Taikhoan>();
+    public virtual Quyen MaQuyenNavigation { get; set; } = null!;
 }
