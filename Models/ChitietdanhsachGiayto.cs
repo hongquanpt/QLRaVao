@@ -7,9 +7,7 @@ public partial class ChitietdanhsachGiayto
 {
     public int MaGiayTo { get; set; }
 
-    public int MaDs { get; set; }
-
-    public int MaHocVien { get; set; }
+    public int MaCtds { get; set; }
 
     public bool DaTra { get; set; }
 
@@ -25,9 +23,7 @@ public partial class ChitietdanhsachGiayto
 
     public DateTime? ThoiGianSua { get; set; }
 
-    public virtual Danhsach MaDsNavigation { get; set; } = null!;
+    public virtual Chitietdanhsach MaCtdsNavigation { get; set; } = null!;
 
     public virtual Giayto MaGiayToNavigation { get; set; } = null!;
-
-    public virtual Quannhan MaHocVienNavigation { get; set; } = null!;
 }

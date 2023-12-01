@@ -13,5 +13,5 @@ public partial class Quyen
 
     public string? ControllerName { get; set; }
 
-    public virtual ICollection<NQHd> NQHds { get; set; } = new List<NQHd>();
+    public virtual ICollection<NhomQuyen> NhomQuyens { get; set; } = new List<NhomQuyen>();
 }

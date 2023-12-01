@@ -21,6 +21,8 @@ public partial class Giayto
 
     public int? MaDv { get; set; }
 
+    public virtual ICollection<ChitietdanhsachGiayto> ChitietdanhsachGiaytos { get; set; } = new List<ChitietdanhsachGiayto>();
+
     public virtual Donvi? MaDvNavigation { get; set; }
 
     public virtual ICollection<Rangoai> Rangoais { get; set; } = new List<Rangoai>();

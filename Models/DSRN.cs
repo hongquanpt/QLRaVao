@@ -3,6 +3,7 @@
     public class DSRN
     {
         public int MaDs { get; set; }
+        public int MaCTDS { get; set; }
         public int MaHocVien { get; set; }
         public string? LyDo { get; set; }
         public string? DiaDiem { get; set; }
@@ -10,7 +11,7 @@
         public DateTime? ThoiGianVao { get; set; }
         public int? TinhTrang { get; set; }
         public int HinhThucRn { get; set; }
-        public int? PheDuyet { get; set; }
+      
 
         public string HoTen { get; set; }
         public string? DiaChi { get; set; }

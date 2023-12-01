@@ -21,7 +21,11 @@ public partial class Quannhan
 
     public int? MaCapBac { get; set; }
 
-    public string? DiaChi { get; set; }
+    public string DiaChi { get; set; } = null!;
+
+    public virtual ICollection<CanboDuyet> CanboDuyets { get; set; } = new List<CanboDuyet>();
+
+    public virtual ICollection<Chitietdanhsach> Chitietdanhsaches { get; set; } = new List<Chitietdanhsach>();
 
     public virtual Capbac? MaCapBacNavigation { get; set; }
 

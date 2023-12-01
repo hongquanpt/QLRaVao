@@ -12,7 +12,7 @@
     var ChonNhomQuyen = (List<NhomQuyen>)ViewBag.ChonNhomQuyen;
 
 }
-@if (qh.MaA == 1)
+@if (qh == null )
 {
     <!DOCTYPE html>
     <html lang="en">
@@ -119,10 +119,9 @@ else
                                                 <th>Chức vụ</th>                                         
                                                 <th>Đơn vị</th>
                                                 <th>Nhóm tài khoản</th>
-                                                @if (qh.MaA != 2)
-                                                {
+                                                
                                                     <th>Xóa</th>
-                                                }
+                                                
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -136,20 +135,22 @@ else
                                                     <td>@item.TenCv</td>
                                                     <td>@item.TenDv</td>
                                                     <td>
-                                                        <select name="ChucVu" class="form-control" @(qh.MaA == 2 ? "disabled" : "")>
-                                                            <option value="@item.MaNhom" selected>@item.TenNhom</option>
-                                                            @foreach (var chucVu in nhomquyen)
-                                                            {
-                                                                <option value="@chucVu.MaNhom">@chucVu.TenNhom</option>
-                                                            }
-                                                        </select>
-                                                    </td>
-                                                    @if (qh.MaA != 2)
-                                                    {
-                                                        <td>
-                                                            <a class="btn btn-success" onclick="XoaTK(@item.MaTaiKhoan)" data-id="@item.MaTaiKhoan">Xóa</a>
-                                                        </td>
-                                                    }
+                                                        @*
+                                                <select name="ChucVu" class="form-control" @(qh.MaA == 2 ? "disabled" : "")>
+                                                <option value="@item.MaNhom" selected>@item.TenNhom</option>
+                                                @foreach (var chucVu in nhomquyen)
+                                                {
+                                                <option value="@chucVu.MaNhom">@chucVu.TenNhom</option>
+                                                }
+                                                </select>
+                                                </td>
+                                                @if (qh.MaA != 2)
+                                                {
+                                                <td>
+                                                <a class="btn btn-success" onclick="XoaTK(@item.MaTaiKhoan)" data-id="@item.MaTaiKhoan">Xóa</a>
+                                                </td>
+                                                }
+                                                        *@
                                                 </tr>
                                             }
                                         </tbody>

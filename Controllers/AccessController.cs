@@ -70,21 +70,20 @@ namespace QuanLyRaVao.Controllers
                 HttpContext.Session.SetString("email", loginInfo.TDN);
                 var data = from tk in _context.Taikhoans
                             join cv in _context.NhomQuyens on tk.MaNhom equals cv.MaNhom
-                            join qcv in _context.NQHds on cv.MaNhom equals qcv.MaNhom
-                            join q in _context.Quyens on qcv.MaQuyen equals q.MaQuyen
-                            join a in _context.Hds on qcv.MaA equals a.MaA
+                            join n in _context.Nhoms on tk.MaNhom equals n.MaNhom
+                            join q in _context.Quyens on cv.MaQuyen equals q.MaQuyen
+                            
                             where (tk.Tdn == loginInfo.TDN)
                             select new AccountRole
                             {
                                 MaTaiKhoan = tk.MaTaiKhoan,
                                 MaQ = q.MaQuyen,
                                 MaCv = cv.MaNhom,
-                                TenCV = cv.TenNhom,
+                                TenCV = n.TenNhom,
                                 TenQ = q.Ten,
                                 ControllerName = q.ControllerName,
                                 ActionName = q.ActionName,
-                                MaA = a.MaA,
-                                TenA = a.TenA,
+                                
                             };
                 List<AccountRole> roles = data.ToList();
 

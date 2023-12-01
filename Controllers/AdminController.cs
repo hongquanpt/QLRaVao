@@ -355,7 +355,7 @@ namespace QuanLyRaVao.Controllers
         {
             // Thực hiện truy vấn và phân trang
             var query = from tk in obj.Taikhoans
-                        join cv in obj.NhomQuyens on tk.MaNhom equals cv.MaNhom
+                        join cv in obj.Nhoms on tk.MaNhom equals cv.MaNhom
                         join  qn in obj.Quannhans on tk.MaQn equals qn.MaQn
                         join dv in obj.Donvis on qn.MaDv equals dv.MaDv
                         join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac                       
@@ -460,16 +460,16 @@ namespace QuanLyRaVao.Controllers
         #endregion
         #region Đại đội
         #region Quản lý danh sách
-        public IActionResult QuanLyDanhSach(int page = 1, int pageSize = 5)
+        /*public IActionResult QuanLyDanhSach(int page = 1, int pageSize = 5)
         {
 
             var query = from ds in obj.Danhsaches
-                        join ct in obj.Chitietdanhsaches on ds.MaDs equals ct.MaDs
+                        join ct in obj.Chitietdanhsacheses on ds.MaDs equals ct.MaDs
                         join qn in obj.Quannhans on ct.MaHocVien equals qn.MaQn
                         join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
                         join dv in obj.Donvis on qn.MaDv equals dv.MaDv
                         join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
-                        where ct.TinhTrang!=3
+                       
                         select new DSRN
                         {
                             MaDs = ds.MaDs,
@@ -480,7 +480,6 @@ namespace QuanLyRaVao.Controllers
                             ThoiGianVao = ct.ThoiGianVao,
                             TinhTrang = ct.TinhTrang,
                             HinhThucRn = ds.HinhThucRn,
-                            PheDuyet = ds.PheDuyet,
                             MaCv = qn.MaCv,
                             MaDv = qn.MaDv,
                             MaCapBac = qn.MaCapBac,
@@ -500,9 +499,291 @@ namespace QuanLyRaVao.Controllers
             ViewBag.Page = page;
             ViewBag.TotalItemCount = totalItemCount;
             return View(pagedList);
+        }*/
+        public IActionResult QuanLyDanhSach(int page = 1, int pageSize = 5)
+        {
+
+            var query = from  ct in obj.Chitietdanhsaches 
+                        join qn in obj.Quannhans on ct.MaHocVien equals qn.MaQn
+                        join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
+                        join dv in obj.Donvis on qn.MaDv equals dv.MaDv
+                        join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
+
+                        select new DSRN
+                        {
+                            MaCTDS= ct.MaCtds,
+                           
+                            MaHocVien = ct.MaHocVien,
+                            LyDo = ct.LyDo,
+                            DiaDiem = ct.DiaDiem,
+                            ThoiGianRa = ct.ThoiGianRa,
+                            ThoiGianVao = ct.ThoiGianVao,
+                            TinhTrang = ct.TinhTrang,
+                            HinhThucRn = ct.HinhThucRn,
+                            MaCv = qn.MaCv,
+                            MaDv = qn.MaDv,
+                            MaCapBac = qn.MaCapBac,
+                            CapBac1 = cb.CapBac1,
+                            TenCv = cv.TenCv,
+                            TenDv = dv.TenDv,
+                            DiaChi = qn.DiaChi,
+                            HoTen = qn.HoTen
+                        };
+            // Tạo danh sách các tình trạng
+
+            var tinhTrang5 = query.Where(o => o.TinhTrang == 5).OrderBy(o => o.MaCTDS).ToList();
+
+            var tinhTrang0 = query.Where(o => o.TinhTrang == 0).OrderBy(o => o.MaCTDS).ToList();
+            var tinhTrang1 = query.Where(o => o.TinhTrang == 1).OrderBy(o => o.MaCTDS).ToList();
+            var tinhTrang2 = query.Where(o => o.TinhTrang == 2).OrderBy(o => o.MaCTDS).ToList();
+            var tinhTrang3 = query.Where(o => o.TinhTrang == 3).OrderBy(o => o.MaCTDS).ToList();
+            var tinhTrang4 = query.Where(o => o.TinhTrang == 4).OrderBy(o => o.MaCTDS).ToList();
+
+            // Tạo danh sách phân trang cho từng tình trạng
+            var pagedList5 = tinhTrang5.ToPagedList(page, pageSize);
+            var pagedList0 = tinhTrang0.ToPagedList(page, pageSize);
+            var pagedList1 = tinhTrang1.ToPagedList(page, pageSize);
+            var pagedList2 = tinhTrang2.ToPagedList(page, pageSize);
+            var pagedList3 = tinhTrang3.ToPagedList(page, pageSize);
+            var pagedList4 = tinhTrang4.ToPagedList(page, pageSize);
+
+            ViewBag.pagedList5 = pagedList5;
+            ViewBag.pagedList0 = pagedList0;
+            ViewBag.pagedList1 = pagedList1;
+            ViewBag.pagedList2 = pagedList2;
+            ViewBag.pagedList3 = pagedList3;
+            ViewBag.pagedList4 = pagedList4;
+            ViewBag.PageStartItem = (page - 1) * pageSize + 1;
+            ViewBag.PageEndItem = Math.Min(page * pageSize, pagedList5.TotalItemCount);
+            ViewBag.Page = page;
+
+            int totalOrders = obj.Chitietdanhsaches.Count(o => o.TinhTrang == 5);
+            int unpaidOrdersCount = obj.Chitietdanhsaches.Count(o => o.TinhTrang == 0);
+            int pendingOrdersCount = obj.Chitietdanhsaches.Count(o => o.TinhTrang == 1);
+            int shippingOrdersCount = obj.Chitietdanhsaches.Count(o => o.TinhTrang == 2);
+            int completedOrdersCount = obj.Chitietdanhsaches.Count(o => o.TinhTrang == 3);
+            int canceledOrdersCount = obj.Chitietdanhsaches.Count(o => o.TinhTrang == 4);
+
+            ViewBag.DaHoanThanh = totalOrders;
+            ViewBag.DaBiTuChoi = unpaidOrdersCount;
+            ViewBag.ChuaPheDuyet = pendingOrdersCount;
+            ViewBag.PheDuyetC = shippingOrdersCount;
+            ViewBag.PheDuyetD = completedOrdersCount;
+            ViewBag.PheDuyetCong = canceledOrdersCount;    
+            return View();
+        }
+        public IActionResult Duyet1(int mactds)
+        {
+            var dh = obj.Chitietdanhsaches.Where(c=>c.MaCtds== mactds).FirstOrDefault();
+            if (dh != null)
+            {
+                dh.TinhTrang = 2;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+        public IActionResult TC1(int mactds)
+        {
+            var dh = obj.Chitietdanhsaches.Where(c => c.MaCtds == mactds).FirstOrDefault();
+            if (dh != null)
+            {
+                dh.TinhTrang = 0;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+        public IActionResult All1()
+        {
+            // Lấy danh sách chi tiết đánh sách có trạng thái là 1
+            var danhSachChiTiet = obj.Chitietdanhsaches.Where(c => c.TinhTrang == 1).ToList();
+            
+            // Lấy danh sách ID của vi phạm
+            List<int> viphamsIds = obj.Viphams.Select(v => v.MaHv).ToList();
+            //List<string> diachi= obj.Quannhans.Select(v=>v.DiaChi).ToList();
+            // Kiểm tra xem danh sách ID của vi phạm có dữ liệu và danh sách chi tiết có dữ liệu không
+            if (viphamsIds.Any() && danhSachChiTiet != null && danhSachChiTiet.Any())
+            {
+                // Lọc và chỉ giữ lại các đối tượng không có mã trong danh sách vi phạm
+                var danhSachKhongViPham = danhSachChiTiet.Where(c => !viphamsIds.Contains(c.MaHocVien)).ToList();
+                var danhSachViPham= danhSachChiTiet.Where(c => viphamsIds.Contains(c.MaHocVien)).ToList();
+                // Cập nhật trạng thái trực tiếp trong cơ sở dữ liệu
+                foreach (var chiTiet in danhSachKhongViPham)
+                {
+                    // Kiểm tra nếu HinhThuc là 1 trong danhSachChiTiet
+                    if (chiTiet.HinhThucRn == 1)
+                    {
+                        string diachi = obj.Quannhans.Where(c => c.MaQn == chiTiet.MaHocVien).FirstOrDefault().DiaChi;
+                        // So sánh địa chỉ với obj.QuanNhans và gán TinhTrang tùy thuộc vào kết quả
+                        if (chiTiet.DiaDiem.Contains(diachi))
+                        {
+                            chiTiet.TinhTrang = 0;
+                        }
+                        else
+                        {
+                            chiTiet.TinhTrang = 2;
+                        }
+                    }
+                    else
+                    {
+                        // Nếu HinhThuc có giá trị khác 1, gán TinhTrang = 2
+                        chiTiet.TinhTrang = 2;
+                    }
+                }
+                foreach (var chiTiet in danhSachViPham)
+                {                 
+                        chiTiet.TinhTrang = 0 ;                   
+                }
+                // Lưu thay đổi vào cơ sở dữ liệu
+                obj.SaveChanges();
+
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+        }
+
+        public IActionResult AllT1()
+        {
+            var danhSachChiTiet = obj.Chitietdanhsaches.Where(c => c.TinhTrang == 1).ToList();         
+            if ( danhSachChiTiet != null && danhSachChiTiet.Any())
+            {                            
+                foreach (var chiTiet in danhSachChiTiet)
+                {
+                    chiTiet.TinhTrang = 0;
+                }
+                // Lưu thay đổi vào cơ sở dữ liệu
+                obj.SaveChanges();
+
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+        }
+
+        public IActionResult Duyet2(int mactds)
+        {
+            var dh = obj.Chitietdanhsaches.Find(mactds);
+            if (dh != null)
+            {
+                dh.TinhTrang = 3;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+        public IActionResult TC2(int mactds)
+        {
+            var dh = obj.Chitietdanhsaches.Where(c => c.MaCtds == mactds).FirstOrDefault();
+            if (dh != null)
+            {
+                dh.TinhTrang = 0;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+        public IActionResult Duyet3(int mactds)
+        {
+            var dh = obj.Chitietdanhsaches.Find(mactds);
+            if (dh != null)
+            {
+                dh.TinhTrang = 4;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+        public IActionResult TC3(int mactds)
+        {
+            var dh = obj.Chitietdanhsaches.Where(c => c.MaCtds == mactds).FirstOrDefault();
+            if (dh != null)
+            {
+                dh.TinhTrang = 0;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
         }
         #endregion
-        #region Quản lý danh sách quân nhân
+        #region Quản lý quân nhân
         public IActionResult QuanLyQuanNhan(int maqn, string diachi, string hoten, int CapBac, int ChucVu, int DonVi,int page = 1, int pageSize = 5)
         {
 
@@ -673,46 +954,7 @@ namespace QuanLyRaVao.Controllers
             }
         }
         #endregion
-        #region Quản lý danh sách ra ngoài
-        //public IActionResult QuanLyDanhSachRaNgoai(int page = 1, int pageSize = 10)
-        //{
-        //    // Thực hiện truy vấn và phân trang
-        //    var query = from ctds in obj.Chitietdanhsaches
-        //              //  join cv in obj.NhomQuyens on tk.MaNhom equals cv.MaNhom
-        //                join qn in obj.Quannhans on ctds.MaHocVien equals qn.MaQn
-        //                join dv in obj.Donvis on qn.MaDv equals dv.MaDv
-        //                join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
-        //                join ch in obj.Chucvus on qn.MaCv equals ch.MaCv
-        //                select new 
-        //                {
-        //                   // Hoten = qn.HoTen,
-        //                    //Tdn = tk.Tdn,
-        //                   // MaNhom = cv.MaNhom,
-        //                 //   Khoa = tk.Khoa,
-        //                    MaQn = qn.MaQn,
-        //                    HoTen = qn.HoTen,
-        //                 //   TenNhom = cv.TenNhom,
-        //                    TenDv = dv.TenDv,
-        //                    TenCv = ch.TenCv,
-        //                    CapBac1 = cb.CapBac1,
-        //                    ThoiGianRa = ctds.ThoiGianRa,
-        //                    ThoiGianVao = ctds.ThoiGianVao
-        //                };
-        //    var nhomquyen = obj.NhomQuyens.ToList();
-        //    var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-        //    // Tính toán thông tin phân trang
-        //    var totalItemCount = query.Count();
-        //  //  var pagedList = new StaticPagedList<TT_TK>(model, page, pageSize, totalItemCount);
-        //    ViewBag.PageStartItem = (page - 1) * pageSize + 1;
-        //    ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
-        //    ViewBag.Page = page;
-        //    ViewBag.TotalItemCount = totalItemCount;
-        //    ViewBag.nhomquyen = nhomquyen;
-        //    ViewBag.ChonQuanNhan = (obj.Quannhans.ToList());
-        //    ViewBag.ChonNhomQuyen = (obj.NhomQuyens.ToList());
-        //    return View(pagedList);
-        //}
-        #endregion
+      
         #region Quản lý danh sách vi phạm
         public IActionResult QuanLyViPham(int page = 1, int pageSize = 5)
         {
@@ -792,12 +1034,21 @@ namespace QuanLyRaVao.Controllers
             var model = obj.Viphams.Find(mavp);
             ViewBag.ChonQuanNhan = (obj.Quannhans.ToList());
             var hvvp = new HV_VP();
-            hvvp.MoTa = model.MoTa;
-            hvvp.Loai = model.Loai;
-            hvvp.ThoiGian = model.ThoiGian;
-            
-            hvvp.MaQn = (int)model.MaHv;
-            return View(model);
+            if(model != null)
+            {
+                hvvp.MoTa = model.MoTa;
+                hvvp.Loai = model.Loai;
+                hvvp.ThoiGian = model.ThoiGian;
+                hvvp.MaQn = model.MaHv;
+                return View(model);
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
         }
         [HttpPost]
         public IActionResult SuaViPham(int mavp, string mota, bool loai, DateTime thoigian, string ghichu, int mahv)
@@ -826,19 +1077,7 @@ namespace QuanLyRaVao.Controllers
         }
         #endregion
         #endregion
-        #region Tiểu đoàn
-        #region Cập nhập danh sách vi phạm
-        #endregion
-        #region Phê duyệt danh sách ra ngoài
-        #endregion
-
-        #endregion
-        #region Vệ Binh
-        #region Cập nhật danh sách vi phạm
-        #endregion
-        #region Xác nhận ra/ vào 
-        #endregion
-        #endregion
+       
 
     }
 }
