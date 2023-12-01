@@ -21,7 +21,7 @@ public partial class Quannhan
 
     public int? MaCapBac { get; set; }
 
-    public string? DiaChi { get; set; }
+    public string DiaChi { get; set; } = null!;
 
     public virtual ICollection<CanboDuyet> CanboDuyets { get; set; } = new List<CanboDuyet>();
 

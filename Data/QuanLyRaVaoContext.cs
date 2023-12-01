@@ -26,8 +26,6 @@ public partial class QuanLyRaVaoContext : DbContext
 
     public virtual DbSet<Chucvu> Chucvus { get; set; }
 
-    public virtual DbSet<Danhsach> Danhsaches { get; set; }
-
     public virtual DbSet<Donvi> Donvis { get; set; }
 
     public virtual DbSet<Giayto> Giaytos { get; set; }
@@ -99,16 +97,11 @@ public partial class QuanLyRaVaoContext : DbContext
                 .HasColumnName("MaCTDS");
             entity.Property(e => e.DiaDiem).HasMaxLength(100);
             entity.Property(e => e.GhiChu).HasMaxLength(200);
+            entity.Property(e => e.HinhThucRn).HasColumnName("HinhThucRN");
             entity.Property(e => e.LyDo).HasMaxLength(100);
-            entity.Property(e => e.MaDs).HasColumnName("MaDS");
             entity.Property(e => e.ThoiGianRa).HasColumnType("datetime");
             entity.Property(e => e.ThoiGianSua).HasColumnType("datetime");
             entity.Property(e => e.ThoiGianVao).HasColumnType("datetime");
-
-            entity.HasOne(d => d.MaDsNavigation).WithMany(p => p.Chitietdanhsaches)
-                .HasForeignKey(d => d.MaDs)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CHITIETDAN__MaDS__3C69FB99");
 
             entity.HasOne(d => d.MaHocVienNavigation).WithMany(p => p.Chitietdanhsaches)
                 .HasForeignKey(d => d.MaHocVien)
@@ -152,16 +145,6 @@ public partial class QuanLyRaVaoContext : DbContext
             entity.Property(e => e.TenCv)
                 .HasMaxLength(100)
                 .HasColumnName("TenCV");
-        });
-
-        modelBuilder.Entity<Danhsach>(entity =>
-        {
-            entity.HasKey(e => e.MaDs).HasName("PK__DANHSACH__27258654B1E7AC44");
-
-            entity.ToTable("DANHSACH");
-
-            entity.Property(e => e.MaDs).HasColumnName("MaDS");
-            entity.Property(e => e.HinhThucRn).HasColumnName("HinhThucRN");
         });
 
         modelBuilder.Entity<Donvi>(entity =>
@@ -268,15 +251,16 @@ public partial class QuanLyRaVaoContext : DbContext
 
             entity.Property(e => e.MaRn).HasColumnName("MaRN");
             entity.Property(e => e.GhiChu).HasMaxLength(200);
-            entity.Property(e => e.MaDs).HasColumnName("MaDS");
+            entity.Property(e => e.MaCtds).HasColumnName("MaCTDS");
             entity.Property(e => e.MaVp).HasColumnName("MaVP");
             entity.Property(e => e.ThoiGianRa).HasColumnType("datetime");
             entity.Property(e => e.ThoiGianSua).HasColumnType("datetime");
             entity.Property(e => e.ThoiGianVao).HasColumnType("datetime");
 
-            entity.HasOne(d => d.MaDsNavigation).WithMany(p => p.Rangoais)
-                .HasForeignKey(d => d.MaDs)
-                .HasConstraintName("FK__RANGOAI__MaDS__440B1D61");
+            entity.HasOne(d => d.MaCtdsNavigation).WithMany(p => p.Rangoais)
+                .HasForeignKey(d => d.MaCtds)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_RANGOAI_CHITIETDANHSACH");
 
             entity.HasOne(d => d.MaGiayToNavigation).WithMany(p => p.Rangoais)
                 .HasForeignKey(d => d.MaGiayTo)
@@ -326,6 +310,7 @@ public partial class QuanLyRaVaoContext : DbContext
 
             entity.HasOne(d => d.MaHvNavigation).WithMany(p => p.Viphams)
                 .HasForeignKey(d => d.MaHv)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__VIPHAM__MaHV__49C3F6B7");
         });
 

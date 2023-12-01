@@ -503,8 +503,7 @@ namespace QuanLyRaVao.Controllers
         public IActionResult QuanLyDanhSach(int page = 1, int pageSize = 5)
         {
 
-            var query = from ds in obj.Danhsaches
-                        join ct in obj.Chitietdanhsaches on ds.MaDs equals ct.MaDs
+            var query = from  ct in obj.Chitietdanhsaches 
                         join qn in obj.Quannhans on ct.MaHocVien equals qn.MaQn
                         join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
                         join dv in obj.Donvis on qn.MaDv equals dv.MaDv
@@ -512,14 +511,15 @@ namespace QuanLyRaVao.Controllers
 
                         select new DSRN
                         {
-                            MaDs = ds.MaDs,
+                            MaCTDS= ct.MaCtds,
+                           
                             MaHocVien = ct.MaHocVien,
                             LyDo = ct.LyDo,
                             DiaDiem = ct.DiaDiem,
                             ThoiGianRa = ct.ThoiGianRa,
                             ThoiGianVao = ct.ThoiGianVao,
                             TinhTrang = ct.TinhTrang,
-                            HinhThucRn = ds.HinhThucRn,
+                            HinhThucRn = ct.HinhThucRn,
                             MaCv = qn.MaCv,
                             MaDv = qn.MaDv,
                             MaCapBac = qn.MaCapBac,
@@ -530,13 +530,14 @@ namespace QuanLyRaVao.Controllers
                             HoTen = qn.HoTen
                         };
             // Tạo danh sách các tình trạng
-            var tinhTrang5 = query.Where(o => o.TinhTrang == 5).OrderByDescending(o => o.MaHocVien).ToList();
 
-            var tinhTrang0 = query.Where(o => o.TinhTrang == 0).OrderByDescending(o => o.MaHocVien).ToList();
-            var tinhTrang1 = query.Where(o => o.TinhTrang == 1).OrderByDescending(o => o.MaHocVien).ToList();
-            var tinhTrang2 = query.Where(o => o.TinhTrang == 2).OrderByDescending(o => o.MaHocVien).ToList();
-            var tinhTrang3 = query.Where(o => o.TinhTrang == 3).OrderByDescending(o => o.MaHocVien).ToList();
-            var tinhTrang4 = query.Where(o => o.TinhTrang == 4).OrderByDescending(o => o.MaHocVien).ToList();
+            var tinhTrang5 = query.Where(o => o.TinhTrang == 5).OrderBy(o => o.MaCTDS).ToList();
+
+            var tinhTrang0 = query.Where(o => o.TinhTrang == 0).OrderBy(o => o.MaCTDS).ToList();
+            var tinhTrang1 = query.Where(o => o.TinhTrang == 1).OrderBy(o => o.MaCTDS).ToList();
+            var tinhTrang2 = query.Where(o => o.TinhTrang == 2).OrderBy(o => o.MaCTDS).ToList();
+            var tinhTrang3 = query.Where(o => o.TinhTrang == 3).OrderBy(o => o.MaCTDS).ToList();
+            var tinhTrang4 = query.Where(o => o.TinhTrang == 4).OrderBy(o => o.MaCTDS).ToList();
 
             // Tạo danh sách phân trang cho từng tình trạng
             var pagedList5 = tinhTrang5.ToPagedList(page, pageSize);
@@ -573,10 +574,10 @@ namespace QuanLyRaVao.Controllers
         }
         public IActionResult Duyet1(int mactds)
         {
-            var dh = obj.Chitietdanhsaches.Find(mactds);
+            var dh = obj.Chitietdanhsaches.Where(c=>c.MaCtds== mactds).FirstOrDefault();
             if (dh != null)
             {
-                dh.TinhTrang = 1;
+                dh.TinhTrang = 2;
                 obj.SaveChanges();
                 return Json(new
                 {
@@ -592,12 +593,180 @@ namespace QuanLyRaVao.Controllers
             }
 
         }
+        public IActionResult TC1(int mactds)
+        {
+            var dh = obj.Chitietdanhsaches.Where(c => c.MaCtds == mactds).FirstOrDefault();
+            if (dh != null)
+            {
+                dh.TinhTrang = 0;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+        public IActionResult All1()
+        {
+            // Lấy danh sách chi tiết đánh sách có trạng thái là 1
+            var danhSachChiTiet = obj.Chitietdanhsaches.Where(c => c.TinhTrang == 1).ToList();
+            
+            // Lấy danh sách ID của vi phạm
+            List<int> viphamsIds = obj.Viphams.Select(v => v.MaHv).ToList();
+            //List<string> diachi= obj.Quannhans.Select(v=>v.DiaChi).ToList();
+            // Kiểm tra xem danh sách ID của vi phạm có dữ liệu và danh sách chi tiết có dữ liệu không
+            if (viphamsIds.Any() && danhSachChiTiet != null && danhSachChiTiet.Any())
+            {
+                // Lọc và chỉ giữ lại các đối tượng không có mã trong danh sách vi phạm
+                var danhSachKhongViPham = danhSachChiTiet.Where(c => !viphamsIds.Contains(c.MaHocVien)).ToList();
+                var danhSachViPham= danhSachChiTiet.Where(c => viphamsIds.Contains(c.MaHocVien)).ToList();
+                // Cập nhật trạng thái trực tiếp trong cơ sở dữ liệu
+                foreach (var chiTiet in danhSachKhongViPham)
+                {
+                    // Kiểm tra nếu HinhThuc là 1 trong danhSachChiTiet
+                    if (chiTiet.HinhThucRn == 1)
+                    {
+                        string diachi = obj.Quannhans.Where(c => c.MaQn == chiTiet.MaHocVien).FirstOrDefault().DiaChi;
+                        // So sánh địa chỉ với obj.QuanNhans và gán TinhTrang tùy thuộc vào kết quả
+                        if (chiTiet.DiaDiem.Contains(diachi))
+                        {
+                            chiTiet.TinhTrang = 0;
+                        }
+                        else
+                        {
+                            chiTiet.TinhTrang = 2;
+                        }
+                    }
+                    else
+                    {
+                        // Nếu HinhThuc có giá trị khác 1, gán TinhTrang = 2
+                        chiTiet.TinhTrang = 2;
+                    }
+                }
+                foreach (var chiTiet in danhSachViPham)
+                {                 
+                        chiTiet.TinhTrang = 0 ;                   
+                }
+                // Lưu thay đổi vào cơ sở dữ liệu
+                obj.SaveChanges();
+
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+        }
+
+        public IActionResult AllT1()
+        {
+            var danhSachChiTiet = obj.Chitietdanhsaches.Where(c => c.TinhTrang == 1).ToList();         
+            if ( danhSachChiTiet != null && danhSachChiTiet.Any())
+            {                            
+                foreach (var chiTiet in danhSachChiTiet)
+                {
+                    chiTiet.TinhTrang = 0;
+                }
+                // Lưu thay đổi vào cơ sở dữ liệu
+                obj.SaveChanges();
+
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+        }
+
         public IActionResult Duyet2(int mactds)
         {
             var dh = obj.Chitietdanhsaches.Find(mactds);
             if (dh != null)
             {
-                dh.TinhTrang = 2;
+                dh.TinhTrang = 3;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+        public IActionResult TC2(int mactds)
+        {
+            var dh = obj.Chitietdanhsaches.Where(c => c.MaCtds == mactds).FirstOrDefault();
+            if (dh != null)
+            {
+                dh.TinhTrang = 0;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+        public IActionResult Duyet3(int mactds)
+        {
+            var dh = obj.Chitietdanhsaches.Find(mactds);
+            if (dh != null)
+            {
+                dh.TinhTrang = 4;
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+
+        }
+        public IActionResult TC3(int mactds)
+        {
+            var dh = obj.Chitietdanhsaches.Where(c => c.MaCtds == mactds).FirstOrDefault();
+            if (dh != null)
+            {
+                dh.TinhTrang = 0;
                 obj.SaveChanges();
                 return Json(new
                 {

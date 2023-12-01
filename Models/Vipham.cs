@@ -23,7 +23,7 @@ public partial class Vipham
 
     public int MaHv { get; set; }
 
-    public virtual Quannhan? MaHvNavigation { get; set; }
+    public virtual Quannhan MaHvNavigation { get; set; } = null!;
 
     public virtual ICollection<Rangoai> Rangoais { get; set; } = new List<Rangoai>();
 }

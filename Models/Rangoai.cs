@@ -23,9 +23,9 @@ public partial class Rangoai
 
     public int? MaGiayTo { get; set; }
 
-    public int? MaDs { get; set; }
+    public int MaCtds { get; set; }
 
-    public virtual Danhsach? MaDsNavigation { get; set; }
+    public virtual Chitietdanhsach MaCtdsNavigation { get; set; } = null!;
 
     public virtual Giayto? MaGiayToNavigation { get; set; }
 
