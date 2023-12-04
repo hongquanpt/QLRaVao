@@ -114,9 +114,21 @@ namespace QuanLyRaVao.Controllers
         }
         #endregion
         #region Quản lý cấp bậc
-        public IActionResult QuanLyCapBac(int page = 1, int pageSize = 5)
+        public IActionResult QuanLyCapBac(int macb,string capbac,string kyhieu,int page = 1, int pageSize = 5)
         {
-            var query = obj.Capbacs.OrderBy(s => s.MaCapBac);
+            var query = obj.Capbacs.ToList();
+            if (macb != 0)
+            {
+                query= query.Where(c=>c.MaCapBac == macb).ToList();
+            }
+            if (!string.IsNullOrEmpty(capbac))
+            {
+                query = query.Where(dm => dm.CapBac1.Contains(capbac)).ToList(); // hoặc OrderByDescending(dm => dm.MaDanhMuc)
+            }
+            if (!string.IsNullOrEmpty(kyhieu))
+            {
+                query = query.Where(dm => dm.KyHieu.Contains(kyhieu)).ToList(); // hoặc OrderByDescending(dm => dm.MaDanhMuc)
+            }
             var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             // Tính toán thông tin phân trang
@@ -200,10 +212,22 @@ namespace QuanLyRaVao.Controllers
         #endregion
         #region Quản lý chức vụ
 
-        public IActionResult QuanLyChucVu(int page = 1, int pageSize = 5)
+        public IActionResult QuanLyChucVu(int macv, string tencv, string kyhieu,int page = 1, int pageSize = 5)
         {
 
-            var query = obj.Chucvus.OrderBy(s => s.MaCv);
+            var query = obj.Chucvus.OrderBy(s => s.MaCv).ToList();
+            if (macv != 0)
+            {
+                query = query.Where(c => c.MaCv == macv).ToList();
+            }
+            if (!string.IsNullOrEmpty(tencv))
+            {
+                query = query.Where(dm => dm.TenCv.Contains(tencv)).ToList(); // hoặc OrderByDescending(dm => dm.MaDanhMuc)
+            }
+            if (!string.IsNullOrEmpty(kyhieu))
+            {
+                query = query.Where(dm => dm.KyHieu.Contains(kyhieu)).ToList(); // hoặc OrderByDescending(dm => dm.MaDanhMuc)
+            }
             var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             // Tính toán thông tin phân trang

@@ -8,6 +8,9 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     List<AccountRole> data = HttpContextAccessor.HttpContext.Session.GetJson<List<AccountRole>>("QuyenTK") ?? new List<AccountRole>();
     var qh = data.FirstOrDefault(c => c.ActionName == "QuanLyCapBac");
+    var macb = ViewBag.MaCapBac;
+    var capbac = ViewBag.CapBac1;
+    var kyhieu = ViewBag.KyHieu;
 }
 
 @if (qh == null)
@@ -98,6 +101,34 @@ else
                                 <div class="card-header">
                                     <h3 class="card-title">Quản lý cấp bậc</h3>
                                 </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+
+                                            <div class="form-group">
+
+                                                <input id="macb" type="number" value="@(macb!=0? macb:null)" class="form-control" placeholder="Nhập mã cấp bậc" name="macb" required>
+                                            </div>
+                                            <div class="form-group">
+
+                                                <input id="capbac" type="text" value="@capbac" class="form-control" placeholder="Nhập Cấp bậc" name="capbac" required>
+                                            </div>
+                                            <div class="form-group">
+
+                                                <input id="kyhieu" type="text" value="@kyhieu" class="form-control" placeholder="Nhập Ký hiệu " name="kyhieu" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <button type="button" class="btn btn-primary" id="filterButton">Tìm kiếm</button>
+
+                                </div>
+
                                 <!-- /.card-header -->
                                 <div class="card-body">
                                     <table id="example2" class="table table-bordered table-hover">
@@ -255,6 +286,17 @@ else
                     form.style.display = "none";
                 });
             }
+            // Filter button click event
+            $("#filterButton").click(function () {
+                // Lấy giá trị từ các phần tử trên trang
+                const macb = $("#macb").val();
+                const capbac = $("#capbac").val();
+                const kyhieu = $("#kyhieu").val();
+              
+                // Xây dựng URL và chuyển hướng
+                const url = `@Url.Action("QuanLyCapbac", "Admin")?macb=${macb}&capbac=${capbac}&kyhieu=${kyhieu}`;
+                window.location.href = url;
+            });
         </script>
 
         <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
