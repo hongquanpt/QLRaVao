@@ -8,6 +8,9 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     List<AccountRole> data = HttpContextAccessor.HttpContext.Session.GetJson<List<AccountRole>>("QuyenTK") ?? new List<AccountRole>();
     var qh = data.FirstOrDefault(c => c.ActionName == "QuanLyDonVi");
+    var madv = ViewBag.madv;
+    var cap = ViewBag.cap;
+    var tendv = ViewBag.tendv;
 }
 
 @if (qh == null)
@@ -97,6 +100,32 @@ else
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">Quản lý đơn vị</h3>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+
+
+                                        <div class="col-md-6">
+
+                                            <div class="form-group">
+
+                                                <input id="MaDv" type="number" value="@(madv!=0? madv:null)" class="form-control" placeholder="Nhập mã đơn vị" name="madv" required>
+                                            </div>
+                                            <div class="form-group">
+
+                                                <input id="Cap" type="number" value="@(cap!=0? cap:null)" class="form-control" placeholder="Nhập cấp đơn vị" name="cap" required>
+                                            </div>
+                                            <div class="form-group">
+
+                                                <input id="TenDv" type="text" value="@tendv" class="form-control" placeholder="Nhập họ tên đơn vị" name="tendv" required>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                    <button type="button" class="btn btn-primary" id="filterButton">Tìm kiếm</button>
+
                                 </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
@@ -240,7 +269,7 @@ else
                                     form.setAttribute("aria-hidden", "true");
                                     form.setAttribute("tabindex", "-1");
                                     form.style.display = "none";
-                                    window.location = '@Url.Action("QuanLyDonVi","Admin")';
+                                    window.location = '@Url.Action("QuanLyDonVi", "Admin")';
                                 }
                             }
                         });
@@ -252,6 +281,8 @@ else
                     form.style.display = "none";
                 });
             }
+            // Filter button click event
+            
         </script>
 
         <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
@@ -292,7 +323,7 @@ else
                             if (res.status == true) {
                                 // Đóng modal sau khi xóa thành công
                                 $('#confirmDeleteModal').modal('hide');
-                                window.location = '@Url.Action("QuanLyDonVi","Admin")';
+                                window.location = '@Url.Action("QuanLyDonVi", "Admin")';
                             }
                         }
                     });
@@ -303,5 +334,16 @@ else
 
 }
 
+<script>
+    $("#filterButton").click(function () {
+        // Lấy giá trị từ các phần tử trên trang
+        const madv = $("#MaDv").val();
+        const cap = $("#Cap").val();
+        const tendv = $("#TenDv").val();
+        // Xây dựng URL và chuyển hướng
+        const url = `@Url.Action("QuanLyDonVi", "Admin")?madv=${madv}&cap=${cap}&tendv=${tendv}`;
+        window.location.href = url;
+    });
+</script>
 
 

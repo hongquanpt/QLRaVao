@@ -22,10 +22,23 @@ namespace QuanLyRaVao.Controllers
         }
         #region admin
         #region Quản lý đơn vị
-        public IActionResult QuanLyDonVi(int page = 1, int pageSize = 5)
+        public IActionResult QuanLyDonVi(int madv,int cap, string tendv,int page = 1, int pageSize = 5)
         {
-            
-            var query = obj.Donvis.OrderBy(s => s.MaDv);
+
+            var query = from dv in obj.Donvis select dv;
+                       
+            if (madv != 0)
+            {
+                query = query.Where(item => item.MaDv == madv);
+            }
+            if (cap != 0)
+            {
+                query = query.Where(item => item.Cap == cap);
+            }
+            if (!string.IsNullOrEmpty(tendv))
+            {
+                query = query.Where(dm => dm.TenDv.Contains(tendv)); // hoặc OrderByDescending(dm => dm.MaDanhMuc)
+            }
             var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             // Tính toán thông tin phân trang
@@ -202,6 +215,7 @@ namespace QuanLyRaVao.Controllers
             ViewBag.TotalItemCount = totalItemCount;
             return View(pagedList);
         }
+
         [HttpPost]
         public ActionResult ThemChucVu(string TenCv, string KH)
         {
@@ -806,6 +820,7 @@ namespace QuanLyRaVao.Controllers
                             TenDv = dv.TenDv,
                             DiaChi= qn.DiaChi
                         };
+
             if (maqn != 0)
             {
                 query = query.Where(item => item.MaQn == maqn);
