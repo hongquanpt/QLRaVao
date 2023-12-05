@@ -427,6 +427,7 @@ namespace QuanLyRaVao.Controllers
                             TenCv=ch.TenCv,
                             CapBac1=cb.CapBac1
                         }; 
+
             var nhomquyen = obj.NhomQuyens.ToList();
             var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             // Tính toán thông tin phân trang
@@ -751,6 +752,7 @@ namespace QuanLyRaVao.Controllers
             }
         }
 
+        // Duyet d
         public IActionResult Duyet2(int mactds)
         {
             var dh = obj.Chitietdanhsaches.Find(mactds);
@@ -792,6 +794,89 @@ namespace QuanLyRaVao.Controllers
                 });
             }
 
+        }
+        public IActionResult All2()
+        {
+            // Lấy danh sách chi tiết đánh sách có trạng thái là 1
+            var danhSachChiTiet = obj.Chitietdanhsaches.Where(c => c.TinhTrang == 2).ToList();
+
+            // Lấy danh sách ID của vi phạm
+            List<int> viphamsIds = obj.Viphams.Select(v => v.MaHv).ToList();
+            //List<string> diachi= obj.Quannhans.Select(v=>v.DiaChi).ToList();
+            // Kiểm tra xem danh sách ID của vi phạm có dữ liệu và danh sách chi tiết có dữ liệu không
+            if (viphamsIds.Any() && danhSachChiTiet != null && danhSachChiTiet.Any())
+            {
+                // Lọc và chỉ giữ lại các đối tượng không có mã trong danh sách vi phạm
+                var danhSachKhongViPham = danhSachChiTiet.Where(c => !viphamsIds.Contains(c.MaHocVien)).ToList();
+                var danhSachViPham = danhSachChiTiet.Where(c => viphamsIds.Contains(c.MaHocVien)).ToList();
+                // Cập nhật trạng thái trực tiếp trong cơ sở dữ liệu
+                foreach (var chiTiet in danhSachKhongViPham)
+                {
+                    // Kiểm tra nếu HinhThuc là 1 trong danhSachChiTiet
+                    if (chiTiet.HinhThucRn == 1)
+                    {
+                        string diachi = obj.Quannhans.Where(c => c.MaQn == chiTiet.MaHocVien).FirstOrDefault().DiaChi;
+                        // So sánh địa chỉ với obj.QuanNhans và gán TinhTrang tùy thuộc vào kết quả
+                        if (chiTiet.DiaDiem.Contains(diachi))
+                        {
+                            chiTiet.TinhTrang = 0;
+                        }
+                        else
+                        {
+                            chiTiet.TinhTrang = 3;
+                        }
+                    }
+                    else
+                    {
+                        // Nếu HinhThuc có giá trị khác 1, gán TinhTrang = 2
+                        chiTiet.TinhTrang = 3;
+                    }
+                }
+                foreach (var chiTiet in danhSachViPham)
+                {
+                    chiTiet.TinhTrang = 0;
+                }
+                // Lưu thay đổi vào cơ sở dữ liệu
+                obj.SaveChanges();
+
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
+        }
+
+        public IActionResult AllT2()
+        {
+            var danhSachChiTiet = obj.Chitietdanhsaches.Where(c => c.TinhTrang == 1).ToList();
+            if (danhSachChiTiet != null && danhSachChiTiet.Any())
+            {
+                foreach (var chiTiet in danhSachChiTiet)
+                {
+                    chiTiet.TinhTrang = 0;
+                }
+                // Lưu thay đổi vào cơ sở dữ liệu
+                obj.SaveChanges();
+
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    status = false
+                });
+            }
         }
         public IActionResult Duyet3(int mactds)
         {

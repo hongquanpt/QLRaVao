@@ -240,6 +240,7 @@ else
                                                     }
                                                 });
                                             });
+
                                             $("#ChuaPD").on("click", "#TuChoiC", function () {
                                                 var id = $(this).closest("tr").find("td").eq(0).html();
                                                 $.ajax({
@@ -382,6 +383,8 @@ else
                                                     }
                                                 </ul>
                                             </div>
+                                            <Button class="btn btn-success" id="AllD">Phê duyệt tất cả</Button>
+                                            <Button class="btn btn-success" id="AllTCD">Từ chối tất cả</Button>
                                         </div>
                                         <script>
 
@@ -404,6 +407,30 @@ else
                                                 $.ajax({
                                                     url: "@Url.Action("TC2", "Admin")",
                                                     data: { mactds: id },
+                                                    success: function (res) {
+                                                        if (res.status == true) {
+                                                            window.location.href = "/Admin/QuanLyDanhSach";
+                                                        }
+                                                        /*$("#showmodal1 .modal-dialog").html(data);*/
+                                                        /* $("#showmodal").modal('show')*/
+                                                    }
+                                                });
+                                            });
+                                            $("#ChuaPD").on("click", "#AllD", function () {
+                                                $.ajax({
+                                                    url: "@Url.Action("All2", "Admin")",
+                                                    success: function (res) {
+                                                        if (res.status == true) {
+                                                            window.location.href = "/Admin/QuanLyDanhSach";
+                                                        }
+                                                        /*$("#showmodal1 .modal-dialog").html(data);*/
+                                                        /* $("#showmodal").modal('show')*/
+                                                    }
+                                                });
+                                            });
+                                            $("#ChuaPD").on("click", "#AllTCD", function () {
+                                                $.ajax({
+                                                    url: "@Url.Action("AllT2", "Admin")",
                                                     success: function (res) {
                                                         if (res.status == true) {
                                                             window.location.href = "/Admin/QuanLyDanhSach";
