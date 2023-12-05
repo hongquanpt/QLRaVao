@@ -8,6 +8,11 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     List<AccountRole> data = HttpContextAccessor.HttpContext.Session.GetJson<List<AccountRole>>("QuyenTK") ?? new List<AccountRole>();
     var qh = data.FirstOrDefault(c => c.ActionName == "QuanLyGiayTo");
+   // var ChonDonVi = (List<Donvi>)ViewBag.ChonDonVi;
+    var magiayto = ViewBag.magiayto;
+    var loai = ViewBag.loai;
+    var sogiay = ViewBag.sohgiay;
+    var madv = ViewBag.madv;
 }
 
 @if (qh == null)
@@ -98,6 +103,51 @@ else
                                 <div class="card-header">
                                     <h3 class="card-title">Quản lý giấy tờ</h3>
                                 </div>
+
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+
+                                                <select class="form-control" id="GiayTo">
+                                                    <option value="0" selected="@(madv == 0)">Chọn đơn vị</option>
+
+                                                    @foreach (var item in ChonDonVi)
+                                                    {
+                                                        <option value="@item.MaDv" selected="@(madv == item.MaDv)">@item.TenDv</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        <div class="col-md-6">
+
+                                            <div class="form-group">
+
+                                                <input id="magiayto" type="number" value="@(magiayto!=0? magiayto:null)" class="form-control" placeholder="Nhập mã giấy tờ" name="magiayto" required>
+                                            </div>
+                                            </div>
+                                                <div class="form-group">
+
+                                                    <select class="form-control" id="CapBac">
+                                                        <option value="0" selected="@(loai == 0)">Chọn loại</option>
+                                                        
+                                                        <option value=1>Còn sử dụng được</option>
+                                                        <option value=0>không sử dụng được</option>
+                                                        
+                                                    </select>
+                                                </div>
+
+                                            <div class="form-group">
+
+                                                <input id="sogiay type="text" value="@sogiay" class="form-control" placeholder="Nhập số giấy " name="sogiay" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <button type="button" class="btn btn-primary" id="filterButton">Tìm kiếm</button>
+
+                                </div>
+
                                 <!-- /.card-header -->
                                 <div class="card-body">
                                     <table id="example2" class="table table-bordered table-hover">
@@ -270,6 +320,18 @@ else
                     form.style.display = "none";
                 });
             }
+            // Filter button click event
+            $("#filterButton").click(function () {
+                // Lấy giá trị từ các phần tử trên trang
+                const magiayto = $("#magiayto").val();
+                const loai = $("#loai").val();
+                const sogiay = $("#sogiay").val();
+                const madv = $("#madv").val();
+
+                // Xây dựng URL và chuyển hướng
+                const url = `@Url.Action("QuanLyGiayTo", "Admin")?magiayto=${magiayto}&loai=${loai}&sogiay=${sogiay}&madv=${madv}`;
+                window.location.href = url;
+            });
         </script>
 
         <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">

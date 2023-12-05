@@ -305,12 +305,27 @@ namespace QuanLyRaVao.Controllers
 
         #endregion
         #region Quản lý giấy tờ
-        public IActionResult QuanLyGiayTo(int page = 1, int pageSize = 5)
+        public IActionResult QuanLyGiayTo(int magiayto,bool loai,int sogiay,int madv,int page = 1, int pageSize = 5)
         {
-            var query = obj.Giaytos.OrderBy(s => s.MaGiayTo);
+            var query = obj.Giaytos.OrderBy(s => s.MaGiayTo).ToList();
+            if (magiayto != 0)
+            {
+                query = query.Where(item => item.MaGiayTo == magiayto).ToList();
+            }
+            if (loai != null)
+            {
+                query = query.Where(item => item.Loai == loai).ToList();
+            }
+            if (sogiay != 0)
+            {
+                query = query.Where(item => item.SoGiay == sogiay).ToList();
+            }
+            if (madv != 0)
+            {
+                query = query.Where(item => item.MaDv ==madv).ToList();
+            }
+
             var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
-
             // Tính toán thông tin phân trang
             var totalItemCount = query.Count();
             var pagedList = new StaticPagedList<Giayto>(model, page, pageSize, totalItemCount);
@@ -318,6 +333,7 @@ namespace QuanLyRaVao.Controllers
             ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
             ViewBag.Page = page;
             ViewBag.TotalItemCount = totalItemCount;
+          //  ViewBag.ChonDonVi = (obj.Donvis.ToList());
             ViewBag.ChonDonVi = (obj.Donvis.ToList());
             return View(pagedList);
         }
@@ -570,7 +586,6 @@ namespace QuanLyRaVao.Controllers
             // Tạo danh sách các tình trạng
 
             var tinhTrang5 = query.Where(o => o.TinhTrang == 5).OrderBy(o => o.MaCTDS).ToList();
-
             var tinhTrang0 = query.Where(o => o.TinhTrang == 0).OrderBy(o => o.MaCTDS).ToList();
             var tinhTrang1 = query.Where(o => o.TinhTrang == 1).OrderBy(o => o.MaCTDS).ToList();
             var tinhTrang2 = query.Where(o => o.TinhTrang == 2).OrderBy(o => o.MaCTDS).ToList();
