@@ -101,24 +101,26 @@ else
                                 <div class="card-header">
                                     <h3 class="card-title">Quản lý cấp bậc</h3>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row">
+                                 <button style="width:40px; margin-left:30px; margin-bottom:10px;margin-top:5px" class="btn btn-outline btn-primary" data-dismiss="modal" id="confirmTimKiem" onclick="TimKiem()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-plus-fill" viewBox="0 0 16 16">
+                                        <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zM8.5 6v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 1 0" />
+                                    </svg>
+                                </button>
+                                <form id="frmTimKiem" method="post" aria-hidden="true" tabindex="-1" role="dialog" style="display: none;" enctype="multipart/form-data">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
                                         <div class="col-md-6">
                                             <div class="form-group">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-
                                             <div class="form-group">
-
                                                 <input id="macb" type="number" value="@(macb!=0? macb:null)" class="form-control" placeholder="Nhập mã cấp bậc" name="macb" required>
                                             </div>
                                             <div class="form-group">
-
                                                 <input id="capbac" type="text" value="@capbac" class="form-control" placeholder="Nhập Cấp bậc" name="capbac" required>
                                             </div>
                                             <div class="form-group">
-
                                                 <input id="kyhieu" type="text" value="@kyhieu" class="form-control" placeholder="Nhập Ký hiệu " name="kyhieu" required>
                                             </div>
                                         </div>
@@ -126,8 +128,9 @@ else
 
 
                                     <button type="button" class="btn btn-primary" id="filterButton">Tìm kiếm</button>
-
-                                </div>
+                                        <button type="button" class="btn btn-primary" id="cancel">Thu gọn</button>
+                                    </div>
+                                </form>
 
                                 <!-- /.card-header -->
                                 <div class="card-body">
@@ -297,6 +300,18 @@ else
                 const url = `@Url.Action("QuanLyCapbac", "Admin")?macb=${macb}&capbac=${capbac}&kyhieu=${kyhieu}`;
                 window.location.href = url;
             });
+            function TimKiem() {
+                var form = document.getElementById("frmTimKiem");
+                form.setAttribute("aria-hidden", "false");
+                form.setAttribute("tabindex", "0");
+                form.style.display = "block";
+
+                $('#cancel').on('click', function () {
+                    form.setAttribute("aria-hidden", "true");
+                    form.setAttribute("tabindex", "-1");
+                    form.style.display = "none";
+                });
+            }
         </script>
 
         <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">

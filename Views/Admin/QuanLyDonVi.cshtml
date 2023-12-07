@@ -101,14 +101,16 @@ else
                                 <div class="card-header">
                                     <h3 class="card-title">Quản lý đơn vị</h3>
                                 </div>
+                                <button style="width:40px; margin-left:30px; margin-bottom:10px;margin-top:5px" class="btn btn-outline btn-primary" data-dismiss="modal" id="confirmTimKiem" onclick="TimKiem()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-plus-fill" viewBox="0 0 16 16">
+                                        <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zM8.5 6v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 1 0" />
+                                    </svg>
+                                </button>
+                                <form id="frmTimKiem" method="post" aria-hidden="true" tabindex="-1" role="dialog" style="display: none;" enctype="multipart/form-data">
                                 <div class="col-md-6">
                                     <div class="form-group">
-
-
                                         <div class="col-md-6">
-
                                             <div class="form-group">
-
                                                 <input id="MaDv" type="number" value="@(madv!=0? madv:null)" class="form-control" placeholder="Nhập mã đơn vị" name="madv" required>
                                             </div>
                                             <div class="form-group">
@@ -119,14 +121,13 @@ else
 
                                                 <input id="TenDv" type="text" value="@tendv" class="form-control" placeholder="Nhập họ tên đơn vị" name="tendv" required>
                                             </div>
-
                                         </div>
                                     </div>
-
-
                                     <button type="button" class="btn btn-primary" id="filterButton">Tìm kiếm</button>
-
+                                        <button type="button" class="btn btn-primary" id="cancel">Thu gọn</button>
                                 </div>
+                                </form>
+
                                 <!-- /.card-header -->
                                 <div class="card-body">
                                     <table id="example2" class="table table-bordered table-hover">
@@ -281,8 +282,20 @@ else
                     form.style.display = "none";
                 });
             }
+            function TimKiem() {
+                var form = document.getElementById("frmTimKiem");
+                form.setAttribute("aria-hidden", "false");
+                form.setAttribute("tabindex", "0");
+                form.style.display = "block";
+                
+                $('#cancel').on('click', function () {
+                    form.setAttribute("aria-hidden", "true");
+                    form.setAttribute("tabindex", "-1");
+                    form.style.display = "none";
+                });
+            }
             // Filter button click event
-            
+
         </script>
 
         <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
