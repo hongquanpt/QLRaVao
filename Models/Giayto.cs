@@ -11,7 +11,7 @@ public partial class Giayto
 
     public int SoGiay { get; set; }
 
-    public bool Xoa { get; set; }
+    public bool TinhTrang { get; set; }
 
     public string? GhiChu { get; set; }
 

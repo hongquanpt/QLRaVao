@@ -1,0 +1,112 @@
+﻿@{
+    var id = ViewBag.Id;
+    @model List<QuanLyRaVao.Models.Giayto>
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div class="content-wrapper">
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-6">
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Cập nhật thông tin danh mục</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form id="frmSuaDM" method="post">
+                <div class="card-body">
+                    <!-- Thêm id cho select để dễ truy cập -->
+                    <select id="ChucVu" name="ChucVu" class="form-control">
+                        <option value="0" selected>Chọn giấy tờ</option>
+                        @foreach (var giayto in Model)
+                        {
+                            <option value="@giayto.MaGiayTo">@giayto.SoGiay</option>
+                        }
+                    </select>
+                    <div class="form-group">
+                        <label for="ThoiGianLay">Thời gian lấy giấy tờ:</label>
+                        <input type="datetime-local" class="form-control" id="ThoiGianLay" name="ThoiGianLay" required>
+                        <div class="valid-feedback">Valid.</div>
+                        <div class="invalid-feedback">Vui lòng chọn thời gian lấy.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="ThoiGianTra">Thời gian trả giấy tờ:</label>
+                        <input type="datetime-local" class="form-control" id="ThoiGianTra" name="ThoiGianTra" >
+                        <div class="valid-feedback">Valid.</div>
+                        <div class="invalid-feedback">Vui lòng chọn thời gian trả.</div>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="confirm">Xác nhận</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var selectGiayTo = document.getElementById('ChucVu');
+        var thoiGianLayInput = document.getElementById('ThoiGianLay');
+        var thoiGianTraInput = document.getElementById('ThoiGianTra');
+
+        // Thêm sự kiện change cho selectGiayTo
+        selectGiayTo.addEventListener('change', function () {
+            var selectedOption = selectGiayTo.options[selectGiayTo.selectedIndex];
+
+            if (selectedOption.value !== "0") {
+                var currentDate = new Date();
+                // Format giờ và ngày thành chuỗi ISO để đặt giá trị input
+                thoiGianLayInput.value = currentDate.toISOString().slice(0, 16);
+            }
+        });
+
+        document.getElementById('confirm').addEventListener('click', function () {
+            var selectedOption = selectGiayTo.options[selectGiayTo.selectedIndex];
+            var thoiGianLayValue = thoiGianLayInput.value.trim();
+            var thoiGianTraValue = thoiGianTraInput.value.trim();
+            var id = '@ViewBag.Id';
+
+            if (selectedOption.value === "0") {
+                alert("Vui lòng chọn giấy tờ.");
+            } else if (thoiGianLayValue === "" || thoiGianTraValue === "") {
+                alert("Vui lòng nhập đủ thông tin.");
+            } else {
+                // Chuyển đổi giá trị ngày giờ thành định dạng phù hợp cho SQL Server
+                var thoiGianLayFormatted = new Date(thoiGianLayValue).toISOString().slice(0, 19).replace("T", " ");
+                var thoiGianTraFormatted = new Date(thoiGianTraValue).toISOString().slice(0, 19).replace("T", " ");
+
+                $.ajax({
+                    url: '/Admin/ThemGT',
+                    data: {
+                        giayto: selectedOption.value,
+                        thoiGianLay: thoiGianLayFormatted,
+                        thoiGianTra: thoiGianTraFormatted,
+                        id: id
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status == true) {
+                            window.location = '@Url.Action("QuanLyDanhSach","Admin")';
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Thêm thành công',
+                                showConfirmButton: false,
+                                timer: 100
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                        alert("Đã xảy ra lỗi khi thêm yêu cầu.");
+                    }
+                });
+            }
+        });
+    });
+</script>
+

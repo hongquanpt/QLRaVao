@@ -15,9 +15,11 @@
         public DateTime? ThoiGianTra { get; set; }
         public int SoGiay {  get; set; }
 
-
+        public DateTime? ThoiGianRa { get; set; }
+        public DateTime? ThoiGianVao { get; set; }
+        public int? TinhTrang { get; set; }
         public string HoTen { get; set; }
-        public string? DiaChi { get; set; }
+        
         public int? MaCv { get; set; }
 
         public int? MaDv { get; set; }

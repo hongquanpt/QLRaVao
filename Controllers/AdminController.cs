@@ -4,6 +4,7 @@ using QuanLyRaVao.authorize;
 using QuanLyRaVao.Data;
 using QuanLyRaVao.Models;
 using System;
+using System.Data;
 using System.Security.Cryptography;
 using X.PagedList;
 
@@ -563,11 +564,10 @@ namespace QuanLyRaVao.Controllers
                         join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
                         join dv in obj.Donvis on qn.MaDv equals dv.MaDv
                         join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
-
+                        
                         select new DSRN
                         {
-                            MaCTDS= ct.MaCtds,
-                           
+                            MaCTDS= ct.MaCtds,                        
                             MaHocVien = ct.MaHocVien,
                             LyDo = ct.LyDo,
                             DiaDiem = ct.DiaDiem,
@@ -586,7 +586,7 @@ namespace QuanLyRaVao.Controllers
                         };
             // Tạo danh sách các tình trạng
 
-            var tinhTrang5 = query.Where(o => o.TinhTrang == 5).OrderBy(o => o.MaCTDS).ToList();
+            var tinhTrang5 = query.Where(o => o.TinhTrang == 4).OrderBy(o => o.MaCTDS).ToList();
             var tinhTrang0 = query.Where(o => o.TinhTrang == 0).OrderBy(o => o.MaCTDS).ToList();
             var tinhTrang1 = query.Where(o => o.TinhTrang == 1).OrderBy(o => o.MaCTDS).ToList();
             var tinhTrang2 = query.Where(o => o.TinhTrang == 2).OrderBy(o => o.MaCTDS).ToList();
@@ -611,7 +611,7 @@ namespace QuanLyRaVao.Controllers
             ViewBag.PageEndItem = Math.Min(page * pageSize, pagedList5.TotalItemCount);
             ViewBag.Page = page;
 
-            int totalOrders = obj.Chitietdanhsaches.Count(o => o.TinhTrang == 5);
+            int totalOrders = obj.Chitietdanhsaches.Count(o => o.TinhTrang == 4);
             int unpaidOrdersCount = obj.Chitietdanhsaches.Count(o => o.TinhTrang == 0);
             int pendingOrdersCount = obj.Chitietdanhsaches.Count(o => o.TinhTrang == 1);
             int shippingOrdersCount = obj.Chitietdanhsaches.Count(o => o.TinhTrang == 2);
@@ -623,7 +623,37 @@ namespace QuanLyRaVao.Controllers
             ViewBag.ChuaPheDuyet = pendingOrdersCount;
             ViewBag.PheDuyetC = shippingOrdersCount;
             ViewBag.PheDuyetD = completedOrdersCount;
-            ViewBag.PheDuyetCong = canceledOrdersCount;    
+            ViewBag.PheDuyetCong = canceledOrdersCount;
+            var query2 = from ct in obj.Chitietdanhsaches
+                        join qn in obj.Quannhans on ct.MaHocVien equals qn.MaQn
+                        join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
+                        join dv in obj.Donvis on qn.MaDv equals dv.MaDv
+                        join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
+                        join dsgt in obj.ChitietdanhsachGiaytos on ct.MaCtds equals dsgt.MaCtds
+                        join gt in obj.Giaytos on dsgt.MaGiayTo equals gt.MaGiayTo
+                        where ct.TinhTrang == 3
+                        select new DSGT
+                        {
+                            MaCtds = dsgt.MaCtds,
+                            MaHocVien = ct.MaHocVien,
+                            MaGiayTo = dsgt.MaGiayTo,
+                            SoGiay = gt.SoGiay,
+                            ThoiGianLay = dsgt.ThoiGianLay,
+                            ThoiGianTra = dsgt.ThoiGianTra,
+                            DaTra = gt.TinhTrang,
+                            MaCv = qn.MaCv,
+                            MaDv = qn.MaDv,
+                            MaCapBac = qn.MaCapBac,
+                            CapBac1 = cb.CapBac1,
+                            TenCv = cv.TenCv,
+                            TenDv = dv.TenDv,
+                            TinhTrang = ct.TinhTrang,
+                            ThoiGianRa = ct.ThoiGianRa,
+                            ThoiGianVao = ct.ThoiGianVao,
+                            HoTen = qn.HoTen
+                        };
+            List<DSGT> ds = query2.ToList();
+            HttpContext.Session.SetJson("DS", ds);
             return View();
         }
         public IActionResult Duyet1(int mactds)
@@ -878,7 +908,7 @@ namespace QuanLyRaVao.Controllers
                 });
             }
         }
-        public IActionResult Duyet3(int mactds)
+       /* public IActionResult Duyet3(int mactds)
         {
             var dh = obj.Chitietdanhsaches.Find(mactds);
             if (dh != null)
@@ -919,7 +949,7 @@ namespace QuanLyRaVao.Controllers
                 });
             }
 
-        }
+        }*/
         #endregion
         #region Quản lý quân nhân
         public IActionResult QuanLyQuanNhan(int maqn, string diachi, string hoten, int CapBac, int ChucVu, int DonVi,int page = 1, int pageSize = 5)
@@ -1093,46 +1123,88 @@ namespace QuanLyRaVao.Controllers
             }
         }
         #endregion
-        #region Quản lý danh sách ra ngoài
+        #region Quản lý danh sách ra ngoài- giấy tờ
         public IActionResult QuanLyDSGT(int page = 1, int pageSize = 5)
-     {
+        {
 
-         var query = from  ct in obj.Chitietdanhsaches
-                     join qn in obj.Quannhans on ct.MaHocVien equals qn.MaQn
-                     join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
-                     join dv in obj.Donvis on qn.MaDv equals dv.MaDv
-                     join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
-                     join dsgt in obj.ChitietdanhsachGiaytos on ct.MaCtds equals dsgt.MaCtds
-                     join gt in obj.Giaytos on dsgt.MaGiayTo equals gt.MaGiayTo
-                     select new DSGT
-                     {
-                         MaCtds = dsgt.MaCtds,
-                         MaHocVien = ct.MaHocVien,
-                         MaGiayTo = dsgt.MaGiayTo,
-                         SoGiay = gt.SoGiay,
-                         ThoiGianLay = dsgt.ThoiGianLay,
-                         ThoiGianTra = dsgt.ThoiGianTra,
-                         DaTra = dsgt.DaTra,     
-                         MaCv = qn.MaCv,
-                         MaDv = qn.MaDv,
-                         MaCapBac = qn.MaCapBac,
-                         CapBac1 = cb.CapBac1,
-                         TenCv = cv.TenCv,
-                         TenDv = dv.TenDv,
-                         DiaChi = qn.DiaChi,
-                         HoTen= qn.HoTen
-                     };
-         var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var query = from ct in obj.Chitietdanhsaches
+                        join qn in obj.Quannhans on ct.MaHocVien equals qn.MaQn
+                        join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
+                        join dv in obj.Donvis on qn.MaDv equals dv.MaDv
+                        join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
+                        join dsgt in obj.ChitietdanhsachGiaytos on ct.MaCtds equals dsgt.MaCtds
+                        join gt in obj.Giaytos on dsgt.MaGiayTo equals gt.MaGiayTo
+                        where ct.TinhTrang==3
+                        select new DSGT
+                        {
+                            MaCtds = dsgt.MaCtds,
+                            MaHocVien = ct.MaHocVien,
+                            MaGiayTo = dsgt.MaGiayTo,
+                            SoGiay = gt.SoGiay,
+                            ThoiGianLay = dsgt.ThoiGianLay,
+                            ThoiGianTra = dsgt.ThoiGianTra,
+                            DaTra = gt.TinhTrang,
+                            MaCv = qn.MaCv,
+                            MaDv = qn.MaDv,
+                            MaCapBac = qn.MaCapBac,
+                            CapBac1 = cb.CapBac1,
+                            TenCv = cv.TenCv,
+                            TenDv = dv.TenDv,
+                            TinhTrang = ct.TinhTrang,
+                            ThoiGianRa = ct.ThoiGianRa,
+                            ThoiGianVao = ct.ThoiGianVao,
+                            HoTen = qn.HoTen
+                        };
+            var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-         // Tính toán thông tin phân trang
-         var totalItemCount = query.Count();
-         var pagedList = new StaticPagedList<DSGT>(model, page, pageSize, totalItemCount);
-         ViewBag.PageStartItem = (page - 1) * pageSize + 1;
-         ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
-         ViewBag.Page = page;
-         ViewBag.TotalItemCount = totalItemCount;
-         return View(pagedList);
-     }
+            // Tính toán thông tin phân trang
+            var totalItemCount = query.Count();
+            var pagedList = new StaticPagedList<DSGT>(model, page, pageSize, totalItemCount);
+            ViewBag.PageStartItem = (page - 1) * pageSize + 1;
+            ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
+            ViewBag.Page = page;
+            ViewBag.TotalItemCount = totalItemCount;
+            return View(pagedList);
+        }
+        public IActionResult CapPhat(int id)
+        {
+            var giayto = obj.Giaytos.Where(c=>c.TinhTrang==true).ToList();
+            ViewBag.Id = id;
+            return PartialView(giayto);
+        }
+        public IActionResult TraGiay(int id, int magiay)
+        {
+           var giayto= obj.Giaytos.Where(c=>c.MaGiayTo==magiay).FirstOrDefault();
+            giayto.TinhTrang = true;
+            var tinhtrang = obj.Chitietdanhsaches.Find(id);
+            tinhtrang.TinhTrang = 4;
+            obj.SaveChanges();
+            return View();
+        }
+        public IActionResult ThemGT(int id, int giayto, DateTime thoigianLay, DateTime thoigianTra)
+        {
+           
+            ChitietdanhsachGiayto ct = new ChitietdanhsachGiayto();
+            ct.MaCtds = id;
+            ct.MaGiayTo = giayto;
+            ct.ThoiGianLay= thoigianLay;
+            ct.ThoiGianTra= thoigianTra;
+            var gt = obj.Giaytos.Find(giayto);
+            gt.TinhTrang = false;
+            var dh = obj.ChitietdanhsachGiaytos.Add(ct);
+              
+            obj.SaveChanges();
+            return Json(new
+            {
+                status = true
+            });
+            
+           /* return Json(new
+            {
+                status = false
+            });*/
+            
+        }
         #endregion
         #region Quản lý danh sách vi phạm
         public IActionResult QuanLyViPham(int page = 1, int pageSize = 5)
@@ -1255,7 +1327,7 @@ namespace QuanLyRaVao.Controllers
             }
         }
         #endregion
-     
+
        
 
     }

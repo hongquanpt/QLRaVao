@@ -2,7 +2,7 @@
 {
     public class DSRN
     {
-        public int MaDs { get; set; }
+     
         public int MaCTDS { get; set; }
         public int MaHocVien { get; set; }
         public string? LyDo { get; set; }

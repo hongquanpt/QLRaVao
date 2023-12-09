@@ -9,15 +9,13 @@ public partial class ChitietdanhsachGiayto
 
     public int MaCtds { get; set; }
 
-    public bool DaTra { get; set; }
-
     public DateTime? ThoiGianLay { get; set; }
 
     public DateTime? ThoiGianTra { get; set; }
 
     public string? GhiChu { get; set; }
 
-    public bool Khoa { get; set; }
+    public bool? Khoa { get; set; }
 
     public int? NguoiSua { get; set; }
 
