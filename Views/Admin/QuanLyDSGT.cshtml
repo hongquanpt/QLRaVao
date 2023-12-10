@@ -111,8 +111,7 @@ else
                                                 <th>Cấp bậc</th>
                                                 <th>Đơn vị</th>
                                                 <th>Số giây</th>
-                                                <th>Thời gian lấy</th>
-                                                <th>Thời gian trả</th>
+                                                
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -125,20 +124,21 @@ else
                                                     <td>@item.CapBac1</td>
                                                     <td>@item.TenDv</td>
                                                     <td>@item.SoGiay</td>
-                                                    <td>@item.ThoiGianLay</td>
-                                                    
-                                                    @if (item.DaTra == true)
+                                                    @if (item.ThoiGianRa == null)
                                                     {
-                                                        <td>@item.ThoiGianTra</td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCtds" data-target="#rangoai">Ra ngoài</button>
+
+                                                        </td>
                                                     }
                                                     else
                                                     {
-                                                        <td>Chưa trả</td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCtds" data-target="#vao">Vào học viện</button>
+
+                                                        </td>
                                                     }
-                                                    
-                                                    <td>
-                                                        <a href="@Url.Action("SuaQuanNhan","Admin")" class="btn btn-success">Edit</a>
-                                                    </td>
+
                                                     
                                                 </tr>
                                             }
@@ -200,6 +200,107 @@ else
                                         </ul>
                                     </div>
                                 </div>
+                                <div class="modal fade" id="rangoai">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Thông tin qua cổng</h4>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="frmSuaDM" method="post">
+                                                    <div class="card-body">
+                                                        <!-- Loại bỏ trường "Chọn giấy tờ" và "Thời gian lấy giấy tờ" -->
+
+                                                        <div class="form-group" id="thoiGianTraGroup">
+                                                            <label for="ThoiGianTra">Thời gian ra ngoài:</label>
+                                                            <input type="datetime-local" class="form-control" id="ThoiGianTra" name="ThoiGianTra" required>
+                                                            <div class="valid-feedback">Valid.</div>
+                                                            <div class="invalid-feedback">Vui lòng chọn thời gian trả.</div>
+                                                        </div>
+
+                                                        <button type="button" style="margin-left:150px" class="btn btn-primary" id="confirm">Xác nhận</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <!-- /.modal-content -->
+                                    </div>
+                                    <!-- /.modal-dialog -->
+                                </div>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        var thoiGianTraGroup = document.getElementById('thoiGianTraGroup');
+                                        var thoiGianTraInput = document.getElementById('ThoiGianTra');
+
+                                        // Tự động cập nhật giá trị cho "Thời gian trả giấy tờ"
+                                        var currentDate = new Date();
+                                        thoiGianTraInput.value = currentDate.toISOString().slice(0, 16);
+
+                                        // Get references to modal elements
+                                        var modal = $('#modal-default');
+                                        var confirmButton = $('#confirm');
+
+                                        // Handle button click
+                                        $('[data-toggle="modal"]').on('click', function () {
+                                            // Get data attributes from the button
+                                            var id = $(this).data('id');
+                                            var magiay = $(this).data('magiay');
+
+                                            // Set values in the modal
+                                            modal.find('#ThoiGianTra').val(thoiGianTraInput.value); // Set default time
+                                            // You can set other values in the modal if needed
+
+                                            // Show the modal
+                                            modal.modal('show');
+
+                                            // Handle confirm button click inside the modal
+                                            confirmButton.on('click', function () {
+                                                var thoiGianTraValue = thoiGianTraInput.value.trim();
+
+                                                if (thoiGianTraValue === "") {
+                                                    alert("Vui lòng nhập đủ thông tin.");
+                                                } else {
+                                                    // Chuyển đổi giá trị ngày giờ thành định dạng phù hợp cho SQL Server
+                                                    var thoiGianTraFormatted = new Date(thoiGianTraValue).toISOString().slice(0, 19).replace("T", " ");
+
+                                                    $.ajax({
+                                                        url: '/Admin/RaNgoai',
+                                                        data: {
+                                                            thoiGianTra: thoiGianTraFormatted,
+                                                            id: id,
+                                                            magiay: magiay
+                                                        },
+                                                        type: 'POST',
+                                                        dataType: 'json',
+                                                        success: function (res) {
+                                                            if (res.status == true) {
+                                                                window.location = '@Url.Action("QuanLyDanhSach","Admin")';
+                                                                Swal.fire({
+                                                                    position: 'center',
+                                                                    icon: 'success',
+                                                                    title: 'Thêm thành công',
+                                                                    showConfirmButton: false,
+                                                                    timer: 100
+                                                                });
+                                                            }
+                                                        },
+                                                        error: function (err) {
+                                                            console.log(err);
+                                                            alert("Đã xảy ra lỗi khi thêm yêu cầu.");
+                                                        }
+                                                    });
+
+                                                    // Hide the modal after processing
+                                                    modal.modal('hide');
+                                                }
+                                            });
+                                        });
+                                    });
+                                 
+                                </script>
                                 <div class="card-footer">
                                     <button class="btn btn-primary" data-dismiss="modal" id="confirmThem" onclick="Them()">Thêm quân nhân mới</button>
                                     @*<a href="#" class="btn btn-secondary" style="display: none;"><i class="material-icons">&#xE24D;</i> <span>Xuất Excel</span></a>*@
@@ -218,6 +319,6 @@ else
             
         </div>
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-      
+        
     </div>
 }

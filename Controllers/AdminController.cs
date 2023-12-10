@@ -1104,7 +1104,7 @@ namespace QuanLyRaVao.Controllers
                         join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
                         join dsgt in obj.ChitietdanhsachGiaytos on ct.MaCtds equals dsgt.MaCtds
                         join gt in obj.Giaytos on dsgt.MaGiayTo equals gt.MaGiayTo
-                   
+                    
                         select new DSGT
                         {
                             MaCtds = dsgt.MaCtds,
@@ -1136,7 +1136,42 @@ namespace QuanLyRaVao.Controllers
             ViewBag.TotalItemCount = totalItemCount;
             return View(pagedList);
         }
-       
+        public IActionResult RaNgoai(int id, int magiay, DateTime thoigianTra)
+        {
+            int max = obj.Rangoais.Max(r => r.MaRn);
+            Rangoai rn =new Rangoai();
+            rn.ThoiGianRa = thoigianTra;
+            rn.MaRn = max + 1;
+            rn.MaGiayTo= magiay;
+            rn.MaCtds = id;
+            obj.SaveChanges();
+            return Json(new
+            {
+                status = true
+            });
+
+            /* return Json(new
+             {
+                 status = false
+             });*/
+
+        }
+        public IActionResult Vao(int id, int magiay, DateTime thoigianTra)
+        {
+            var rn = obj.Rangoais.Where(c => c.MaCtds == id && c.MaGiayTo == magiay).FirstOrDefault();
+            rn.ThoiGianVao = thoigianTra; 
+            obj.SaveChanges();
+            return Json(new
+            {
+                status = true
+            });
+
+            /* return Json(new
+             {
+                 status = false
+             });*/
+
+        }
         #endregion
         #region Quản lý danh sách vi phạm
         public IActionResult QuanLyViPham(int page = 1, int pageSize = 5)
