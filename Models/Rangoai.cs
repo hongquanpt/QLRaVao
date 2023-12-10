@@ -19,15 +19,11 @@ public partial class Rangoai
 
     public DateTime? ThoiGianSua { get; set; }
 
-    public int? MaVp { get; set; }
-
-    public int? MaGiayTo { get; set; }
+    public int MaGiayTo { get; set; }
 
     public int MaCtds { get; set; }
 
     public virtual Chitietdanhsach MaCtdsNavigation { get; set; } = null!;
 
-    public virtual Giayto? MaGiayToNavigation { get; set; }
-
-    public virtual Vipham? MaVpNavigation { get; set; }
+    public virtual Giayto MaGiayToNavigation { get; set; } = null!;
 }

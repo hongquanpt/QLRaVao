@@ -45,6 +45,7 @@ public partial class QuanLyRaVaoContext : DbContext
     public virtual DbSet<Vipham> Viphams { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Data Source=Quan\\hq;Initial Catalog=QuanLyRaVao;Integrated Security=True;Encrypt=false;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -252,7 +253,6 @@ public partial class QuanLyRaVaoContext : DbContext
             entity.Property(e => e.MaRn).HasColumnName("MaRN");
             entity.Property(e => e.GhiChu).HasMaxLength(200);
             entity.Property(e => e.MaCtds).HasColumnName("MaCTDS");
-            entity.Property(e => e.MaVp).HasColumnName("MaVP");
             entity.Property(e => e.ThoiGianRa).HasColumnType("datetime");
             entity.Property(e => e.ThoiGianSua).HasColumnType("datetime");
             entity.Property(e => e.ThoiGianVao).HasColumnType("datetime");
@@ -264,11 +264,8 @@ public partial class QuanLyRaVaoContext : DbContext
 
             entity.HasOne(d => d.MaGiayToNavigation).WithMany(p => p.Rangoais)
                 .HasForeignKey(d => d.MaGiayTo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__RANGOAI__MaGiayT__44FF419A");
-
-            entity.HasOne(d => d.MaVpNavigation).WithMany(p => p.Rangoais)
-                .HasForeignKey(d => d.MaVp)
-                .HasConstraintName("FK__RANGOAI__MaVP__45F365D3");
         });
 
         modelBuilder.Entity<Taikhoan>(entity =>
