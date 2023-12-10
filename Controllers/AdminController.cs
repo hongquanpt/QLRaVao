@@ -13,6 +13,7 @@ namespace QuanLyRaVao.Controllers
     public class AdminController : Controller
     {
         private readonly QuanLyRaVaoContext obj;
+       
         public AdminController(QuanLyRaVaoContext obj)
         {
             this.obj = obj;
@@ -515,47 +516,7 @@ namespace QuanLyRaVao.Controllers
 
         #endregion
        
-        #region Quản lý danh sách
-        /*public IActionResult QuanLyDanhSach(int page = 1, int pageSize = 5)
-        {
-
-            var query = from ds in obj.Danhsaches
-                        join ct in obj.Chitietdanhsacheses on ds.MaDs equals ct.MaDs
-                        join qn in obj.Quannhans on ct.MaHocVien equals qn.MaQn
-                        join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
-                        join dv in obj.Donvis on qn.MaDv equals dv.MaDv
-                        join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
-                       
-                        select new DSRN
-                        {
-                            MaDs = ds.MaDs,
-                            MaHocVien = ct.MaHocVien,
-                            LyDo = ct.LyDo,
-                            DiaDiem = ct.DiaDiem,
-                            ThoiGianRa = ct.ThoiGianRa,
-                            ThoiGianVao = ct.ThoiGianVao,
-                            TinhTrang = ct.TinhTrang,
-                            HinhThucRn = ds.HinhThucRn,
-                            MaCv = qn.MaCv,
-                            MaDv = qn.MaDv,
-                            MaCapBac = qn.MaCapBac,
-                            CapBac1 = cb.CapBac1,
-                            TenCv = cv.TenCv,
-                            TenDv = dv.TenDv,
-                            DiaChi = qn.DiaChi,
-                            HoTen= qn.HoTen
-                        };
-            var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
-            // Tính toán thông tin phân trang
-            var totalItemCount = query.Count();
-            var pagedList = new StaticPagedList<DSRN>(model, page, pageSize, totalItemCount);
-            ViewBag.PageStartItem = (page - 1) * pageSize + 1;
-            ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
-            ViewBag.Page = page;
-            ViewBag.TotalItemCount = totalItemCount;
-            return View(pagedList);
-        }*/
+        #region Quản lý danh sách     
         public IActionResult QuanLyDanhSach(int page = 1, int pageSize = 5)
         {
 
@@ -654,10 +615,13 @@ namespace QuanLyRaVao.Controllers
                         };
             List<DSGT> ds = query2.ToList();
             HttpContext.Session.SetJson("DS", ds);
+            List<Giayto> giayto = obj.Giaytos.Where(c => c.TinhTrang == true).ToList();
+            HttpContext.Session.SetJson("GT", giayto);
             return View();
         }
         public IActionResult Duyet1(int mactds)
         {
+
             var dh = obj.Chitietdanhsaches.Where(c=>c.MaCtds== mactds).FirstOrDefault();
             if (dh != null)
             {
@@ -1134,7 +1098,7 @@ namespace QuanLyRaVao.Controllers
                         join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
                         join dsgt in obj.ChitietdanhsachGiaytos on ct.MaCtds equals dsgt.MaCtds
                         join gt in obj.Giaytos on dsgt.MaGiayTo equals gt.MaGiayTo
-                        where ct.TinhTrang==3
+                   
                         select new DSGT
                         {
                             MaCtds = dsgt.MaCtds,
@@ -1166,29 +1130,33 @@ namespace QuanLyRaVao.Controllers
             ViewBag.TotalItemCount = totalItemCount;
             return View(pagedList);
         }
-        public IActionResult CapPhat(int id)
+        public IActionResult TraGT(int id, int magiay, DateTime thoigianTra)
         {
-            var giayto = obj.Giaytos.Where(c=>c.TinhTrang==true).ToList();
-            ViewBag.Id = id;
-            return PartialView(giayto);
-        }
-        public IActionResult TraGiay(int id, int magiay)
-        {
-           var giayto= obj.Giaytos.Where(c=>c.MaGiayTo==magiay).FirstOrDefault();
+            var giayto = obj.Giaytos.Where(c => c.MaGiayTo == magiay).FirstOrDefault();
             giayto.TinhTrang = true;
             var tinhtrang = obj.Chitietdanhsaches.Find(id);
             tinhtrang.TinhTrang = 4;
-            obj.SaveChanges();
-            return View();
+            var ct= obj.ChitietdanhsachGiaytos.Where(c=>c.MaCtds==id && c.MaGiayTo==magiay).FirstOrDefault();
+            ct.ThoiGianTra=thoigianTra;
+            obj.SaveChanges();       
+            return Json(new
+            {
+                status = true
+            });
+
+            /* return Json(new
+             {
+                 status = false
+             });*/
+
         }
-        public IActionResult ThemGT(int id, int giayto, DateTime thoigianLay, DateTime thoigianTra)
+        public IActionResult ThemGT(int id, int giayto, DateTime thoigianLay)
         {
            
             ChitietdanhsachGiayto ct = new ChitietdanhsachGiayto();
             ct.MaCtds = id;
             ct.MaGiayTo = giayto;
-            ct.ThoiGianLay= thoigianLay;
-            ct.ThoiGianTra= thoigianTra;
+            ct.ThoiGianLay= thoigianLay;         
             var gt = obj.Giaytos.Find(giayto);
             gt.TinhTrang = false;
             var dh = obj.ChitietdanhsachGiaytos.Add(ct);

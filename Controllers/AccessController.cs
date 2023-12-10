@@ -72,7 +72,7 @@ namespace QuanLyRaVao.Controllers
                             join cv in _context.NhomQuyens on tk.MaNhom equals cv.MaNhom
                             join n in _context.Nhoms on tk.MaNhom equals n.MaNhom
                             join q in _context.Quyens on cv.MaQuyen equals q.MaQuyen
-                            
+                            join qn in _context.Quannhans on tk.MaQn equals qn.MaQn
                             where (tk.Tdn == loginInfo.TDN)
                             select new AccountRole
                             {
@@ -83,7 +83,7 @@ namespace QuanLyRaVao.Controllers
                                 TenQ = q.Ten,
                                 ControllerName = q.ControllerName,
                                 ActionName = q.ActionName,
-                                
+                                MaQn=qn.MaQn
                             };
                 List<AccountRole> roles = data.ToList();
 

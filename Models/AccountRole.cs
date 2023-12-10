@@ -4,6 +4,7 @@
     {
         public int MaTaiKhoan { get; set; }
         public int MaQ { get; set; }
+        public int MaQn { get; set; }
 
         public int MaCv { get; set; }
         public string? TenCV { get; set; }

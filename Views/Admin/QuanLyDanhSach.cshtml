@@ -7,6 +7,7 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     List<AccountRole> data = HttpContextAccessor.HttpContext.Session.GetJson<List<AccountRole>>("QuyenTK") ?? new List<AccountRole>();
     List<DSGT> ds = HttpContextAccessor.HttpContext.Session.GetJson<List<DSGT>>("DS") ?? new List<DSGT>();
+    List<Giayto> gt = HttpContextAccessor.HttpContext.Session.GetJson<List<Giayto>>("GT") ?? new List<Giayto>();
     var qh = data.FirstOrDefault(c => c.ActionName == "QuanLyDanhSach");
     var dsdahoanthanh = ViewBag.pagedList5 as PagedList<DSRN>;
     var dsdatuchoi = ViewBag.pagedList0 as PagedList<DSRN>;
@@ -484,11 +485,19 @@ else
                                                             </td>
                                                             @if (ds.Any(c => c.MaCtds == item.MaCTDS && (c.DaTra == false || c.DaTra == null)))
                                                             {
-                                                                <td><a href="@Url.Action("TraGiay", "Admin", new { id = item.MaCTDS, magiay = ds.First(c => c.MaCtds == item.MaCTDS).MaGiayTo })" class="btn btn-success">Trả giấy</a></td>
+                                                                <td>
+                                                                    <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCTDS" data-magiay="@ds.First(c => c.MaCtds == item.MaCTDS).MaGiayTo" data-target="#tragiay">Trả giấy</button>
+                                                                    
+                                                                </td>
                                                             }
                                                             else
                                                             {
-                                                                <td><a href="@Url.Action("CapPhat", "Admin", new { id = item.MaCTDS })" class="btn btn-success">Cấp giấy tờ</a></td>
+
+                                                                <td>
+                                                                    <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCTDS"  data-target="#capgiay">Cấp giấy</button>
+
+                                                                </td>
+                                                               
                                                             }
 
                                                         </tr>
@@ -551,11 +560,207 @@ else
                                                 </ul>
                                             </div>
                                         </div>
-                                        <script>
+                                        <div class="modal fade" id="tragiay">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h4 class="modal-title">Cập nhật thông tin trả giấy</h4>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form id="frmSuaDM" method="post">
+                                                            <div class="card-body">
+                                                                <!-- Loại bỏ trường "Chọn giấy tờ" và "Thời gian lấy giấy tờ" -->
 
-                                            
-                                         
-                                        </script>                                         
+                                                                <div class="form-group" id="thoiGianTraGroup">
+                                                                    <label for="ThoiGianTra">Thời gian trả giấy tờ:</label>
+                                                                    <input type="datetime-local" class="form-control" id="ThoiGianTra" name="ThoiGianTra" required>
+                                                                    <div class="valid-feedback">Valid.</div>
+                                                                    <div class="invalid-feedback">Vui lòng chọn thời gian trả.</div>
+                                                                </div>
+
+                                                                <button type="button" style="margin-left:150px" class="btn btn-primary" id="confirm">Xác nhận</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>                                                
+                                                </div>
+                                                <!-- /.modal-content -->
+                                            </div>
+                                            <!-- /.modal-dialog -->
+                                        </div>
+                                        <div class="modal fade" id="capgiay">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h4 class="modal-title">Cập nhật thông tin trả giấy</h4>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form id="frmSuaDM" method="post">
+                                                            <div class="card-body">
+                                                                <!-- Thêm id cho select để dễ truy cập -->
+                                                                <select id="ChucVu" name="ChucVu" class="form-control">
+                                                                    <option value="0" selected>Chọn giấy tờ</option>
+                                                                    @foreach (var giayto in gt)
+                                                                    {
+                                                                        <option value="@giayto.MaGiayTo">@giayto.SoGiay</option>
+                                                                    }
+                                                                </select>
+                                                                <div class="form-group">
+                                                                    <label for="ThoiGianLay">Thời gian lấy giấy tờ:</label>
+                                                                    <input type="datetime-local" class="form-control" id="ThoiGianLay" name="ThoiGianLay" required>
+                                                                    <div class="valid-feedback">Valid.</div>
+                                                                    <div class="invalid-feedback">Vui lòng chọn thời gian lấy.</div>
+                                                                </div>                                                              
+                                                                <button type="button" class="btn btn-primary" id="confirm2">Xác nhận</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                <!-- /.modal-content -->
+                                            </div>
+                                            <!-- /.modal-dialog -->
+                                        </div>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function () {
+                                                var thoiGianTraGroup = document.getElementById('thoiGianTraGroup');
+                                                var thoiGianTraInput = document.getElementById('ThoiGianTra');
+
+                                                // Tự động cập nhật giá trị cho "Thời gian trả giấy tờ"
+                                                var currentDate = new Date();
+                                                thoiGianTraInput.value = currentDate.toISOString().slice(0, 16);
+
+                                                // Get references to modal elements
+                                                var modal = $('#modal-default');
+                                                var confirmButton = $('#confirm');
+
+                                                // Handle button click
+                                                $('[data-toggle="modal"]').on('click', function () {
+                                                    // Get data attributes from the button
+                                                    var id = $(this).data('id');
+                                                    var magiay = $(this).data('magiay');
+
+                                                    // Set values in the modal
+                                                    modal.find('#ThoiGianTra').val(thoiGianTraInput.value); // Set default time
+                                                    // You can set other values in the modal if needed
+
+                                                    // Show the modal
+                                                    modal.modal('show');
+
+                                                    // Handle confirm button click inside the modal
+                                                    confirmButton.on('click', function () {
+                                                        var thoiGianTraValue = thoiGianTraInput.value.trim();
+
+                                                        if (thoiGianTraValue === "") {
+                                                            alert("Vui lòng nhập đủ thông tin.");
+                                                        } else {
+                                                            // Chuyển đổi giá trị ngày giờ thành định dạng phù hợp cho SQL Server
+                                                            var thoiGianTraFormatted = new Date(thoiGianTraValue).toISOString().slice(0, 19).replace("T", " ");
+
+                                                            $.ajax({
+                                                                url: '/Admin/TraGT',
+                                                                data: {
+                                                                    thoiGianTra: thoiGianTraFormatted,
+                                                                    id: id,
+                                                                    magiay: magiay
+                                                                },
+                                                                type: 'POST',
+                                                                dataType: 'json',
+                                                                success: function (res) {
+                                                                    if (res.status == true) {
+                                                                        window.location = '@Url.Action("QuanLyDanhSach","Admin")';
+                                                                        Swal.fire({
+                                                                            position: 'center',
+                                                                            icon: 'success',
+                                                                            title: 'Thêm thành công',
+                                                                            showConfirmButton: false,
+                                                                            timer: 100
+                                                                        });
+                                                                    }
+                                                                },
+                                                                error: function (err) {
+                                                                    console.log(err);
+                                                                    alert("Đã xảy ra lỗi khi thêm yêu cầu.");
+                                                                }
+                                                            });
+
+                                                            // Hide the modal after processing
+                                                            modal.modal('hide');
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                            document.addEventListener('DOMContentLoaded', function () {
+                                                var selectGiayTo = document.getElementById('ChucVu');
+                                                var thoiGianLayInput = document.getElementById('ThoiGianLay');
+
+                                                // Variables to store button data
+                                                var buttonId;
+
+                                                // Handle button click to open the modal
+                                                $('[data-toggle="modal"]').on('click', function () {
+                                                    // Store the data-id attribute value in the buttonId variable
+                                                    buttonId = $(this).data('id');
+                                                });
+
+                                                // Thêm sự kiện change cho selectGiayTo
+                                                selectGiayTo.addEventListener('change', function () {
+                                                    var selectedOption = selectGiayTo.options[selectGiayTo.selectedIndex];
+
+                                                    if (selectedOption.value !== "0") {
+                                                        var currentDate = new Date();
+                                                        // Format giờ và ngày thành chuỗi ISO để đặt giá trị input
+                                                        thoiGianLayInput.value = currentDate.toISOString().slice(0, 16);
+                                                    }
+                                                });
+
+                                                document.getElementById('confirm2').addEventListener('click', function () {
+                                                    var selectedOption = selectGiayTo.options[selectGiayTo.selectedIndex];
+                                                    var thoiGianLayValue = thoiGianLayInput.value.trim();
+
+                                                    if (selectedOption.value === "0") {
+                                                        alert("Vui lòng chọn giấy tờ.");
+                                                    } else if (thoiGianLayValue === "") {
+                                                        alert("Vui lòng nhập đủ thông tin.");
+                                                    } else {
+                                                        // Chuyển đổi giá trị ngày giờ thành định dạng phù hợp cho SQL Server
+                                                        var thoiGianLayFormatted = new Date(thoiGianLayValue).toISOString().slice(0, 19).replace("T", " ");
+
+                                                        $.ajax({
+                                                            url: '/Admin/ThemGT',
+                                                            data: {
+                                                                giayto: selectedOption.value,
+                                                                thoiGianLay: thoiGianLayFormatted,
+                                                                id: buttonId // Use the stored buttonId here
+                                                            },
+                                                            type: 'POST',
+                                                            dataType: 'json',
+                                                            success: function (res) {
+                                                                if (res.status == true) {
+                                                                    window.location = '@Url.Action("QuanLyDanhSach","Admin")';
+                                                                    Swal.fire({
+                                                                        position: 'center',
+                                                                        icon: 'success',
+                                                                        title: 'Thêm thành công',
+                                                                        showConfirmButton: false,
+                                                                        timer: 100
+                                                                    });
+                                                                }
+                                                            },
+                                                            error: function (err) {
+                                                                console.log(err);
+                                                                alert("Đã xảy ra lỗi khi thêm yêu cầu.");
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            });
+
+                                        </script>
                                         <div id="HT" class="tab-pane fade">
                                             <table id="example2" class="table table-bordered table-hover">
                                                 <thead>
