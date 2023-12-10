@@ -872,48 +872,49 @@ namespace QuanLyRaVao.Controllers
                 });
             }
         }
-       /* public IActionResult Duyet3(int mactds)
+        public IActionResult TraGT(int id, int magiay, DateTime thoigianTra)
         {
-            var dh = obj.Chitietdanhsaches.Find(mactds);
-            if (dh != null)
+            var giayto = obj.Giaytos.Where(c => c.MaGiayTo == magiay).FirstOrDefault();
+            giayto.TinhTrang = true;
+            var tinhtrang = obj.Chitietdanhsaches.Find(id);
+            tinhtrang.TinhTrang = 4;
+            var ct = obj.ChitietdanhsachGiaytos.Where(c => c.MaCtds == id && c.MaGiayTo == magiay).FirstOrDefault();
+            ct.ThoiGianTra = thoigianTra;
+            obj.SaveChanges();
+            return Json(new
             {
-                dh.TinhTrang = 4;
-                obj.SaveChanges();
-                return Json(new
-                {
-                    status = true
-                });
-            }
-            else
-            {
-                return Json(new
-                {
-                    status = false
-                });
-            }
+                status = true
+            });
+
+            /* return Json(new
+             {
+                 status = false
+             });*/
 
         }
-        public IActionResult TC3(int mactds)
+        public IActionResult ThemGT(int id, int giayto, DateTime thoigianLay)
         {
-            var dh = obj.Chitietdanhsaches.Where(c => c.MaCtds == mactds).FirstOrDefault();
-            if (dh != null)
-            {
-                dh.TinhTrang = 0;
-                obj.SaveChanges();
-                return Json(new
-                {
-                    status = true
-                });
-            }
-            else
-            {
-                return Json(new
-                {
-                    status = false
-                });
-            }
 
-        }*/
+            ChitietdanhsachGiayto ct = new ChitietdanhsachGiayto();
+            ct.MaCtds = id;
+            ct.MaGiayTo = giayto;
+            ct.ThoiGianLay = thoigianLay;
+            var gt = obj.Giaytos.Find(giayto);
+            gt.TinhTrang = false;
+            var dh = obj.ChitietdanhsachGiaytos.Add(ct);
+
+            obj.SaveChanges();
+            return Json(new
+            {
+                status = true
+            });
+
+            /* return Json(new
+             {
+                 status = false
+             });*/
+
+        }    
         #endregion
         #region Quản lý quân nhân
         public IActionResult QuanLyQuanNhan(int maqn, string diachi, string hoten, int CapBac, int ChucVu, int DonVi,int page = 1, int pageSize = 5)
@@ -1130,49 +1131,7 @@ namespace QuanLyRaVao.Controllers
             ViewBag.TotalItemCount = totalItemCount;
             return View(pagedList);
         }
-        public IActionResult TraGT(int id, int magiay, DateTime thoigianTra)
-        {
-            var giayto = obj.Giaytos.Where(c => c.MaGiayTo == magiay).FirstOrDefault();
-            giayto.TinhTrang = true;
-            var tinhtrang = obj.Chitietdanhsaches.Find(id);
-            tinhtrang.TinhTrang = 4;
-            var ct= obj.ChitietdanhsachGiaytos.Where(c=>c.MaCtds==id && c.MaGiayTo==magiay).FirstOrDefault();
-            ct.ThoiGianTra=thoigianTra;
-            obj.SaveChanges();       
-            return Json(new
-            {
-                status = true
-            });
-
-            /* return Json(new
-             {
-                 status = false
-             });*/
-
-        }
-        public IActionResult ThemGT(int id, int giayto, DateTime thoigianLay)
-        {
-           
-            ChitietdanhsachGiayto ct = new ChitietdanhsachGiayto();
-            ct.MaCtds = id;
-            ct.MaGiayTo = giayto;
-            ct.ThoiGianLay= thoigianLay;         
-            var gt = obj.Giaytos.Find(giayto);
-            gt.TinhTrang = false;
-            var dh = obj.ChitietdanhsachGiaytos.Add(ct);
-              
-            obj.SaveChanges();
-            return Json(new
-            {
-                status = true
-            });
-            
-           /* return Json(new
-            {
-                status = false
-            });*/
-            
-        }
+       
         #endregion
         #region Quản lý danh sách vi phạm
         public IActionResult QuanLyViPham(int page = 1, int pageSize = 5)
