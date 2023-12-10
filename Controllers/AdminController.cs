@@ -914,7 +914,12 @@ namespace QuanLyRaVao.Controllers
                  status = false
              });*/
 
-        }    
+        } 
+        public IActionResult ChiTiet(int maCTDS, int maGiayTo)
+        {
+            var ct= obj.ChitietdanhsachGiaytos.Where(c=>c.MaCtds==maCTDS&& c.MaGiayTo==maGiayTo).FirstOrDefault();
+            return View(ct);
+        }
         #endregion
         #region Quản lý quân nhân
         public IActionResult QuanLyQuanNhan(int maqn, string diachi, string hoten, int CapBac, int ChucVu, int DonVi,int page = 1, int pageSize = 5)

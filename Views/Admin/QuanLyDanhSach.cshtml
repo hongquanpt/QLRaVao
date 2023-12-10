@@ -109,11 +109,28 @@ else
 
                                 </div>
                                 <ul class="nav nav-tabs" role="tablist">
-                                    <li class=" nav-item active"><a class="nav-link active" data-toggle="tab" href="#ChuaPD">Chưa phê duyệt (@ViewBag.ChuaPheDuyet)</a></li>
-                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#PDC">Đã phê duyệt cấp đại đội (@ViewBag.PheDuyetC)</a></li>
-                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#PDD">Đã phê duyệt cấp tiểu đoàn (@ViewBag.PheDuyetD)</a></li>       
-                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#HT">Đã hoàn thành (@ViewBag.DaHoanThanh)</a></li>
-                                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#TC">Đã hủy (@ViewBag.DaBiTuChoi)</a></li>
+                                    @if (qh.MaCv == 2)
+                                    {
+                                        <li class=" nav-item active"><a class="nav-link active" data-toggle="tab" href="#ChuaPD">Danh sách đăng ký ra ngoài (@ViewBag.ChuaPheDuyet)</a></li>
+                                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#PDC">Danh sách gửi lên tiểu đoàn chờ phê duyệt (@ViewBag.PheDuyetC)</a></li>
+                                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#PDD">Danh sách tiểu đoàn đã phê duyệt (@ViewBag.PheDuyetD)</a></li>
+                                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#HT">Đã hoàn thành (@ViewBag.DaHoanThanh)</a></li>
+                                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#TC">Đã hủy (@ViewBag.DaBiTuChoi)</a></li>
+                                    }
+                                    @if (qh.MaCv == 3)
+                                    {
+                                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#PDC">Danh sách đại đội gửi lên (@ViewBag.PheDuyetC)</a></li>
+                                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#PDD">Danh sách đã phê duyệt (@ViewBag.PheDuyetD)</a></li>
+                                    }
+                                    @if (qh.MaCv == 1)
+                                    {
+                                        <li class=" nav-item active"><a class="nav-link active" data-toggle="tab" href="#ChuaPD">Chưa phê duyệt (@ViewBag.ChuaPheDuyet)</a></li>
+                                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#PDC">Đã phê duyệt cấp đại đội (@ViewBag.PheDuyetC)</a></li>
+                                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#PDD">Đã phê duyệt cấp tiểu đoàn (@ViewBag.PheDuyetD)</a></li>
+                                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#HT">Đã hoàn thành (@ViewBag.DaHoanThanh)</a></li>
+                                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#TC">Đã hủy (@ViewBag.DaBiTuChoi)</a></li>
+                                    }
+                                    
                                 </ul>
                                                             
                                 <!-- /.card-header -->
@@ -322,9 +339,13 @@ else
                                                             <td>@item.ThoiGianVao</td>
                                                             <td>
                                                                 <a href="@Url.Action("SuaDanhSach","Admin",new {MaHocVien=item.MaHocVien})" class="btn btn-success">Edit</a>
-                                                            </td>                                                        
-                                                            <td><a class="btn btn-success" id="TuChoiD">Từ chối</a></td>
-                                                            <td><a class="btn btn-success" id="PheDuyetD">Phê duyệt</a></td>
+                                                            </td>  
+                                                            @if (qh.MaCv == 1 || qh.MaCv == 3)
+                                                            {
+                                                                <td><a class="btn btn-success" id="TuChoiD">Từ chối</a></td>
+                                                                <td><a class="btn btn-success" id="PheDuyetD">Phê duyệt</a></td>
+                                                            }
+                                                           
                                                         </tr> 
                                                     }
                                                 </tbody>
@@ -384,8 +405,12 @@ else
                                                     }
                                                 </ul>
                                             </div>
-                                            <Button class="btn btn-success" id="AllD">Phê duyệt tất cả</Button>
-                                            <Button class="btn btn-success" id="AllTCD">Từ chối tất cả</Button>
+                                            @if (qh.MaCv == 1 || qh.MaCv == 3)
+                                            {
+                                                <Button class="btn btn-success" id="AllD">Phê duyệt tất cả</Button>
+                                                <Button class="btn btn-success" id="AllTCD">Từ chối tất cả</Button>
+                                            }
+                                            
                                         </div>
                                         <script>
 
@@ -483,22 +508,26 @@ else
                                                             <td>
                                                                 <a href="@Url.Action("SuaDanhSach","Admin",new {MaHocVien=item.MaHocVien})" class="btn btn-success">Edit</a>
                                                             </td>
-                                                            @if (ds.Any(c => c.MaCtds == item.MaCTDS && (c.DaTra == false || c.DaTra == null)))
+                                                            @if (qh.MaCv == 1 || qh.MaCv == 2)
                                                             {
-                                                                <td>
-                                                                    <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCTDS" data-magiay="@ds.First(c => c.MaCtds == item.MaCTDS).MaGiayTo" data-target="#tragiay">Trả giấy</button>
-                                                                    
-                                                                </td>
-                                                            }
-                                                            else
-                                                            {
+                                                                @if (ds.Any(c => c.MaCtds == item.MaCTDS && (c.DaTra == false || c.DaTra == null)))
+                                                                {
+                                                                    <td>
+                                                                        <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCTDS" data-magiay="@ds.First(c => c.MaCtds == item.MaCTDS).MaGiayTo" data-target="#tragiay">Trả giấy</button>
 
-                                                                <td>
-                                                                    <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCTDS"  data-target="#capgiay">Cấp giấy</button>
+                                                                    </td>
+                                                                }
+                                                                else
+                                                                {
 
-                                                                </td>
-                                                               
+                                                                    <td>
+                                                                        <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCTDS" data-target="#capgiay">Cấp giấy</button>
+
+                                                                    </td>
+
+                                                                }
                                                             }
+                                                           
 
                                                         </tr>
                                                     }
@@ -799,7 +828,10 @@ else
 
                                                             <td>@item.ThoiGianRa</td>
                                                             <td>@item.ThoiGianVao</td>
-                                                          
+                                                           @*  <td>
+                                                                <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCTDS" data-magiay="@ds.First(c => c.MaCtds == item.MaCTDS).MaGiayTo" data-target="#chitiet">Chi tiết</button>
+
+                                                            </td> *@
                                                             
                                                         </tr>
                                                     }
@@ -861,6 +893,69 @@ else
                                                 </ul>
                                             </div>
                                         </div>
+                                        <div class="modal fade" id="chitiet">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h4 class="modal-title">Chi tiết lịch sử giấy</h4>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <table id="example2" class="table table-bordered table-hover">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Số giấy</th>
+                                                                    <th>Thời gian mượn</th>
+                                                                    <th>Thời gian trả</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td id="soGiay"></td>
+                                                                    <td id="thoiGianMuon"></td>
+                                                                    <td id="thoiGianTra"></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <!-- /.modal-content -->
+                                            </div>
+                                            <!-- /.modal-dialog -->
+                                        </div>
+                                        <script>
+                                            $(document).ready(function () {
+                                                // Event listener for the button click
+                                                $('[data-toggle="modal"]').on('click', function () {
+                                                    // Extract data from the button
+                                                    var maCTDS = $(this).data('id');
+                                                    var maGiayTo = $(this).data('magiay');
+
+                                                    // Ajax request to get additional information based on the extracted data
+                                                    $.ajax({
+                                                        url: '/Admin/ChiTiet', // Update the URL with your actual controller and action
+                                                        type: 'GET',
+                                                        data: {
+                                                            maCTDS: maCTDS,
+                                                            maGiayTo: maGiayTo
+                                                        },
+                                                        success: function (result) {
+                                                            // Update the modal content with the received data
+                                                            $('#soGiay').text(result.MaGiayTo);
+                                                            $('#thoiGianMuon').text(result.ThoiGianLay);
+                                                            $('#thoiGianTra').text(result.ThoiGianTra);
+                                                        },
+                                                        error: function (error) {
+                                                            console.log(error);
+                                                            alert('Error fetching data.');
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                        </script>
+
                                         <div id="TC" class="tab-pane fade">
                                             <table id="example2" class="table table-bordered table-hover">
                                                 <thead>
