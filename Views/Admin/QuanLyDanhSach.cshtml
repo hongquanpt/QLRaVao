@@ -335,8 +335,7 @@ else
                                                             if (res.status == true) {
                                                                 window.location.href = "/Admin/QuanLyDanhSach";
                                                             }
-                                                            /*$("#showmodal1 .modal-dialog").html(data);*/
-                                                            /* $("#showmodal").modal('show')*/
+                                                           
                                                         }
                                                     });
                                                 });
@@ -769,76 +768,79 @@ else
                                         </div>
                                         <script>
                                             document.addEventListener('DOMContentLoaded', function () {
-                                                var thoiGianTraGroup = document.getElementById('thoiGianTraGroup');
                                                 var thoiGianTraInput = document.getElementById('ThoiGianTra');
-
-                                                // Tự động cập nhật giá trị cho "Thời gian trả giấy tờ"
-                                                var currentDate = new Date();
-                                                thoiGianTraInput.value = currentDate.toISOString().slice(0, 16);
-
-                                                // Get references to modal elements
                                                 var modal = $('#modal-default');
                                                 var confirmButton = $('#confirm');
 
-                                                // Handle button click
+                                                // Tự động cập nhật giá trị cho "Thời gian trả giấy tờ" sử dụng Moment.js
+                                                var currentDate = moment().format('YYYY-MM-DDTHH:mm');
+                                                thoiGianTraInput.value = currentDate;
+
+                                                // Biến để lưu trữ giá trị của id và magiay
+                                                var id, magiay;
+
+                                                // Bắt sự kiện khi nút mở modal được nhấp
                                                 $('[data-toggle="modal"]').on('click', function () {
-                                                    // Get data attributes from the button
-                                                    var id = $(this).data('id');
-                                                    var magiay = $(this).data('magiay');
+                                                    // Lấy giá trị từ các thuộc tính dữ liệu của nút
+                                                    id = $(this).data('id');
+                                                    magiay = $(this).data('magiay');
 
-                                                    // Set values in the modal
-                                                    modal.find('#ThoiGianTra').val(thoiGianTraInput.value); // Set default time
-                                                    // You can set other values in the modal if needed
+                                                    // Đặt giá trị mặc định trong modal
+                                                    modal.find('#ThoiGianTra').val(thoiGianTraInput.value);
 
-                                                    // Show the modal
+                                                    // Hiển thị modal
                                                     modal.modal('show');
+                                                });
 
-                                                    // Handle confirm button click inside the modal
-                                                    confirmButton.on('click', function () {
-                                                        var thoiGianTraValue = thoiGianTraInput.value.trim();
+                                                // Bắt sự kiện khi nút xác nhận trong modal được nhấp
+                                                confirmButton.on('click', function () {
+                                                    var thoiGianTraValue = thoiGianTraInput.value.trim();
 
-                                                        if (thoiGianTraValue === "") {
-                                                            alert("Vui lòng nhập đủ thông tin.");
-                                                        } else {
-                                                            // Chuyển đổi giá trị ngày giờ thành định dạng phù hợp cho SQL Server
-                                                            var thoiGianTraFormatted = new Date(thoiGianTraValue).toISOString().slice(0, 19).replace("T", " ");
+                                                    if (thoiGianTraValue === "") {
+                                                        alert("Vui lòng nhập đủ thông tin.");
+                                                    } else {
+                                                        // Chuyển đổi giá trị ngày giờ thành định dạng phù hợp cho SQL Server sử dụng Moment.js
+                                                        var thoiGianTraFormatted = moment(thoiGianTraValue).format('YYYY-MM-DD HH:mm:ss');
 
-                                                            $.ajax({
-                                                                url: '/Admin/TraGT',
-                                                                data: {
-                                                                    thoiGianTra: thoiGianTraFormatted,
-                                                                    id: id,
-                                                                    magiay: magiay
-                                                                },
-                                                                type: 'POST',
-                                                                dataType: 'json',
-                                                                success: function (res) {
-                                                                    if (res.status == true) {
-                                                                        window.location = '@Url.Action("QuanLyDanhSach","Admin")';
-                                                                        Swal.fire({
-                                                                            position: 'center',
-                                                                            icon: 'success',
-                                                                            title: 'Thêm thành công',
-                                                                            showConfirmButton: false,
-                                                                            timer: 100
-                                                                        });
-                                                                    }
-                                                                },
-                                                                error: function (err) {
-                                                                    console.log(err);
-                                                                    alert("Đã xảy ra lỗi khi thêm yêu cầu.");
+                                                        $.ajax({
+                                                            url: '/Admin/TraGT',
+                                                            data: {
+                                                                thoiGianTra: thoiGianTraFormatted,
+                                                                id: id,
+                                                                magiay: magiay
+                                                            },
+                                                            type: 'POST',
+                                                            dataType: 'json',
+                                                            success: function (res) {
+                                                                if (res.status == true) {
+                                                                    window.location = '@Url.Action("QuanLyDanhSach", "Admin")';
+                                                                    Swal.fire({
+                                                                        position: 'center',
+                                                                        icon: 'success',
+                                                                        title: 'Thêm thành công',
+                                                                        showConfirmButton: false,
+                                                                        timer: 100
+                                                                    });
                                                                 }
-                                                            });
+                                                            },
+                                                            error: function (err) {
+                                                                console.log(err);
+                                                                alert("Đã xảy ra lỗi khi thêm yêu cầu.");
+                                                            }
+                                                        });
 
-                                                            // Hide the modal after processing
-                                                            modal.modal('hide');
-                                                        }
-                                                    });
+                                                        // Ẩn modal sau khi xử lý
+                                                        modal.modal('hide');
+                                                    }
                                                 });
                                             });
+
+
                                             document.addEventListener('DOMContentLoaded', function () {
                                                 var selectGiayTo = document.getElementById('ChucVu');
                                                 var thoiGianLayInput = document.getElementById('ThoiGianLay');
+                                                var modal = $('#modal-default');
+                                                var confirmButton = $('#confirm2');
 
                                                 // Variables to store button data
                                                 var buttonId;
@@ -854,13 +856,13 @@ else
                                                     var selectedOption = selectGiayTo.options[selectGiayTo.selectedIndex];
 
                                                     if (selectedOption.value !== "0") {
-                                                        var currentDate = new Date();
-                                                        // Format giờ và ngày thành chuỗi ISO để đặt giá trị input
-                                                        thoiGianLayInput.value = currentDate.toISOString().slice(0, 16);
+                                                        // Sử dụng Moment.js để đặt giá trị thời gian
+                                                        var currentDate = moment().format('YYYY-MM-DDTHH:mm');
+                                                        thoiGianLayInput.value = currentDate;
                                                     }
                                                 });
 
-                                                document.getElementById('confirm2').addEventListener('click', function () {
+                                                confirmButton.on('click', function () {
                                                     var selectedOption = selectGiayTo.options[selectGiayTo.selectedIndex];
                                                     var thoiGianLayValue = thoiGianLayInput.value.trim();
 
@@ -869,15 +871,15 @@ else
                                                     } else if (thoiGianLayValue === "") {
                                                         alert("Vui lòng nhập đủ thông tin.");
                                                     } else {
-                                                        // Chuyển đổi giá trị ngày giờ thành định dạng phù hợp cho SQL Server
-                                                        var thoiGianLayFormatted = new Date(thoiGianLayValue).toISOString().slice(0, 19).replace("T", " ");
+                                                        // Chuyển đổi giá trị ngày giờ thành định dạng phù hợp cho SQL Server sử dụng Moment.js
+                                                        var thoiGianLayFormatted = moment(thoiGianLayValue).format('YYYY-MM-DD HH:mm:ss');
 
                                                         $.ajax({
                                                             url: '/Admin/ThemGT',
                                                             data: {
                                                                 giayto: selectedOption.value,
                                                                 thoiGianLay: thoiGianLayFormatted,
-                                                                id: buttonId // Use the stored buttonId here
+                                                                id: buttonId // Sử dụng buttonId đã lưu ở trên
                                                             },
                                                             type: 'POST',
                                                             dataType: 'json',
@@ -901,6 +903,7 @@ else
                                                     }
                                                 });
                                             });
+
 
                                         </script>
                                         <div id="HT" class="tab-pane fade">
