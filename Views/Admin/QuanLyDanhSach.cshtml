@@ -177,8 +177,8 @@ else
                                                             <td>
                                                                 <a href="@Url.Action("SuaDanhSach","Admin",new {MaHocVien=item.MaHocVien})" class="btn btn-success">Edit</a>
                                                             </td>
-                                                            <td><a class="btn btn-success" id="TuChoiC">Từ chối</a></td>
-                                                            <td><a class="btn btn-success" id="PheDuyetC">Phê duyệt</a></td>
+                                                            <td><a class="btn btn-success" id="TuChoiC" data-maqn="@qh.MaQn">Từ chối</a></td>
+                                                            <td><a class="btn btn-success" id="PheDuyetC" data-maqn="@qh.MaQn">Phê duyệt</a></td>
                                                         </tr>
                                                     }
                                                 </tbody>
@@ -238,17 +238,18 @@ else
                                                     }
                                                 </ul>
                                             </div>
-                                            <Button class="btn btn-success" id="AllC">Phê duyệt tất cả</Button>
-                                            <Button class="btn btn-success" id="AllTC">Từ chối tất cả</Button>
+                                            <Button class="btn btn-success" id="AllC" data-maqn="@qh.MaQn">Phê duyệt tất cả</Button>
+                                            <Button class="btn btn-success" id="AllTC" data-maqn="@qh.MaQn">Từ chối tất cả</Button>
                                         </div>
                                         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
                                         <script>
                                            
                                             $("#ChuaPD").on("click", "#PheDuyetC", function () {
                                                 var id = $(this).closest("tr").find("td").eq(0).html();
+                                                var maqn = $(this).data("maqn");
                                                 $.ajax({
                                                     url: "@Url.Action("Duyet1", "Admin")",
-                                                    data: { mactds: id },
+                                                    data: { mactds: id,maqn:maqn},
                                                     success: function (res) {
                                                         if (res.status == true) {
                                                             window.location.href = "/Admin/QuanLyDanhSach";
@@ -259,24 +260,27 @@ else
                                                 });
                                             });
 
-                                            $("#ChuaPD").on("click", "#TuChoiC", function () {
-                                                var id = $(this).closest("tr").find("td").eq(0).html();
-                                                $.ajax({
-                                                    url: "@Url.Action("TC1", "Admin")",
-                                                    data: { mactds: id },
-                                                    success: function (res) {
-                                                        if (res.status == true) {
-                                                            window.location.href = "/Admin/QuanLyDanhSach";
+                 
+                                                $("#ChuaPD").on("click", ".TuChoiC", function () {
+                                                    var id = $(this).closest("tr").find("td").eq(0).html();
+                                                    var maqn = $(this).data("maqn"); // Assuming data-maqn is set on the anchor tag
+                                                    $.ajax({
+                                                        url: "@Url.Action("TC1", "Admin")",
+                                                        data: { mactds: id, maqn: maqn },
+                                                        success: function (res) {
+                                                            if (res.status == true) {
+                                                                window.location.href = "/Admin/QuanLyDanhSach";
+                                                            }
                                                         }
-                                                        /*$("#showmodal1 .modal-dialog").html(data);*/
-                                                        /* $("#showmodal").modal('show')*/
-                                                    }
+                                                    });
                                                 });
-                                            });
+                          
 
                                             $("#ChuaPD").on("click", "#AllC", function () {
+                                                var maqn = $(this).data("maqn");
                                                 $.ajax({
-                                                    url: "@Url.Action("All1", "Admin")",                                                 
+                                                    url: "@Url.Action("All1", "Admin")",
+                                                    data: {  maqn: maqn },
                                                     success: function (res) {
                                                         if (res.status == true) {
                                                             window.location.href = "/Admin/QuanLyDanhSach";
@@ -287,8 +291,10 @@ else
                                                 });
                                             });
                                             $("#ChuaPD").on("click", "#AllTC", function () {
+                                                var maqn = $(this).data("maqn");
                                                 $.ajax({
                                                     url: "@Url.Action("AllT1", "Admin")",
+                                                    data: { maqn: maqn },
                                                     success: function (res) {
                                                         if (res.status == true) {
                                                             window.location.href = "/Admin/QuanLyDanhSach";
@@ -342,8 +348,8 @@ else
                                                             </td>  
                                                             @if (qh.MaCv == 1 || qh.MaCv == 3)
                                                             {
-                                                                <td><a class="btn btn-success" id="TuChoiD">Từ chối</a></td>
-                                                                <td><a class="btn btn-success" id="PheDuyetD">Phê duyệt</a></td>
+                                                                <td><a class="btn btn-success" id="TuChoiD" data-maqn="@qh.MaQn">Từ chối</a></td>
+                                                                <td><a class="btn btn-success" id="PheDuyetD" data-maqn="@qh.MaQn">Phê duyệt</a></td>
                                                             }
                                                            
                                                         </tr> 
@@ -416,9 +422,10 @@ else
 
                                             $("#PDC").on("click", "#PheDuyetD", function () {
                                                 var id = $(this).closest("tr").find("td").eq(0).html();
+                                                var maqn = $(this).data("maqn");
                                                 $.ajax({
                                                     url: "@Url.Action("Duyet2", "Admin")",
-                                                    data: { mactds: id },
+                                                    data: { mactds: id, maqn: maqn },
                                                     success: function (res) {
                                                         if (res.status == true) {
                                                             window.location.href = "/Admin/QuanLyDanhSach";
@@ -430,9 +437,10 @@ else
                                             });
                                             $("#PDC").on("click", "#TuChoiD", function () {
                                                 var id = $(this).closest("tr").find("td").eq(0).html();
+                                                var maqn = $(this).data("maqn");
                                                 $.ajax({
                                                     url: "@Url.Action("TC2", "Admin")",
-                                                    data: { mactds: id },
+                                                    data: { mactds: id, maqn: maqn },
                                                     success: function (res) {
                                                         if (res.status == true) {
                                                             window.location.href = "/Admin/QuanLyDanhSach";
@@ -443,8 +451,10 @@ else
                                                 });
                                             });
                                             $("#ChuaPD").on("click", "#AllD", function () {
+                                                var maqn = $(this).data("maqn");
                                                 $.ajax({
                                                     url: "@Url.Action("All2", "Admin")",
+                                                    data: {  maqn: maqn },
                                                     success: function (res) {
                                                         if (res.status == true) {
                                                             window.location.href = "/Admin/QuanLyDanhSach";
@@ -455,8 +465,10 @@ else
                                                 });
                                             });
                                             $("#ChuaPD").on("click", "#AllTCD", function () {
+                                                var maqn = $(this).data("maqn");
                                                 $.ajax({
                                                     url: "@Url.Action("AllT2", "Admin")",
+                                                    data: {  maqn: maqn },
                                                     success: function (res) {
                                                         if (res.status == true) {
                                                             window.location.href = "/Admin/QuanLyDanhSach";

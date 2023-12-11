@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using QuanLyRaVao.authorize;
 using QuanLyRaVao.Data;
 using QuanLyRaVao.Models;
@@ -619,12 +620,21 @@ namespace QuanLyRaVao.Controllers
             HttpContext.Session.SetJson("GT", giayto);
             return View();
         }
-        public IActionResult Duyet1(int mactds)
+        public IActionResult Duyet1(int mactds, int maqn)
         {
+            
+            var dh = obj.Chitietdanhsaches.FirstOrDefault(c => c.MaCtds == mactds);
 
-            var dh = obj.Chitietdanhsaches.Where(c=>c.MaCtds== mactds).FirstOrDefault();
             if (dh != null)
             {
+                var duyet = new CanboDuyet
+                {
+                    MaCtds = mactds,
+                    MaCb = maqn,
+                    ThoiGianDuyet = DateTime.Now,
+                    GhiChu = "Phê duyệt đại đội"
+                };               
+                obj.CanboDuyets.Add(duyet);       
                 dh.TinhTrang = 2;
                 obj.SaveChanges();
                 return Json(new
@@ -639,13 +649,23 @@ namespace QuanLyRaVao.Controllers
                     status = false
                 });
             }
-
         }
-        public IActionResult TC1(int mactds)
+
+
+        public IActionResult TC1(int mactds, int maqn)
         {
+            
             var dh = obj.Chitietdanhsaches.Where(c => c.MaCtds == mactds).FirstOrDefault();
             if (dh != null)
             {
+                var duyet = new CanboDuyet
+                {
+                    MaCtds = mactds,
+                    MaCb = maqn,
+                    ThoiGianDuyet = DateTime.Now,
+                    GhiChu = "Từ chối đại đội"
+                };
+                obj.CanboDuyets.Add(duyet);
                 dh.TinhTrang = 0;
                 obj.SaveChanges();
                 return Json(new
@@ -662,8 +682,9 @@ namespace QuanLyRaVao.Controllers
             }
 
         }
-        public IActionResult All1()
+        public IActionResult All1(int maqn)
         {
+           
             // Lấy danh sách chi tiết đánh sách có trạng thái là 1
             var danhSachChiTiet = obj.Chitietdanhsaches.Where(c => c.TinhTrang == 1).ToList();
             
@@ -686,22 +707,62 @@ namespace QuanLyRaVao.Controllers
                         // So sánh địa chỉ với obj.QuanNhans và gán TinhTrang tùy thuộc vào kết quả
                         if (chiTiet.DiaDiem.Contains(diachi))
                         {
+                            var duyet = new CanboDuyet
+                            {
+                                MaCtds = chiTiet.MaCtds,
+                                MaCb = maqn,
+                                ThoiGianDuyet = DateTime.Now,
+                                GhiChu = "Từ chối đại đội"
+                            };
+
+                            // Add the entity to the context
+                            obj.CanboDuyets.Add(duyet);
                             chiTiet.TinhTrang = 0;
                         }
                         else
                         {
+                            var duyet = new CanboDuyet
+                            {
+                                MaCtds = chiTiet.MaCtds,
+                                MaCb = maqn,
+                                ThoiGianDuyet = DateTime.Now,
+                                GhiChu = "Phê duyệt đại đội"
+                            };
+
+                            // Add the entity to the context
+                            obj.CanboDuyets.Add(duyet);
                             chiTiet.TinhTrang = 2;
                         }
                     }
                     else
                     {
+                        var duyet = new CanboDuyet
+                        {
+                            MaCtds = chiTiet.MaCtds,
+                            MaCb = maqn,
+                            ThoiGianDuyet = DateTime.Now,
+                            GhiChu = "Phê duyệt đại đội"
+                        };
+
+                        // Add the entity to the context
+                        obj.CanboDuyets.Add(duyet);
                         // Nếu HinhThuc có giá trị khác 1, gán TinhTrang = 2
                         chiTiet.TinhTrang = 2;
                     }
                 }
                 foreach (var chiTiet in danhSachViPham)
-                {                 
-                        chiTiet.TinhTrang = 0 ;                   
+                {
+                    var duyet = new CanboDuyet
+                    {
+                        MaCtds = chiTiet.MaCtds,
+                        MaCb = maqn,
+                        ThoiGianDuyet = DateTime.Now,
+                        GhiChu = "Từ chối đại đội"
+                    };
+
+                    // Add the entity to the context
+                    obj.CanboDuyets.Add(duyet);
+                    chiTiet.TinhTrang = 0 ;                   
                 }
                 // Lưu thay đổi vào cơ sở dữ liệu
                 obj.SaveChanges();
@@ -720,13 +781,20 @@ namespace QuanLyRaVao.Controllers
             }
         }
 
-        public IActionResult AllT1()
+        public IActionResult AllT1(int maqn)
         {
             var danhSachChiTiet = obj.Chitietdanhsaches.Where(c => c.TinhTrang == 1).ToList();         
             if ( danhSachChiTiet != null && danhSachChiTiet.Any())
             {                            
                 foreach (var chiTiet in danhSachChiTiet)
                 {
+                    var duyet = new CanboDuyet
+                    {
+                        MaCtds = chiTiet.MaCtds,
+                        MaCb = maqn,
+                        ThoiGianDuyet = DateTime.Now,
+                        GhiChu = "Từ chối đại đội"
+                    };
                     chiTiet.TinhTrang = 0;
                 }
                 // Lưu thay đổi vào cơ sở dữ liệu
@@ -747,11 +815,20 @@ namespace QuanLyRaVao.Controllers
         }
 
         // Duyet d
-        public IActionResult Duyet2(int mactds)
+        public IActionResult Duyet2(int mactds, int maqn)
         {
+            
             var dh = obj.Chitietdanhsaches.Find(mactds);
             if (dh != null)
             {
+                var duyet = new CanboDuyet
+                {
+                    MaCtds = mactds,
+                    MaCb = maqn,
+                    ThoiGianDuyet = DateTime.Now,
+                    GhiChu = "Phê duyệt tiểu đoàn"
+                };
+                obj.CanboDuyets.Add(duyet);
                 dh.TinhTrang = 3;
                 obj.SaveChanges();
                 return Json(new
@@ -768,11 +845,20 @@ namespace QuanLyRaVao.Controllers
             }
 
         }
-        public IActionResult TC2(int mactds)
+        public IActionResult TC2(int mactds, int maqn)
         {
+           
             var dh = obj.Chitietdanhsaches.Where(c => c.MaCtds == mactds).FirstOrDefault();
             if (dh != null)
             {
+                var duyet = new CanboDuyet
+                {
+                    MaCtds = mactds,
+                    MaCb = maqn,
+                    ThoiGianDuyet = DateTime.Now,
+                    GhiChu = "Từ chối tiểu đoàn"
+                };
+                obj.CanboDuyets.Add(duyet);
                 dh.TinhTrang = 0;
                 obj.SaveChanges();
                 return Json(new
@@ -789,8 +875,10 @@ namespace QuanLyRaVao.Controllers
             }
 
         }
-        public IActionResult All2()
+        public IActionResult All2(int maqn)
         {
+            
+            
             // Lấy danh sách chi tiết đánh sách có trạng thái là 1
             var danhSachChiTiet = obj.Chitietdanhsaches.Where(c => c.TinhTrang == 2).ToList();
 
@@ -813,21 +901,61 @@ namespace QuanLyRaVao.Controllers
                         // So sánh địa chỉ với obj.QuanNhans và gán TinhTrang tùy thuộc vào kết quả
                         if (chiTiet.DiaDiem.Contains(diachi))
                         {
+                            var duyet = new CanboDuyet
+                            {
+                                MaCtds = chiTiet.MaCtds,
+                                MaCb = maqn,
+                                ThoiGianDuyet = DateTime.Now,
+                                GhiChu = "Từ chối tiểu đoàn"
+                            };
+
+                            // Add the entity to the context
+                            obj.CanboDuyets.Add(duyet);
                             chiTiet.TinhTrang = 0;
                         }
                         else
                         {
+                            var duyet = new CanboDuyet
+                            {
+                                MaCtds = chiTiet.MaCtds,
+                                MaCb = maqn,
+                                ThoiGianDuyet = DateTime.Now,
+                                GhiChu = "Phê duyệt tiểu đoàn"
+                            };
+
+                            // Add the entity to the context
+                            obj.CanboDuyets.Add(duyet);
                             chiTiet.TinhTrang = 3;
                         }
                     }
                     else
                     {
+                        var duyet = new CanboDuyet
+                        {
+                            MaCtds = chiTiet.MaCtds,
+                            MaCb = maqn,
+                            ThoiGianDuyet = DateTime.Now,
+                            GhiChu = "Phê duyệt tiểu đoàn"
+                        };
+
+                        // Add the entity to the context
+                        obj.CanboDuyets.Add(duyet);
                         // Nếu HinhThuc có giá trị khác 1, gán TinhTrang = 2
                         chiTiet.TinhTrang = 3;
                     }
                 }
                 foreach (var chiTiet in danhSachViPham)
                 {
+                    var duyet = new CanboDuyet
+                    {
+                        MaCtds = chiTiet.MaCtds,
+                        MaCb = maqn,
+                        ThoiGianDuyet = DateTime.Now,
+                        GhiChu = "Từ chối tiểu đoàn"
+                    };
+
+                    // Add the entity to the context
+                    obj.CanboDuyets.Add(duyet);
                     chiTiet.TinhTrang = 0;
                 }
                 // Lưu thay đổi vào cơ sở dữ liệu
@@ -847,13 +975,24 @@ namespace QuanLyRaVao.Controllers
             }
         }
 
-        public IActionResult AllT2()
+        public IActionResult AllT2(int maqn)
         {
+            
             var danhSachChiTiet = obj.Chitietdanhsaches.Where(c => c.TinhTrang == 1).ToList();
             if (danhSachChiTiet != null && danhSachChiTiet.Any())
             {
                 foreach (var chiTiet in danhSachChiTiet)
                 {
+                    var duyet = new CanboDuyet
+                    {
+                        MaCtds = chiTiet.MaCtds,
+                        MaCb = maqn,
+                        ThoiGianDuyet = DateTime.Now,
+                        GhiChu = "Từ chối tiểu đoàn"
+                    };
+
+                    // Add the entity to the context
+                    obj.CanboDuyets.Add(duyet);
                     chiTiet.TinhTrang = 0;
                 }
                 // Lưu thay đổi vào cơ sở dữ liệu

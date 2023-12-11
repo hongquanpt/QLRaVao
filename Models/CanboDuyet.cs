@@ -17,6 +17,8 @@ public partial class CanboDuyet
 
     public DateTime? ThoiGianSua { get; set; }
 
+    public int MaCbD { get; set; }
+
     public virtual Quannhan MaCbNavigation { get; set; } = null!;
 
     public virtual Chitietdanhsach MaCtdsNavigation { get; set; } = null!;

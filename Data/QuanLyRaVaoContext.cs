@@ -45,19 +45,21 @@ public partial class QuanLyRaVaoContext : DbContext
     public virtual DbSet<Vipham> Viphams { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Data Source=Quan\\hq;Initial Catalog=QuanLyRaVao;Integrated Security=True;Encrypt=false;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<CanboDuyet>(entity =>
         {
-            entity.HasKey(e => new { e.MaCb, e.MaCtds });
+            entity.HasKey(e => e.MaCbD).HasName("PK_CANBO_DUYET_1");
 
             entity.ToTable("CANBO_DUYET");
 
+            entity.Property(e => e.MaCbD).HasColumnName("MaCB_D");
+            entity.Property(e => e.GhiChu).HasMaxLength(200);
             entity.Property(e => e.MaCb).HasColumnName("MaCB");
             entity.Property(e => e.MaCtds).HasColumnName("MaCTDS");
-            entity.Property(e => e.GhiChu).HasMaxLength(200);
             entity.Property(e => e.ThoiGianDuyet).HasColumnType("datetime");
             entity.Property(e => e.ThoiGianSua).HasColumnType("datetime");
 
