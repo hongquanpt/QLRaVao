@@ -9,6 +9,7 @@
     List<DSGT> ds = HttpContextAccessor.HttpContext.Session.GetJson<List<DSGT>>("DS") ?? new List<DSGT>();
     List<Giayto> gt = HttpContextAccessor.HttpContext.Session.GetJson<List<Giayto>>("GT") ?? new List<Giayto>();
     List<Quannhan> hv = HttpContextAccessor.HttpContext.Session.GetJson<List<Quannhan>>("HV") ?? new List<Quannhan>();
+    List<Rangoai> rn = HttpContextAccessor.HttpContext.Session.GetJson<List<Rangoai>>("RN") ?? new List<Rangoai>();
     var qh = data.FirstOrDefault(c => c.ActionName == "QuanLyDanhSach");
     var dsdahoanthanh = ViewBag.pagedList5 as PagedList<DSRN>;
     var dsdatuchoi = ViewBag.pagedList0 as PagedList<DSRN>;
@@ -624,10 +625,22 @@ else
                                                             {
                                                                 @if (ds.Any(c => c.MaCtds == item.MaCTDS && (c.DaTra == false || c.DaTra == null)))
                                                                 {
-                                                                    <td>
-                                                                        <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCTDS" data-magiay="@ds.First(c => c.MaCtds == item.MaCTDS).MaGiayTo" data-target="#tragiay">Trả giấy</button>
+                                                                    if ((rn.Where(c => c.MaCtds == item.MaCTDS).FirstOrDefault() != null) && rn.Where(c => c.MaCtds == item.MaCTDS).FirstOrDefault().ThoiGianVao==null)
+                                                                    {
 
-                                                                    </td>
+                                                                        <td>
+                                                                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#tb">Trả giấy</button>
+
+                                                                        </td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td>
+                                                                            <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCTDS" data-magiay="@ds.First(c => c.MaCtds == item.MaCTDS).MaGiayTo" data-target="#tragiay">Trả giấy</button>
+
+                                                                        </td>
+                                                                    }
+
                                                                 }
                                                                 else
                                                                 {
@@ -726,6 +739,34 @@ else
                                                             </div>
                                                         </form>
                                                     </div>                                                
+                                                </div>
+                                                <!-- /.modal-content -->
+                                            </div>
+                                            <!-- /.modal-dialog -->
+                                        </div>
+                                        <div class="modal fade" id="tb">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h4 class="modal-title">Đã xảy ra lỗi khi trả giấy</h4>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form id="frmSuaDM" method="post">
+                                                            <div class="card-body">
+                                                                <!-- Loại bỏ trường "Chọn giấy tờ" và "Thời gian lấy giấy tờ" -->
+
+                                                                <div class="form-group" id="thoiGianTraGroup">
+                                                                    <label for="ThoiGianTra">Học viên ra ngoài chưa vào</label>
+                                                                    
+                                                                </div>
+
+                                                               
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                                 <!-- /.modal-content -->
                                             </div>

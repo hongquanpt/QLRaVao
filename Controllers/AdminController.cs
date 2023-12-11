@@ -1268,7 +1268,7 @@ namespace QuanLyRaVao.Controllers
                         join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
                         join dsgt in obj.ChitietdanhsachGiaytos on ct.MaCtds equals dsgt.MaCtds
                         join gt in obj.Giaytos on dsgt.MaGiayTo equals gt.MaGiayTo
-                    
+                        where ct.TinhTrang==3
                         select new DSGT
                         {
                             MaCtds = dsgt.MaCtds,
