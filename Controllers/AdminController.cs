@@ -618,6 +618,10 @@ namespace QuanLyRaVao.Controllers
             HttpContext.Session.SetJson("DS", ds);
             List<Giayto> giayto = obj.Giaytos.Where(c => c.TinhTrang == true).ToList();
             HttpContext.Session.SetJson("GT", giayto);
+            List<int> mahv=ds.Select(c=>c.MaHocVien).ToList();
+            var hv= obj.Quannhans.Where(c=>c.MaCv==1||c.MaCv==2).ToList();
+            var hocvien=hv.Where(c => !mahv.Contains(c.MaQn)).ToList();      
+            HttpContext.Session.SetJson("HV", hocvien);
             return View();
         }
         public IActionResult Duyet1(int mactds, int maqn)
@@ -1040,8 +1044,7 @@ namespace QuanLyRaVao.Controllers
             ct.ThoiGianLay = thoigianLay;
             var gt = obj.Giaytos.Find(giayto);
             gt.TinhTrang = false;
-            var dh = obj.ChitietdanhsachGiaytos.Add(ct);
-
+            obj.ChitietdanhsachGiaytos.Add(ct);
             obj.SaveChanges();
             return Json(new
             {
@@ -1058,6 +1061,28 @@ namespace QuanLyRaVao.Controllers
         {
             var ct= obj.ChitietdanhsachGiaytos.Where(c=>c.MaCtds==maCTDS&& c.MaGiayTo==maGiayTo).FirstOrDefault();
             return View(ct);
+        }
+        public IActionResult ThemDS(int hocVien, int hinhThuc, string lyDo, string diaDiem, DateTime thoiGianRa, DateTime thoiGianVao)
+        {
+           
+            int max = obj.Chitietdanhsaches.Max(r => r.MaCtds);
+            var ct = new Chitietdanhsach
+            {
+                MaCtds= max+1,
+                MaHocVien = hocVien,
+                HinhThucRn = hinhThuc,
+                LyDo = lyDo,
+                DiaDiem = diaDiem,
+                ThoiGianRa = thoiGianRa,
+                ThoiGianVao = thoiGianVao,
+                TinhTrang=1
+            };
+            obj.Chitietdanhsaches.Add(ct);
+            obj.SaveChanges();
+            return Json(new
+            {
+                status = true
+            });
         }
         #endregion
         #region Quản lý quân nhân
