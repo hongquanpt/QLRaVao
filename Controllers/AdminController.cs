@@ -1298,7 +1298,10 @@ namespace QuanLyRaVao.Controllers
             ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
             ViewBag.Page = page;
             ViewBag.TotalItemCount = totalItemCount;
+            List<Rangoai> rn = obj.Rangoais.ToList();
+            HttpContext.Session.SetJson("RN", rn);
             return View(pagedList);
+
         }
         public IActionResult RaNgoai(int id, int magiay, DateTime thoigianTra)
         {

@@ -7,7 +7,7 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     List<AccountRole> data = HttpContextAccessor.HttpContext.Session.GetJson<List<AccountRole>>("QuyenTK") ?? new List<AccountRole>();
     var qh = data.FirstOrDefault(c => c.ActionName == "QuanLyDSGT");
-
+    List<Rangoai> rn = HttpContextAccessor.HttpContext.Session.GetJson<List<Rangoai>>("RN") ?? new List<Rangoai>();
     
    
 }
@@ -124,20 +124,19 @@ else
                                                     <td>@item.CapBac1</td>
                                                     <td>@item.TenDv</td>
                                                     <td>@item.SoGiay</td>
-                                                    @if (item.ThoiGianRa == null)
+                                                    @if (rn.Where(c => c.MaCtds == item.MaCtds && c.MaGiayTo == item.MaGiayTo).FirstOrDefault() == null || rn.Where(c => c.MaCtds == item.MaCtds && c.MaGiayTo == item.MaGiayTo).FirstOrDefault().ThoiGianRa == null)
                                                     {
                                                         <td>
                                                             <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCtds" data-target="#rangoai">Ra ngoài</button>
-
                                                         </td>
                                                     }
                                                     else
                                                     {
                                                         <td>
                                                             <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCtds" data-target="#vao">Vào học viện</button>
-
                                                         </td>
                                                     }
+
 
                                                     
                                                 </tr>
