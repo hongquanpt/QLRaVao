@@ -1303,35 +1303,30 @@ namespace QuanLyRaVao.Controllers
             return View(pagedList);
 
         }
-        public IActionResult RaNgoai(int id, int magiay, DateTime thoigianTra)
+        public IActionResult RaNgoai(int id, int magiay, DateTime thoigianra)
         {
-            int max = obj.Rangoais.Max(r => r.MaRn);
+           // int max = obj.Rangoais.Max(r => r.MaRn);
             Rangoai rn =new Rangoai();
-            rn.ThoiGianRa = thoigianTra;
-            rn.MaRn = max + 1;
+            rn.ThoiGianRa = thoigianra;
+           // rn.MaRn = max + 1;
             rn.MaGiayTo= magiay;
             rn.MaCtds = id;
+            obj.Add(rn);
             obj.SaveChanges();
-            return Json(new
-            {
-                status = true
-            });
-
+            return RedirectToAction("QuanLyDSGT","Admin");
             /* return Json(new
              {
                  status = false
              });*/
 
         }
-        public IActionResult Vao(int id, int magiay, DateTime thoigianTra)
+        public IActionResult Vao(int id, int magiay)
         {
             var rn = obj.Rangoais.Where(c => c.MaCtds == id && c.MaGiayTo == magiay).FirstOrDefault();
-            rn.ThoiGianVao = thoigianTra; 
+            rn.ThoiGianVao = DateTime.Now;
+            obj.Update(rn);
             obj.SaveChanges();
-            return Json(new
-            {
-                status = true
-            });
+            return RedirectToAction("QuanLyDSGT", "Admin");
 
             /* return Json(new
              {

@@ -118,22 +118,29 @@ else
                                             @foreach (var item in Model)
                                             {
                                                 <tr>
+                                                    @if (rn.Where(c => c.MaCtds == item.MaCtds && c.MaGiayTo == item.MaGiayTo).FirstOrDefault() == null )
+                                                    {
                                                     <td>@item.MaCtds</td>
                                                     <td>@item.HoTen</td>
                                                     <td>@item.TenCv</td>
                                                     <td>@item.CapBac1</td>
                                                     <td>@item.TenDv</td>
                                                     <td>@item.SoGiay</td>
-                                                    @if (rn.Where(c => c.MaCtds == item.MaCtds && c.MaGiayTo == item.MaGiayTo).FirstOrDefault() == null || rn.Where(c => c.MaCtds == item.MaCtds && c.MaGiayTo == item.MaGiayTo).FirstOrDefault().ThoiGianRa == null)
-                                                    {
+                                                    
                                                         <td>
-                                                            <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCtds" data-target="#rangoai">Ra ngoài</button>
+                                                            <a href="@Url.Action("RaNgoai","Admin",new {id=item.MaCtds,magiay=item.MaGiayTo,thoigianra = DateTime.Now})" class="btn btn-success">Ra Ngoài</a>
                                                         </td>
                                                     }
-                                                    else
+                                                    else if (rn.Where(c => c.MaCtds == item.MaCtds && c.MaGiayTo == item.MaGiayTo).FirstOrDefault().ThoiGianVao == null)
                                                     {
+                                                        <td>@item.MaCtds</td>
+                                                        <td>@item.HoTen</td>
+                                                        <td>@item.TenCv</td>
+                                                        <td>@item.CapBac1</td>
+                                                        <td>@item.TenDv</td>
+                                                        <td>@item.SoGiay</td>
                                                         <td>
-                                                            <button type="button" class="btn btn-default" data-toggle="modal" data-id="@item.MaCtds" data-target="#vao">Vào học viện</button>
+                                                            <a href="@Url.Action("Vao","Admin",new {id=item.MaCtds, magiay= item.MaGiayTo})" class="btn btn-success">Vào học viện</a>
                                                         </td>
                                                     }
 
