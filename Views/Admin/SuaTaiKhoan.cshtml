@@ -1,0 +1,123 @@
+﻿@model QuanLyRaVao.Models.Taikhoan
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    //   var qn = Model.MaTaiKhoan.ToString();
+    var ChonQuanNhan = (List<Quannhan>)ViewBag.ChonQuanNhan;
+    var ChonCapBac = (List<Capbac>)ViewBag.ChonCapBac;
+    var ChonChucVu = (List<Chucvu>)ViewBag.ChonChucVu;
+    var ChonDonVi = (List<Donvi>)ViewBag.ChonDonVi;
+    var ChonNhomQuyen = (List<NhomQuyen>)ViewBag.ChonNhomQuyen;
+    var ChonNhom = (List<Nhom>)ViewBag.ChonNhom;
+    int ma = ViewBag.matk;
+}
+<div class="content-wrapper">
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-6">
+                    <!-- general form elements -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Cập nhật thông tin tài khoản</h3>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <form id="frmSuaTaiKhoan" method="post">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Nhập tên đăng nhập</label>
+                        <input type="text" class="form-control" id="tdn" value="@Model.Tdn" placeholder="Nhập tên đăng nhập mới tại đây">
+                        <label for="exampleInputPassword1">Nhập mật khẩu</label>
+                        <input type="text" class="form-control" value="@Model.MatKhau" id="matkhau" placeholder="Nhập mật khẩu tại đây">
+
+                        <label for="exampleInputPassword1">Chọn chủ tài khoản</label>
+                        <select class="form-control" id="maqn">
+                            <option style="display:none" value="@Model.MaQn">@Model.MaQnNavigation.HoTen</option>
+                            @if (ChonQuanNhan != null)
+                            {
+                                @foreach (var item in ChonQuanNhan)
+                                {
+                                    <option value="@item.MaQn">@item.HoTen</option>
+                                }
+                            }
+                        </select>
+                        <label for="exampleInputPassword1">Chọn nhóm</label>
+                        <select class="form-control" id="manhom">
+                            <option style="display:none" value="@Model.MaNhom">@Model.MaNhomNavigation.TenNhom</option>
+                            @if (ChonNhom != null)
+                            {
+                                @foreach (var item in ChonNhom)
+                                {
+                                    <option value="@item.MaNhom">@item.TenNhom</option>
+                                }
+                            }
+                        </select>
+
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-primary" onclick="SuaTaiKhoan(@Model.MaTaiKhoan)" id="confirm">Lưu</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">Hủy bỏ</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </section>
+</div>
+
+
+<script>
+    function SuaTaiKhoan(id) {
+        var form = document.getElementById("frmSuaTaiKhoan");
+        $('#confirm').on('click', function () {
+            var tdn = $('#tdn').val().toString();
+            var matkhau = $('#matkhau').val().toString();
+            var maqn = parseInt($('#maqn').val());
+            var manhom = parseInt($('#manhom').val());
+            var ma = parseInt($('ma').val());
+            if (tdn.trim() === "" || matkhau.trim() === "" || (typeof maqn !== 'number' || !Number.isInteger(maqn))) {
+
+                alert("Bạn chưa nhập đủ thông tin");
+            } else {
+                // Nếu trường TenHang không rỗng, tiến hành gửi yêu cầu AJAX
+                $.ajax({
+                    url: '/Admin/SuaTaiKhoan',
+                    data: {
+                        tdn: tdn,
+                        matkhau: matkhau,
+                        maqn: maqn,
+                        manhom: manhom,
+                        mataikhoan:ma
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.status == true) {
+                            window.location = '@Url.Action("QuanLyTK", "Admin")'
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Sửa thành công',
+                                showConfirmButton: false,
+                                timer: 100
+                            })
+                        }
+                    }
+                        
+                    
+                });
+            }
+        });
+
+    }
+
+
+    $('#cancel').on('click', function () {
+        window.location = '@Url.Action("QuanLyTK", "Admin")'
+    });
+
+</script>

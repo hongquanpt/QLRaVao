@@ -139,25 +139,9 @@ else
                                                     <td>@item.TenCv</td>
                                                     <td>@item.TenDv</td>
                                                     <td>@item.TenNhom</td>
-
-                                                    <td>
-                                                        @*
-                                                <select name="ChucVu" class="form-control" @(qh.MaA == 2 ? "disabled" : "")>
-                                                <option value="@item.MaNhom" selected>@item.TenNhom</option>
-                                                @foreach (var chucVu in nhomquyen)
-                                                {
-                                                <option value="@chucVu.MaNhom">@chucVu.TenNhom</option>
-                                                }
-                                                </select>
-                                                </td>
-                                                @if (qh.MaA != 2)
-                                                {
-                                                <td>
-                                                <a class="btn btn-success" onclick="XoaTK(@item.MaTaiKhoan)" data-id="@item.MaTaiKhoan">Xóa</a>
-                                                </td>
-                                                }
-                                                        *@
-                                                    </td>
+                                                  @*   <td>
+                                                        <a href="@Url.Action("SuaTaiKhoan","Admin",new {mataikhoan=item.MaTaiKhoan})" class="btn btn-success">Edit</a>
+                                                    </td> *@
                                                     <td><a class="btn btn-success" onclick="XoaTK(@item.MaTaiKhoan)">Delete</a></td>
                                                 </tr>
                                             }
@@ -381,28 +365,7 @@ else
         });
     </script>
 
-    <script>
-        $(document).ready(function () {
-            $('select[name="ChucVu"]').change(function () {
-                var maTaiKhoan = parseInt($(this).closest('tr').find('td:first').text(), 10);
-                var maChucVu = parseInt($(this).val(), 10);
-
-                // Use AJAX to send the updated values to the controller
-                $.ajax({
-                    url: '@Url.Action("SuaCV", "Admin")',
-                    type: 'POST',
-                    data: { matk: maTaiKhoan, macv: maChucVu },
-                    success: function () {
-                        // Optionally, you can perform some action on success
-                        console.log('ChucVu updated successfully');
-                    },
-                    error: function () {
-                        console.log('Error updating ChucVu');
-                    }
-                });
-            });
-        });
-    </script>
+    
     <!-- Control Sidebar -->
     <aside class="control-sidebar control-sidebar-dark">
         <!-- Control sidebar content goes here -->

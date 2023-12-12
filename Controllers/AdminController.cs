@@ -490,7 +490,14 @@ namespace QuanLyRaVao.Controllers
         {
             var model = obj.Taikhoans.Find(mataikhoan);
             ViewBag.ChonQuanNhan = (obj.Quannhans.ToList());
-            ViewBag.ChonNhomQuyen = (obj.NhomQuyens.ToList());
+           // ViewBag.ChonNhomQuyen = (obj.NhomQuyens.ToList());
+            ViewBag.ChonCapBac = (obj.Capbacs.ToList());
+            ViewBag.ChonChucVu = (obj.Chucvus.ToList());
+            ViewBag.ChonDonVi = (obj.Donvis.ToList());
+          //  ViewBag.ChonQuanNhan = (obj.Quannhans.ToList());
+           // ViewBag.ChonNhomQuyen = (obj.NhomQuyens.ToList());
+            ViewBag.ChonNhom = (obj.Nhoms.ToList());
+            ViewBag.matk = mataikhoan;
             return View(model);
         }
         [HttpPost]
