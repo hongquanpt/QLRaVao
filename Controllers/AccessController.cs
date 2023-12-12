@@ -67,7 +67,7 @@ namespace QuanLyRaVao.Controllers
                       new Claim("OtherProperties","Example Role")
 
                   };
-                HttpContext.Session.SetString("email", loginInfo.TDN);
+                
                 var data = from tk in _context.Taikhoans
                             join cv in _context.NhomQuyens on tk.MaNhom equals cv.MaNhom
                             join n in _context.Nhoms on tk.MaNhom equals n.MaNhom
@@ -86,7 +86,7 @@ namespace QuanLyRaVao.Controllers
                                 MaQn=qn.MaQn
                             };
                 List<AccountRole> roles = data.ToList();
-
+                HttpContext.Session.SetString("email", data.First().TenCV);
                 HttpContext.Session.SetJson("QuyenTK", roles);
 
                     ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

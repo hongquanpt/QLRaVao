@@ -176,11 +176,12 @@ else
 
                                                             <td>@item.ThoiGianRa</td>
                                                             <td>@item.ThoiGianVao</td>
-                                                            <td>
-                                                                <a href="@Url.Action("SuaDanhSach","Admin",new {MaHocVien=item.MaHocVien})" class="btn btn-success">Edit</a>
-                                                            </td>
-                                                            <td><a class="btn btn-success" id="TuChoiC" data-maqn="@qh.MaQn">Từ chối</a></td>
                                                             <td><a class="btn btn-success" id="PheDuyetC" data-maqn="@qh.MaQn">Phê duyệt</a></td>
+                                                            <td><a class="btn btn-success" id="TuChoiC" data-maqn="@qh.MaQn">Từ chối</a></td>
+                                                            
+                                                            <td>
+                                                                <a class="btn btn-success" title="Delete" data-toggle="modal" onclick="Xoa(@item.MaCTDS)">Xóa</a>
+                                                            </td>
                                                         </tr>
                                                     }
                                                 </tbody>
@@ -306,8 +307,54 @@ else
                                             </div>
                                             <!-- /.modal-dialog -->
                                         </div>
+                                        <!-- Đoạn mã HTML cho modal xác nhận xóa -->
+                                        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="confirmDeleteModalLabel">Bạn có chắc chắn muốn xóa danh sách này?</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-primary" id="confirmDeleteButton">Xóa</button>
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
                                         <script>
+
+                                            function Xoa(ma) {
+                                                var masp = parseInt(ma);
+
+                                                // Hiển thị modal xác nhận xóa
+                                                $('#confirmDeleteModal').modal('show');
+
+                                                // Xử lý sự kiện khi người dùng xác nhận xóa
+                                                $('#confirmDeleteButton').on('click', function () {
+                                                    $.ajax({
+                                                        url: '/Admin/Xoa',
+                                                        data: {
+                                                            id: masp
+                                                        },
+                                                        type: 'POST',
+                                                        dataType: 'json',
+                                                        success: function (res) {
+                                                            if (res.status == true) {
+                                                                // Đóng modal sau khi xóa thành công
+                                                                $('#confirmDeleteModal').modal('hide');
+                                                                window.location = '@Url.Action("QuanLyDanhSach","Admin")';
+                                                            }
+                                                        }
+                                                    });
+                                                });
+                                            }
+
+
                                             $(document).ready(function () {
                                                 $("#confirm5").click(function () {
                                                     var hocVien = $("#HocVien").val();
@@ -317,9 +364,15 @@ else
                                                     var thoiGianRa = $("#ThoiGianRa").val();
                                                     var thoiGianVao = $("#ThoiGianVao").val();
 
-                                                    // Use Moment.js to format dates
-                                                    thoiGianRa = moment(thoiGianRa, "YYYY-MM-DDTHH:mm").toISOString();
-                                                    thoiGianVao = moment(thoiGianVao, "YYYY-MM-DDTHH:mm").toISOString();
+                                                    // Validate if thoiGianRa and thoiGianVao are not empty
+                                                    if (!thoiGianRa || !thoiGianVao) {
+                                                        alert("Please enter both ThoiGianRa and ThoiGianVao.");
+                                                        return;
+                                                    }
+
+                                                    // Use Moment.js to format dates and times correctly
+                                                    thoiGianRa = moment(thoiGianRa, "YYYY-MM-DDTHH:mm").format("YYYY-MM-DDTHH:mm:ss");
+                                                    thoiGianVao = moment(thoiGianVao, "YYYY-MM-DDTHH:mm").format("YYYY-MM-DDTHH:mm:ss");
 
                                                     $.ajax({
                                                         url: '/Admin/ThemDS',
@@ -335,12 +388,18 @@ else
                                                         success: function (res) {
                                                             if (res.status == true) {
                                                                 window.location.href = "/Admin/QuanLyDanhSach";
+                                                            } else {
+                                                                alert("Error: " + res.message); // Display an error message if needed
                                                             }
-                                                           
+                                                        },
+                                                        error: function (err) {
+                                                            console.error("Error:", err);
+                                                            // Handle the error as needed
                                                         }
                                                     });
                                                 });
                                             });
+
 
 
 
@@ -444,9 +503,7 @@ else
 
                                                             <td>@item.ThoiGianRa</td>
                                                             <td>@item.ThoiGianVao</td>
-                                                            <td>
-                                                                <a href="@Url.Action("SuaDanhSach","Admin",new {MaHocVien=item.MaHocVien})" class="btn btn-success">Edit</a>
-                                                            </td>  
+                                                             
                                                             @if (qh.MaCv == 1 || qh.MaCv == 3)
                                                             {
                                                                 <td><a class="btn btn-success" id="TuChoiD" data-maqn="@qh.MaQn">Từ chối</a></td>
@@ -618,9 +675,7 @@ else
 
                                                             <td>@item.ThoiGianRa</td>
                                                             <td>@item.ThoiGianVao</td>
-                                                            <td>
-                                                                <a href="@Url.Action("SuaDanhSach","Admin",new {MaHocVien=item.MaHocVien})" class="btn btn-success">Edit</a>
-                                                            </td>
+                                                           
                                                             @if (qh.MaCv == 1 || qh.MaCv == 2)
                                                             {
                                                                 @if (ds.Any(c => c.MaCtds == item.MaCTDS && (c.DaTra == false || c.DaTra == null)))
