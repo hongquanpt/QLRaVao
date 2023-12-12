@@ -161,12 +161,12 @@ else
                                             @if (Model.HasPreviousPage)
                                             {
                                                 <li class="page-item">
-                                                    <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = Model.PageNumber - 1 })">Previous</a>
+                                                    <a class="page-link" href="@Url.Action("LichSu", new { page = Model.PageNumber - 1 })">Previous</a>
                                                 </li>
 
                                             }
                                             <li class="page-item  @(1 == Model.PageNumber ? "active" : "")">
-                                                <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = 1 })">1</a>
+                                                <a class="page-link" href="@Url.Action("LichSu", new { page = 1 })">1</a>
                                             </li>
                                             @if (Model.PageNumber > 3)
                                             {
@@ -179,7 +179,7 @@ else
                                                 if (i > 1 && i < Model.PageCount)
                                                 {
                                                     <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                                                        <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = i })">@i</a>
+                                                        <a class="page-link" href="@Url.Action("LichSu", new { page = i })">@i</a>
                                                     </li>
                                                 }
                                             }
@@ -192,22 +192,21 @@ else
                                             @if (Model.PageCount > 1)
                                             {
                                                 <li class="page-item  @(Model.PageCount == Model.PageNumber ? "active" : "")">
-                                                    <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = Model.PageCount })">@Model.PageCount</a>
+                                                    <a class="page-link" href="@Url.Action("LichSu", new { page = Model.PageCount })">@Model.PageCount</a>
                                                 </li>
                                             }
                                             @if (Model.HasNextPage)
                                             {
 
                                                 <li class="page-item">
-                                                    <a class="page-link" href="@Url.Action("QuanLyQuanNhan", new { page = Model.PageNumber + 1 })">Next</a>
+                                                    <a class="page-link" href="@Url.Action("LichSu", new { page = Model.PageNumber + 1 })">Next</a>
                                                 </li>
                                             }
                                         </ul>
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <button class="btn btn-primary" data-dismiss="modal" id="confirmThem" onclick="Them()">Thêm quân nhân mới</button>
-                                    @*<a href="#" class="btn btn-secondary" style="display: none;"><i class="material-icons">&#xE24D;</i> <span>Xuất Excel</span></a>*@
+                                   
                                 </div>
                                 <!-- /.card-body -->
                             </div>
