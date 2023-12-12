@@ -421,19 +421,19 @@ else
                                             });
 
                  
-                                                $("#ChuaPD").on("click", ".TuChoiC", function () {
-                                                    var id = $(this).closest("tr").find("td").eq(0).html();
-                                                    var maqn = $(this).data("maqn"); // Assuming data-maqn is set on the anchor tag
-                                                    $.ajax({
-                                                        url: "@Url.Action("TC1", "Admin")",
-                                                        data: { mactds: id, maqn: maqn },
-                                                        success: function (res) {
-                                                            if (res.status == true) {
-                                                                window.location.href = "/Admin/QuanLyDanhSach";
-                                                            }
+                                            $("#ChuaPD").on("click", ".TuChoiC", function () {
+                                                var id = $(this).closest("tr").find("td").eq(0).html();
+                                                var maqn = $(this).data("maqn"); // Assuming data-maqn is set on the anchor tag
+                                                $.ajax({
+                                                    url: "@Url.Action("TC1", "Admin")",
+                                                    data: { mactds: id, maqn: maqn },
+                                                    success: function (res) {
+                                                        if (res.status == true) {
+                                                            window.location.href = "/Admin/QuanLyDanhSach";
                                                         }
-                                                    });
+                                                    }
                                                 });
+                                            });
                           
 
                                             $("#ChuaPD").on("click", "#AllC", function () {
@@ -571,12 +571,12 @@ else
                                             </div>
                                             @if (qh.MaCv == 1 || qh.MaCv == 3)
                                             {
-                                                <Button class="btn btn-success" id="AllD">Phê duyệt tất cả</Button>
-                                                <Button class="btn btn-success" id="AllTCD">Từ chối tất cả</Button>
+                                                <Button class="btn btn-success" id="AllD" data-maqn="@qh.MaQn">Phê duyệt tất cả</Button>
+                                                <Button class="btn btn-success" id="AllTCD" data-maqn="@qh.MaQn">Từ chối tất cả</Button>
                                             }
                                             
                                         </div>
-                                        <script>
+                                        <script> 
 
                                             $("#PDC").on("click", "#PheDuyetD", function () {
                                                 var id = $(this).closest("tr").find("td").eq(0).html();
@@ -608,7 +608,7 @@ else
                                                     }
                                                 });
                                             });
-                                            $("#ChuaPD").on("click", "#AllD", function () {
+                                            $("#PDC").on("click", "#AllD", function () {
                                                 var maqn = $(this).data("maqn");
                                                 $.ajax({
                                                     url: "@Url.Action("All2", "Admin")",
@@ -622,7 +622,7 @@ else
                                                     }
                                                 });
                                             });
-                                            $("#ChuaPD").on("click", "#AllTCD", function () {
+                                            $("#PDC").on("click", "#AllTCD", function () {
                                                 var maqn = $(this).data("maqn");
                                                 $.ajax({
                                                     url: "@Url.Action("AllT2", "Admin")",
