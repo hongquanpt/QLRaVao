@@ -7,6 +7,7 @@ using QuanLyRaVao.Models;
 using System;
 using System.Data;
 using System.Security.Cryptography;
+using System.Text;
 using X.PagedList;
 
 namespace QuanLyRaVao.Controllers
@@ -18,6 +19,22 @@ namespace QuanLyRaVao.Controllers
         public AdminController(QuanLyRaVaoContext obj)
         {
             this.obj = obj;
+        }
+        public static string GetMD5(string str)
+        {
+            MD5 md5 = new MD5CryptoServiceProvider();
+            byte[] fromData = Encoding.UTF8.GetBytes(str);
+            byte[] targetData = md5.ComputeHash(fromData);
+            string byte2String = null;
+
+            for (int i = 0; i < targetData.Length; i++)
+            {
+                byte2String += targetData[i].ToString("x2");
+
+            }
+            return byte2String;
+
+            //nếu bạn muốn các chữ cái in thường thay vì in hoa thì bạn thay chữ "X" in hoa trong "X2" thành "x"
         }
         public IActionResult Index()
         {
@@ -454,7 +471,7 @@ namespace QuanLyRaVao.Controllers
         {
             var moi = new Models.Taikhoan();
             moi.Tdn = tdn;
-            moi.MatKhau = matkhau;
+            moi.MatKhau = GetMD5(matkhau);
             moi.MaQn = maqn;
             moi.MaNhom = manhom;
             obj.Taikhoans.Add(moi);
