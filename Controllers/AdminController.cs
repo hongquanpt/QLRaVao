@@ -618,10 +618,11 @@ namespace QuanLyRaVao.Controllers
             HttpContext.Session.SetJson("DS", ds);
             List<Giayto> giayto = obj.Giaytos.Where(c => c.TinhTrang == true).ToList();
             HttpContext.Session.SetJson("GT", giayto);
-            List<int> mahv=ds.Select(c=>c.MaHocVien).ToList();
-            var hv= obj.Quannhans.Where(c=>c.MaCv==1||c.MaCv==2).ToList();
+            var ds2 = query.Where(c => c.TinhTrang != 4 && c.TinhTrang != 0);
+            List<int> mahv=ds2.Select(c=>c.MaHocVien).ToList();
+            var hv = obj.Quannhans.Where(c => c.MaCv == 1 || c.MaCv == 2).ToList();
             var hocvien=hv.Where(c => !mahv.Contains(c.MaQn)).ToList();      
-            HttpContext.Session.SetJson("HV", hocvien);
+            HttpContext.Session.SetJson("HV", hocvien  );
             return View();
         }
         public IActionResult Duyet1(int mactds, int maqn)
@@ -1084,6 +1085,31 @@ namespace QuanLyRaVao.Controllers
                 status = true
             });
         }
+    public IActionResult Xoa( int id)
+        {
+            var ct = obj.Chitietdanhsaches.Find(id);
+            if (ct != null)
+            {
+                obj.Chitietdanhsaches.Remove(ct);
+                obj.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            else
+            {
+                // Xử lý trường hợp tk là null (nếu cần)
+                return Json(new
+                {
+                    status = false,
+                    message = "Không tìm thấy danh sách"
+                });
+            }
+
+        }
+
+
         #endregion
         #region Quản lý quân nhân
         public IActionResult QuanLyQuanNhan(int maqn, string diachi, string hoten, int CapBac, int ChucVu, int DonVi,int page = 1, int pageSize = 5)
@@ -1457,7 +1483,63 @@ namespace QuanLyRaVao.Controllers
         }
         #endregion
 
-       
+        #region Lịch sử ra ngoài
+        public IActionResult LichSu(int page = 1, int pageSize = 5)
+        {
+
+            var query = from ct in obj.Chitietdanhsaches
+                        join qn in obj.Quannhans on ct.MaHocVien equals qn.MaQn
+                        join cb in obj.Capbacs on qn.MaCapBac equals cb.MaCapBac
+                        join dv in obj.Donvis on qn.MaDv equals dv.MaDv
+                        join cv in obj.Chucvus on qn.MaCv equals cv.MaCv
+                        join dsgt in obj.ChitietdanhsachGiaytos on ct.MaCtds equals dsgt.MaCtds
+                        join gt in obj.Giaytos on dsgt.MaGiayTo equals gt.MaGiayTo
+                        join ra in obj.Rangoais on ct.MaCtds equals ra.MaCtds
+                        join cbd in obj.CanboDuyets on ct.MaCtds equals cbd.MaCtds
+                        where cbd.GhiChu== "Phê duyệt tiểu đoàn"&& (ct.TinhTrang==4||ct.TinhTrang==0)
+                        select new LS
+                        {
+                            MaCtds = dsgt.MaCtds,
+                            MaHocVien = ct.MaHocVien,
+                            MaGiayTo = dsgt.MaGiayTo,
+                            DaTra = gt.TinhTrang,
+                            ThoiGianLay = dsgt.ThoiGianLay,
+                            ThoiGianTra = dsgt.ThoiGianTra,
+                            SoGiay = gt.SoGiay,
+                            ThoiGianRa = ct.ThoiGianRa,
+                            ThoiGianVao = ct.ThoiGianVao,
+                            TinhTrang = ct.TinhTrang,
+                            HoTen = qn.HoTen,
+                            DiaChi = qn.DiaChi,
+                            MaCv = qn.MaCv,
+                            MaDv = qn.MaDv,
+                            MaCapBac = qn.MaCapBac,
+                            CapBac1 = cb.CapBac1,
+                            TenCv = cv.TenCv,
+                            TenDv = dv.TenDv,
+                            LyDo = ct.LyDo,
+                            DiaDiem = ct.DiaDiem,
+                            HinhThucRn = ct.HinhThucRn,
+                            NguoiDuyet = cbd.MaCb,
+                            ThoiGianRaC = ra.ThoiGianRa,
+                            ThoiGianVaoC = ra.ThoiGianVao
+                        };
+
+            var model = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            // Tính toán thông tin phân trang
+            var totalItemCount = query.Count();
+            var pagedList = new StaticPagedList<LS>(model, page, pageSize, totalItemCount);
+            ViewBag.PageStartItem = (page - 1) * pageSize + 1;
+            ViewBag.PageEndItem = Math.Min(page * pageSize, totalItemCount);
+            ViewBag.Page = page;
+            ViewBag.TotalItemCount = totalItemCount;
+            List<Quannhan> rn = obj.Quannhans.ToList();
+            HttpContext.Session.SetJson("QN", rn);
+            return View(pagedList);
+
+        }
+        #endregion
 
     }
 }
