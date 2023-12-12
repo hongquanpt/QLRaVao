@@ -1,4 +1,4 @@
-﻿@model QuanLyRaVao.Models.HV_VP
+﻿@model QuanLyRaVao.Models.Vipham
 
 @{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
@@ -14,7 +14,7 @@
                     <!-- general form elements -->
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">Cập nhật thông tin giay to</h3>
+                            <h3 class="card-title">Cập nhật thông tin vi phạm</h3>
                         </div>
 
                     </div>
@@ -35,7 +35,7 @@
 
                         <label for="exampleInputPassword1">Chọn quân nhân vi phạm</label>
                         <select class="form-control" id="mahv">
-                            <option style="display:none" value="@Model.HoTen"></option>
+                            <option style="display:none" value="@Model.MaHvNavigation.HoTen">@Model.MaHvNavigation.HoTen</option>
                             @if (ChonQuanNhan != null)
                             {
                                 @foreach (var item in ChonQuanNhan)
@@ -63,15 +63,13 @@
 <script>
     function SuaViPham(mavp) {
         $('#confirm').on('click', function () {
-            var mota = $('#mota').val().toString();
+            var mota = $('#mota').val();
             var loai = $('#loai').val();
             var thoigian = $('#thoigian').val();
-            var ghichu = $('#ghichu').val().toString();
-            var mahv = $('#mahv').val();
-            if (mota.trim() === "" || (typeof mahv !== 'number' || !Number.isInteger(mahv))) {
+            var ghichu = $('#ghichu').val();
+            var mahv = parseInt($('#mahv').val());
 
-                alert("Bạn chưa nhập đủ thông tin");
-            } else {
+          
                 // Nếu trường TenHang không rỗng, tiến hành gửi yêu cầu AJAX
                 $.ajax({
                     url: '/Admin/SuaViPham',
@@ -97,7 +95,7 @@
                         }
                     }
                 });
-            }
+            
         });
         $('#cancel').on('click', function () {
             window.location = '@Url.Action("QuanLyViPham", "Admin")'
