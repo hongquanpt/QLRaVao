@@ -441,8 +441,12 @@ namespace QuanLyRaVao.Controllers
             ViewBag.Page = page;
             ViewBag.TotalItemCount = totalItemCount;
              ViewBag.nhomquyen=nhomquyen;
+            ViewBag.ChonCapBac = (obj.Capbacs.ToList());
+            ViewBag.ChonChucVu = (obj.Chucvus.ToList());
+            ViewBag.ChonDonVi = (obj.Donvis.ToList());
             ViewBag.ChonQuanNhan = (obj.Quannhans.ToList());
             ViewBag.ChonNhomQuyen = (obj.NhomQuyens.ToList());
+            ViewBag.ChonNhom = (obj.Nhoms.ToList());
             return View(pagedList);
         }
         [HttpPost]
