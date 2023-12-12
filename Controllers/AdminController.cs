@@ -1467,13 +1467,10 @@ namespace QuanLyRaVao.Controllers
         {
             var model = obj.Viphams.Find(mavp);
             ViewBag.ChonQuanNhan = (obj.Quannhans.ToList());
-            var hvvp = new HV_VP();
+
             if(model != null)
             {
-                hvvp.MoTa = model.MoTa;
-                hvvp.Loai = model.Loai;
-                hvvp.ThoiGian = model.ThoiGian;
-                hvvp.MaQn = model.MaHv;
+            
                 return View(model);
             }
             else
